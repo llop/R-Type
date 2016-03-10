@@ -33,6 +33,7 @@ private:
 					const char* ficheroMapa);
 
 	void avanzaPosicion();		// se encarga del scroll
+	void generaEnemigos();		// genera los enemigos del nivel
 	void trataColisiones();		// mira si alguien ha chocado con alguna pared
 	void aplicaLogicas();		// hace que todo el mundo corra su lógica
 	void aplicaMuertes();		// maneja las muertes de los sprites

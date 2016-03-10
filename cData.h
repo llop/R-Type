@@ -4,11 +4,12 @@
 #include "Globals.h"
 
 //Image array size
-#define NUM_IMG	2
+#define NUM_IMG	3
 
 //Image identifiers
 #define TEX_NIVEL1 0
 #define TEX_NAVE 1
+#define TEX_ENE1 2
 
 
 class cData {

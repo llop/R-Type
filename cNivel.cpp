@@ -152,6 +152,13 @@ void cNivel::avanzaPosicion() {
 	_naveEspacial->setPosicion(xNave + avanza, yNave);
 }
 
+void cNivel::generaEnemigos() {
+	if (_posicion == 300) {
+		cEnemigo1* n = new cEnemigo1(_sis, _posicion + GAME_WIDTH + 10, 200);
+		pushEnemigo(n);
+	}
+}
+
 void cNivel::aplicaLogicas() {
 	// aplicar logicas
 	for (list<cItem*>::iterator it=_items.begin(); it!=_items.end(); ++it) (*it)->logica();
@@ -206,6 +213,7 @@ void cNivel::trataColisiones() {
 //   decorado
 void cNivel::logica() {
 	avanzaPosicion();
+	generaEnemigos();
 	trataColisiones();
 	aplicaLogicas();
 	aplicaMuertes();

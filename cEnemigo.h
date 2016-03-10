@@ -22,6 +22,7 @@ protected:
 
 public:
 	cEnemigo(cSistema* sis) : cSprite(sis) {};
+	cEnemigo(cSistema* sis, int x, int y) : cSprite(sis, x, y) {};
 	virtual ~cEnemigo() {};
 
 
@@ -40,9 +41,11 @@ class cEnemigo1 : public cEnemigo {
 private:
 
 	float _angle;			//
+	int _yBase;
 
 public:
-	cEnemigo1(cSistema* sis);
+	//cEnemigo1(cSistema* sis);
+	cEnemigo1(cSistema* sis, int x, int y);
 	~cEnemigo1();
 
 	void getCaja(cRect &rect) const;

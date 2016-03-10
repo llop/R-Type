@@ -26,7 +26,9 @@ int e1die[6][4] = {
 
 int e1dieMid = 311;
 
-cEnemigo1::cEnemigo1(cSistema* sis) : cEnemigo(sis) {
+cEnemigo1::cEnemigo1(cSistema* sis, int x, int y) : cEnemigo(sis, x, y) {
+	_yBase = _y;
+	_sis->cargaTextura(TEX_ENE1, "img\\r-typesheet5.png");
 	_angle = 0;
 	_state = ENEMIGO_VIVE;
 	_seq = 0;
@@ -38,9 +40,15 @@ cEnemigo1::~cEnemigo1(){
 	
 }
 
+
+void cEnemigo1::getCaja(cRect &rect) const {
+
+}
+
 void cEnemigo1::logica() {
-	_angle += ENEMIGO1_INC_ANGLE;
 	if (_state == ENEMIGO_VIVE) {
+		_angle += ENEMIGO1_INC_ANGLE;
+
 		if (_delay) --_delay;
 		else {
 			_seq = (_seq + 1) % ENEMIGO1_NUM_FRAMES;
