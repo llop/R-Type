@@ -1,16 +1,9 @@
 #pragma once
 
-#include "cScene.h"
-#include "cPlayer.h"
-
 #include "cSistema.h"
 
 
-#define GAME_WIDTH	640
-#define GAME_HEIGHT 480
-
-class cGame
-{
+class cGame {
 public:
 	cGame(void);
 	virtual ~cGame(void);
@@ -29,10 +22,6 @@ public:
 
 private:
 	unsigned char keys[256];
-	//cScene Scene;
-	//cPlayer Player;
-	//cData Data;
-
-	cSistema sis;
+	cSistema* sis;
 
 };

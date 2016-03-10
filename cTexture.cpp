@@ -9,7 +9,7 @@ cTexture::cTexture(void) {
 cTexture::~cTexture(void) {
 }
 
-bool cTexture::Load(char *filename,int type,int wraps,int wrapt,int magf,int minf,bool mipmap) {
+bool cTexture::Load(const char *filename,int type,int wraps,int wrapt,int magf,int minf,bool mipmap) {
 	corona::Image* img;
 	int components;
 

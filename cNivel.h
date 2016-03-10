@@ -2,7 +2,7 @@
 
 
 // includes
-#include "cSprite.h"
+#include "cSistema.h"
 #include "cNaveEspacial.h"
 #include "cItem.h"
 #include "cEnemigo.h"
@@ -32,12 +32,16 @@ private:
 	bool cargaMapa(int tilesAncho, int tilesAlto, int anchoTile, int altoTile, 
 					const char* ficheroMapa);
 
+	void avanzaPosicion();		// se encarga del scroll
+	void trataColisiones();		// mira si alguien ha chocado con alguna pared
+	void aplicaLogicas();		// hace que todo el mundo corra su lógica
+	void aplicaMuertes();		// maneja las muertes de los sprites
 
 public:
-	cNivel(cNaveEspacial* naveEspaciall, 
+	cNivel(cSistema* sis, cNaveEspacial* naveEspaciall, 
 			int tilesAncho, int tilesAlto, int anchoTile, int altoTile, 
-			const char* ficheroMapa);
-	~cNivel();
+			const char* ficheroMapa, const char* ficheroTextura);
+	virtual ~cNivel();
 	
 
 	int getPosicion() const;
@@ -63,7 +67,7 @@ public:
 	void delDisparo(cDisparo* disparo);
 	
 
-	void logica(const cSistema &sis);
+	void logica();
 	void pinta() const;
 
 };

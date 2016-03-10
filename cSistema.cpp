@@ -1,41 +1,61 @@
 
-#include "cSistema.h"
 #include "Globals.h"
+#include "cSistema.h"
+#include "cNaveEspacial.h"
+#include "cNivel.h"
 
 
-//class cSistema {
-//private:
-//	cNaveEspacial* _naveEspacial;		//   nave espacial
-//	list<cItem*> _items;				//   items
-//	list<cEnemigo*> _enemigos;			//   enemigos
-//	list<cDisparo*> _disparos;			//   disparos
-//	cDecorado* _decorado;				//   decorado
 
 cSistema::cSistema() {
+	_naveEspacial = NULL;
+	_nivel = NULL;
+	_data = new cData();
 	_estado = MENU;
 }
 
 cSistema::~cSistema() {
+	delete _data;
+	_data = NULL;
+	if (_naveEspacial != NULL) {
+		delete _naveEspacial;
+		_naveEspacial = NULL;
+	}
+	if (_nivel != NULL) {
+		delete _nivel;
+		_nivel = NULL;
+	}
+}
 
+
+void cSistema::cargaTextura(int id, const char* ficheroTextura) {
+	_data->LoadImage(id, ficheroTextura, GL_RGBA);
+}
+
+int cSistema::getIdTextura(int id) const {
+	return _data->GetID(id);
+}
+
+void cSistema::getTamanoTextura(int id, int &width, int &height) const {
+	_data->GetSize(id, &width, &height);
 }
 
 
 // consultar
-cNaveEspacial* cSistema::getNaveEspacial() const {
+cSprite* cSistema::getNaveEspacial() const {
 	return _naveEspacial;
 }
 
-cNivel* cSistema::getNivel() const {
+cSprite* cSistema::getNivel() const {
 	return _nivel;
 }
 
 
 // establecer
-void cSistema::setNaveEspacial(cNaveEspacial* naveEspacial) {
+void cSistema::setNaveEspacial(cSprite* naveEspacial) {
 	_naveEspacial = naveEspacial;
 }
 
-void cSistema::setNivel(cNivel* nivel) {
+void cSistema::setNivel(cSprite* nivel) {
 	_nivel = nivel;
 }
 
@@ -51,7 +71,9 @@ void cSistema::delNivel() {
 
 // esto para el game loop
 void cSistema::procesaTeclas(unsigned char *keys) {
-	_naveEspacial->procesaTeclas(keys);
+	if (_naveEspacial != NULL) {
+		((cNaveEspacial*)_naveEspacial)->procesaTeclas(keys);
+	}
 }
 
 
@@ -60,7 +82,7 @@ void cSistema::procesaTeclas(unsigned char *keys) {
 //   2 - items y disparos
 //   3 - nave y enemigos
 void cSistema::logicaNivel() {
-	_nivel->logica(*this);
+	((cNivel*)_nivel)->logica();
 }
 
 void cSistema::logicaMenu() {
@@ -69,8 +91,8 @@ void cSistema::logicaMenu() {
 	_numNivel = 1;
 
 	// carga nivel 1
-	_naveEspacial = new cNaveEspacial();
-	_nivel = new cNivel(_naveEspacial, 72, 30, 16, 16, "level-01.csv");
+	_naveEspacial = new cNaveEspacial(this);
+	_nivel = new cNivel(this, (cNaveEspacial*)_naveEspacial, 72, 30, 16, 16, "level-01.csv", "img\\blocks.png");
 
 }
 

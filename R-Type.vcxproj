@@ -91,6 +91,7 @@
   <ItemGroup>
     <ClCompile Include="cBicho.cpp" />
     <ClCompile Include="cData.cpp" />
+    <ClCompile Include="cDisparoNave.cpp" />
     <ClCompile Include="cNivel.cpp" />
     <ClCompile Include="cGame.cpp" />
     <ClCompile Include="cNaveEspacial.cpp" />
@@ -113,7 +114,6 @@
     <ClInclude Include="cPlayer.h" />
     <ClInclude Include="cScene.h" />
     <ClInclude Include="cSistema.h" />
-    <ClInclude Include="cSprite.h" />
     <ClInclude Include="cTexture.h" />
     <ClInclude Include="Globals.h" />
   </ItemGroup>

@@ -78,6 +78,7 @@ void main(int argc, char** argv) {
 	glutEnterGameMode();*/
 
 	//Make the default cursor disappear
+	//check out available cursors https://www.opengl.org/documentation/specs/glut/spec3/node28.html
 	//glutSetCursor(GLUT_CURSOR_NONE);
 
 	//Register callback functions

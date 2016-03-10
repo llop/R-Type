@@ -8,8 +8,9 @@ using namespace std;
 
 bool cNivel::cargaMapa(int tilesAncho, int tilesAlto, int anchoTile, int altoTile, 
 						const char* ficheroMapa) {
-	FILE *fd = fopen(ficheroMapa, "r");
-	if (fd == NULL) return false;
+	FILE *fd;
+	errno_t err = fopen_s(&fd, ficheroMapa, "r");
+	if (err != 0) return false;
 
 	_tilesAncho = tilesAncho;
 	_tilesAlto = tilesAlto;
@@ -48,9 +49,9 @@ bool cNivel::cargaMapa(int tilesAncho, int tilesAlto, int anchoTile, int altoTil
 }
 
 
-cNivel::cNivel(cNaveEspacial* naveEspacial, 
+cNivel::cNivel(cSistema* sis, cNaveEspacial* naveEspacial, 
 				int tilesAncho, int tilesAlto, int anchoTile, int altoTile, 
-				const char* ficheroMapa) {
+				const char* ficheroMapa, const char* ficheroTextura) : cSprite(sis) {
 	_naveEspacial = naveEspacial;
 	_posicion = 0;
 
@@ -61,11 +62,26 @@ cNivel::cNivel(cNaveEspacial* naveEspacial,
 		throw exception(errMsg.str().c_str());
 	}
 
-	_data.LoadImage(IMG_BLOCKS, "blocks.png", GL_RGBA);
+	_sis->cargaTextura(TEX_NIVEL1, ficheroTextura);
 }
 
 cNivel::~cNivel() {
-
+	// al destruir el nivel, hay que destruir cosas que hayan quedado por ahi dentro
+	for (list<cItem*>::iterator it=_items.begin(); it!=_items.end();) {
+		cItem* item = *it;
+		it = _items.erase(it);
+		delete item;
+	}
+	for (list<cDisparo*>::iterator it=_disparos.begin(); it!=_disparos.end();) {
+		cDisparo* disparo = *it;
+		it = _disparos.erase(it);
+		delete disparo;
+	}
+	for (list<cEnemigo*>::iterator it=_enemigos.begin(); it!=_enemigos.end();) {
+		cEnemigo* enemigo = *it;
+		it = _enemigos.erase(it);
+		delete enemigo;
+	}
 }
 
 
@@ -108,21 +124,91 @@ void cNivel::delDisparo(cDisparo* disparo) {
 	_disparos.remove(disparo);
 }
 
-void cNivel::logica(const cSistema &sis) {
-	++_posicion;
 
-	// tratar colisiones
+void cNivel::avanzaPosicion() {
+	// decidir aqui cuanto avanza el scroll por frame
+	int avanza = 1;
+	if (_posicion == 512) avanza = 0;		// es el final del escenario: detener el scroll
 
+	// avanzar automaticamente todo
+	_posicion += avanza;
+	for (list<cItem*>::iterator it=_items.begin(); it!=_items.end(); ++it) {
+		int x, y;
+		(*it)->getPosicion(x, y);
+		(*it)->setPosicion(x + avanza, y);
+	}
+	for (list<cDisparo*>::iterator it=_disparos.begin(); it!=_disparos.end(); ++it) {
+		int x, y;
+		(*it)->getPosicion(x, y);
+		(*it)->setPosicion(x + avanza, y);
+	}
+	for (list<cEnemigo*>::iterator it=_enemigos.begin(); it!=_enemigos.end(); ++it) {
+		int x, y;
+		(*it)->getPosicion(x, y);
+		(*it)->setPosicion(x + avanza, y);
+	}
+	int xNave, yNave;
+	_naveEspacial->getPosicion(xNave, yNave);
+	_naveEspacial->setPosicion(xNave + avanza, yNave);
+}
+
+void cNivel::aplicaLogicas() {
 	// aplicar logicas
-	for (list<cItem*>::iterator it=_items.begin(); it!=_items.end(); ++it) 
-		(*it)->logica(sis);
-	for (list<cDisparo*>::iterator it=_disparos.begin(); it!=_disparos.end(); ++it) 
-		(*it)->logica(sis);
+	for (list<cItem*>::iterator it=_items.begin(); it!=_items.end(); ++it) (*it)->logica();
+  	for (list<cDisparo*>::iterator it=_disparos.begin(); it!=_disparos.end(); ++it) (*it)->logica();
 	
 	// jugador y enemigos (IA)
-	_naveEspacial->logica(sis);
-	for (list<cEnemigo*>::iterator it=_enemigos.begin(); it!=_enemigos.end(); ++it) 
-		(*it)->logica(sis);
+	_naveEspacial->logica();
+	for (list<cEnemigo*>::iterator it=_enemigos.begin(); it!=_enemigos.end(); ++it) (*it)->logica();
+}
+
+void cNivel::aplicaMuertes() {
+	// matar a quien lo necesite
+	// quitar sprite de la lista correspondiente y liberar la memoria
+	for (list<cItem*>::iterator it=_items.begin(); it!=_items.end();) {
+		cItem* item = *it;
+		if (item->muerto()) {
+			it = _items.erase(it);
+			delete item;
+		} else ++it;
+	}
+	for (list<cDisparo*>::iterator it=_disparos.begin(); it!=_disparos.end();) {
+		cDisparo* disparo = *it;
+		if (disparo->muerto()) {
+			it = _disparos.erase(it);
+			delete disparo;
+		} else ++it;
+	}
+	for (list<cEnemigo*>::iterator it=_enemigos.begin(); it!=_enemigos.end();) {
+		cEnemigo* enemigo = *it;
+		if (enemigo->muerto()) {
+			it = _enemigos.erase(it);
+			delete enemigo;
+		} else ++it;
+	}
+}
+
+void cNivel::trataColisiones() {
+	// la nave
+
+	// los enemigos
+
+	// los disparos
+
+	// los items pueden atravesar paredes!
+}
+
+// maneja toda la interaccion:
+//   nave espacial
+//   items
+//   enemigos
+//   disparos
+//   decorado
+void cNivel::logica() {
+	avanzaPosicion();
+	trataColisiones();
+	aplicaLogicas();
+	aplicaMuertes();
 }
 
 void cNivel::pinta() const {
@@ -139,15 +225,25 @@ void cNivel::pinta() const {
 	fish eye lens, etc. Think of the ModelView matrix as where you stand with the camera and the direction you point it.
 	*/
 	// Mover el mundo para poner lo que queremos frente a la camara
-	glTranslatef(-_posicion, 0, 0);
+	float xTranslate = (float)-_posicion;
+	glTranslatef(xTranslate, 0, 0);
 
+
+	// pintar mierdas
+	for (list<cItem*>::const_iterator it = _items.begin(); it != _items.end(); ++it) (*it)->pinta();
+	for (list<cDisparo*>::const_iterator it = _disparos.begin(); it != _disparos.end(); ++it) (*it)->pinta();
+	for (list<cEnemigo*>::const_iterator it = _enemigos.begin(); it != _enemigos.end(); ++it) (*it)->pinta();
+
+	// pintar la nave
+	_naveEspacial->pinta();
+
+	// pintar el fondo lo ultimo
 	float coordx_tile, coordy_tile;
 	int px, py;
 	int colIni = _posicion / _anchoTile;
 
-
 	glEnable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D, _data.GetID(IMG_BLOCKS));
+	glBindTexture(GL_TEXTURE_2D, _sis->getIdTextura(TEX_NIVEL1));
 	glBegin(GL_QUADS);
 	for (int i = 0; i < 30; ++i) {
 		py =  _tilesAlto * _altoTile - (i+1) * _altoTile;

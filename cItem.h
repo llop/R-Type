@@ -2,7 +2,7 @@
 
 
 // includes
-#include "cSprite.h"
+#include "cSistema.h"
 
 
 class cItem : public cSprite {
@@ -11,8 +11,8 @@ private:
 	
 
 public:
-	cItem();
-	~cItem();
+	cItem(cSistema* sis);
+	virtual ~cItem() {};
 
 
 };

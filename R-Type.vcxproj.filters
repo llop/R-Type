@@ -44,6 +44,9 @@
     <ClCompile Include="cNivel.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="cDisparoNave.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cBicho.h">
@@ -80,9 +83,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="cItem.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="cSprite.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="cNivel.h">

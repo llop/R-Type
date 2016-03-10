@@ -2,7 +2,7 @@
 
 
 // includes
-#include "cSprite.h"
+#include "cSistema.h"
 
 
 class cEnemigo : public cSprite {
@@ -11,8 +11,8 @@ private:
 	
 
 public:
-	cEnemigo();
-	~cEnemigo();
+	cEnemigo(cSistema* sis);
+	virtual ~cEnemigo() {};
 
 
 };

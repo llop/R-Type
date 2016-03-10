@@ -4,27 +4,21 @@
 #include "Globals.h"
 
 //Image array size
-#define NUM_IMG		2
+#define NUM_IMG	2
 
 //Image identifiers
-#define IMG_BLOCKS	0
-#define IMG_PLAYER	1
-/*
-#define IMG_ENEMY1	2
-#define IMG_ENEMY2	3
-#define IMG_SHOOT	4
-...
-*/
+#define TEX_NIVEL1 0
+#define TEX_NAVE 1
 
-class cData
-{
+
+class cData {
 public:
 	cData(void);
 	~cData(void);
 
 	int  GetID(int img) const;
 	void GetSize(int img,int *w,int *h) const;
-	bool LoadImage(int img,char *filename,int type = GL_RGBA);
+	bool LoadImage(int img,const char *filename,int type = GL_RGBA);
 
 private:
 	cTexture texture[NUM_IMG];

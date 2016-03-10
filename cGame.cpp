@@ -3,9 +3,11 @@
 
 
 cGame::cGame(void) {
+	sis = new cSistema();
 }
 
 cGame::~cGame(void) {
+	delete sis;
 }
 
 bool cGame::Init() {
@@ -62,8 +64,8 @@ bool cGame::Process() {
 	// termina juego
 	if(keys[27]) res = false;
 
-	sis.procesaTeclas(keys);
-	sis.logica();
+	sis->procesaTeclas(keys);
+	sis->logica();
 
 	return res;
 }
@@ -72,6 +74,6 @@ bool cGame::Process() {
 void cGame::Render() {
 	glClear(GL_COLOR_BUFFER_BIT);
 	glLoadIdentity();
-	sis.pinta();
+	sis->pinta();
 	glutSwapBuffers();
 }
