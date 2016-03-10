@@ -29,7 +29,7 @@ cDisparoNave::cDisparoNave(cSistema* sis, int x, int y, int tamano) : cDisparo(s
 	_dano = (_tamano + 1) * 20;
 
 	_seq = 0;
-	_delay = 0;
+	_delay = DISPARO_NAVE_DELAY;
 
 	_pixelsAvanza = tiroNave[0][2] - _tamano - (_tamano>>1);
 }
@@ -51,8 +51,13 @@ void cDisparoNave::logica() {
 	if (_x > GAME_WIDTH + nivel->getPosicion()) {
 		// matar el tiro cuando queda fuera de la pantalla
 		_muerto = true;
+		return;
 	}
-	_seq = !_seq;
+	if (_delay) --_delay;
+	else {
+		_seq = !_seq;
+		_delay = DISPARO_NAVE_DELAY;
+	}
 }
 
 void cDisparoNave::pinta() const {

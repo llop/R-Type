@@ -17,11 +17,9 @@ protected:
 	int _state;				// vivo o explotando
 	int _seq;				// numero del frame en la secuencia
 	int _delay;				// tiempo entre frames
-	
-	void movimiento();
 
 public:
-	cEnemigo(cSistema* sis) : cSprite(sis) {};
+	//cEnemigo(cSistema* sis) : cSprite(sis) {};
 	cEnemigo(cSistema* sis, int x, int y) : cSprite(sis, x, y) {};
 	virtual ~cEnemigo() {};
 
@@ -30,7 +28,7 @@ public:
 
 #define ENEMIGO1_ALT_MOV 50
 #define ENEMIGO1_SPEED_LEFT 2
-#define ENEMIGO1_INC_ANGLE 0.2
+#define ENEMIGO1_INC_ANGLE 0.04f
 #define ENEMIGO1_NUM_FRAMES 8
 #define ENEMIGO1_MUEVE_DELAY 10
 #define ENEMIGO1_MUERE_DELAY 10

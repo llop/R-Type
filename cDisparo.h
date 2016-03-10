@@ -23,6 +23,8 @@ public:
 };
 
 
+#define DISPARO_NAVE_DELAY 10
+
 // disparo de la nave
 class cDisparoNave : public cDisparo {
 protected:

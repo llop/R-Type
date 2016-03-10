@@ -153,10 +153,14 @@ void cNivel::avanzaPosicion() {
 }
 
 void cNivel::generaEnemigos() {
-	if (_posicion == 300) {
-		cEnemigo1* n = new cEnemigo1(_sis, _posicion + GAME_WIDTH + 10, 200);
+
+	// generar una cadena de malos
+	int inter = 12;
+	if (!(_posicion%inter) && _posicion<inter*6) {
+		cEnemigo1* n = new cEnemigo1(_sis, _posicion + GAME_WIDTH + 21, 200);
 		pushEnemigo(n);
 	}
+
 }
 
 void cNivel::aplicaLogicas() {

@@ -69,7 +69,7 @@ cNaveEspacial::~cNaveEspacial() {
 
 void cNaveEspacial::arriba() {
 	if (_state == NAVE_VIVE) {
-
+		
 		// cambiar coordenadas
 		_y -= NAVE_PIXELS_MUEVE;
 		

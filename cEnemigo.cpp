@@ -12,7 +12,6 @@ int e1mov[8][4] = {
 	{ 203, 13, 21, 7 },
 	{ 236, 10, 21, 14 }
 };
-
 int e1movMid = 17;
 
 int e1die[6][4] = {
@@ -23,16 +22,19 @@ int e1die[6][4] = {
 	{ 109, 296, 32, 30 },
 	{ 76, 296, 32, 30 }
 };
-
 int e1dieMid = 311;
 
+
 cEnemigo1::cEnemigo1(cSistema* sis, int x, int y) : cEnemigo(sis, x, y) {
-	_yBase = _y;
 	_sis->cargaTextura(TEX_ENE1, "img\\r-typesheet5.png");
+
 	_angle = 0;
+	_yBase = _y;
+	
 	_state = ENEMIGO_VIVE;
 	_seq = 0;
 	_delay = ENEMIGO1_MUEVE_DELAY;
+	
 	_vida = ENEMIGO1_VIDA_INICIAL;
 }
 
@@ -49,6 +51,16 @@ void cEnemigo1::logica() {
 	if (_state == ENEMIGO_VIVE) {
 		_angle += ENEMIGO1_INC_ANGLE;
 
+		_x -= ENEMIGO1_SPEED_LEFT;
+		_y = int(_yBase + sin(_angle) * ENEMIGO1_ALT_MOV);
+
+		cNivel* nivel = (cNivel*)_sis->getNivel();
+		if (_x + e1mov[0][2] < nivel->getPosicion()) {
+			// matar el tiro cuando queda fuera de la pantalla
+			_muerto = true;
+			return;
+		}
+
 		if (_delay) --_delay;
 		else {
 			_seq = (_seq + 1) % ENEMIGO1_NUM_FRAMES;
@@ -58,8 +70,7 @@ void cEnemigo1::logica() {
 	if (_state == ENEMIGO_EXPLO) {
 		if (_delay) {
 			--_delay;
-		}
-		else {
+		} else {
 			++_seq;
 			_delay = ENEMIGO1_MUERE_DELAY;
 		}
@@ -73,9 +84,10 @@ void cEnemigo1::logica() {
 
 void cEnemigo1::pinta() const{
 	if (_state == ENEMIGO_MUERE) return;
-	int tex = _sis->getIdTextura(TEX_NAVE);
+
+	int tex = _sis->getIdTextura(TEX_ENE1);
 	int wTex, hTex;
-	_sis->getTamanoTextura(TEX_NAVE, wTex, hTex);
+	_sis->getTamanoTextura(TEX_ENE1, wTex, hTex);
 
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, tex);
@@ -94,8 +106,7 @@ void cEnemigo1::pinta() const{
 		xPixEne = _x - (wPixEne >> 1);
 		yPixOffset = e1movMid - e1mov[_seq][1];
 		yPixEne = GAME_HEIGHT - (_y - yPixOffset + hPixEne);
-	}
-	else if (_state == ENEMIGO_EXPLO) {
+	} else if (_state == ENEMIGO_EXPLO) {
 		xTexEne = e1die[_seq][0] / (float)wTex;
 		yTexEne = e1die[_seq][1] / (float)hTex;
 		wTexEne = e1die[_seq][2] / (float)wTex;

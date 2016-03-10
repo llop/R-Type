@@ -47,6 +47,9 @@
     <ClCompile Include="cDisparoNave.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="cEnemigo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cBicho.h">
