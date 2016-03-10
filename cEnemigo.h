@@ -5,6 +5,10 @@
 #include "cSistema.h"
 
 
+#define ENEMIGO_VIVE 0
+#define ENEMIGO_EXPLO 1
+#define ENEMIGO_MUERE 2
+
 class cEnemigo : public cSprite {
 protected:
 	
@@ -17,7 +21,7 @@ protected:
 	void movimiento();
 
 public:
-	cEnemigo(cSistema* sis);
+	cEnemigo(cSistema* sis) : cSprite(sis) {};
 	virtual ~cEnemigo() {};
 
 
@@ -25,6 +29,12 @@ public:
 
 #define ENEMIGO1_ALT_MOV 50
 #define ENEMIGO1_SPEED_LEFT 2
+#define ENEMIGO1_INC_ANGLE 0.2
+#define ENEMIGO1_NUM_FRAMES 8
+#define ENEMIGO1_MUEVE_DELAY 10
+#define ENEMIGO1_MUERE_DELAY 10
+#define ENEMIGO1_VIDA_INICIAL 20
+#define ENEMIGO1_EXPLO_FRAMES 6
 
 class cEnemigo1 : public cEnemigo {
 private:
