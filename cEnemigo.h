@@ -47,6 +47,8 @@ public:
 	~cEnemigo1();
 
 	void getCaja(cRect &rect) const;
+	
+	void colision(cRect &caja, int &colMask) const;
 
 	void logica();
 	void pinta() const;

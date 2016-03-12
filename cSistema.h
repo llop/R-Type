@@ -61,6 +61,11 @@ public:
 };
 
 
+#define COLISION_ARRIBA 1
+#define COLISION_ABAJO 2
+#define COLISION_IZQ 4
+#define COLISION_DER 8
+
 /**
  * Un sprite es un coso que se tiene que implementar
  */
@@ -89,6 +94,9 @@ public:
 
 	// que cada sprite calcula su caja como le de la gana
 	virtual void getCaja(cRect &caja) const {};
+	
+	// por donde colisiona
+	virtual void colision(cRect &caja, int &colMask) const {};
 
 	// esta mierda que la implementen las subclases
 	virtual void logica() {};

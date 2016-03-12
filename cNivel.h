@@ -13,6 +13,10 @@
 using namespace std;
 
 
+#define NIVEL_AVANCE 1
+#define NIVEL_DELAY 1
+
+
 class cNivel : public cSprite {
 private:
 
@@ -27,6 +31,8 @@ private:
 	int _anchoTile, _altoTile;			// dimensiones de un solo tile en pixels
 
 	vector<int> _mapa;					// el mapa de tiles
+
+	int _delay;
 
 
 	bool cargaMapa(int tilesAncho, int tilesAlto, int anchoTile, int altoTile, 
@@ -67,6 +73,7 @@ public:
 	void delEnemigo(cEnemigo* enemigo);
 	void delDisparo(cDisparo* disparo);
 	
+	void colision(cRect &caja, int &colMask) const;
 
 	void logica();
 	void pinta() const;

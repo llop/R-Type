@@ -197,8 +197,8 @@ void cNaveEspacial::muerete() {
 }
 
 void cNaveEspacial::getCaja(cRect &rect) const {
-	rect.w = mov[_seq][2] - 2;
-	rect.h = mov[_seq][3] - 2;
+	rect.w = mov[_seq][2] - 4;
+	rect.h = mov[_seq][3] - 4;
 	rect.x = _x - (rect.w>>1);
 	rect.y = _y - (rect.h>>1);
 }
@@ -214,7 +214,7 @@ void cNaveEspacial::logica() {
 		hPixNave = mov[_seq][3];
 		xPixNave = _x - (wPixNave>>1);
 		yPixOffset = movMid - mov[_seq][1];
-		yPixNave = GAME_HEIGHT - (_y - yPixOffset + hPixNave);
+		yPixNave = GAME_HEIGHT - 32 - (_y - yPixOffset + hPixNave);
 
 		int posNivel = nivel->getPosicion();
 		int left = xPixNave - posNivel;
@@ -223,11 +223,48 @@ void cNaveEspacial::logica() {
 		int right = (posNivel + GAME_WIDTH) - (xPixNave + wPixNave);
 		if (right < 0) _x += right;
 
-		int top = GAME_HEIGHT - (yPixNave + hPixNave);
+		int top = GAME_HEIGHT - 32 - (yPixNave + hPixNave);
 		if (top < 0) _y -= top;
 
 		int bottom = yPixNave;
 		if (bottom < 0) _y += bottom;
+
+		// ha chocado con el escenario?
+		cRect rect;
+		getCaja(rect);
+		int colMask;
+		nivel->colision(rect, colMask);
+		if (colMask) muerete();
+
+		// ha chocado con algun disparo malo?
+		list<cDisparo*> disparos = nivel->getDisparos();
+		for (list<cDisparo*>::iterator it=disparos.begin(); it!=disparos.end(); ++it) {
+			cDisparo* disparo = *it;
+			if (disparo->malo()) {
+				disparo->colision(rect, colMask);
+				if (colMask) {
+					// hace pupa!!!
+					// Y si hacemos que la nave muera de un tiro?
+					int dano = disparo->dano();
+					_vida -= dano;
+					// el disparo muere
+					disparo->muerete();
+				}
+			}
+		}
+
+		// ha chocado con algun enemigo?
+		list<cEnemigo*> enemigos = nivel->getEnemigos();
+		for (list<cEnemigo*>::iterator it = enemigos.begin(); it != enemigos.end(); ++it) {
+			cEnemigo* enemigo = *it;
+			enemigo->colision(rect, colMask);
+			if (colMask) {
+				// la nave muere
+				//muerete();
+				// y el enemigo tambien
+				enemigo->muerete();
+			}
+		}
 
 	} else if (_state == NAVE_EXPLO) {
 		if (_delay) {

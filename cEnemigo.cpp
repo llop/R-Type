@@ -44,7 +44,16 @@ cEnemigo1::~cEnemigo1(){
 
 
 void cEnemigo1::getCaja(cRect &rect) const {
+	rect.w = e1mov[_seq][2] - 2;
+	rect.h = e1mov[_seq][3] - 2;
+	rect.x = _x - (rect.w>>1);
+	rect.y = _y - (rect.h>>1);
+}
 
+void cEnemigo1::colision(cRect &rect, int &colMask) const {
+	cRect myRect;
+	getCaja(myRect);
+	colMask = ((myRect.x>rect.x) && (myRect.x+myRect.w<rect.x + rect.w) && (myRect.y>rect.y) && (myRect.y+myRect.h<rect.y+rect.h));
 }
 
 void cEnemigo1::logica() {

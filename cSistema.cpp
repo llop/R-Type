@@ -92,7 +92,7 @@ void cSistema::logicaMenu() {
 
 	// carga nivel 1
 	_naveEspacial = new cNaveEspacial(this);
-	_nivel = new cNivel(this, (cNaveEspacial*)_naveEspacial, 72, 30, 16, 16, "level-01.csv", "img\\blocks.png");
+	_nivel = new cNivel(this, (cNaveEspacial*)_naveEspacial, 288, 28, 16, 16, "maps\\level-02.csv", "maps\\textura-nivel2.png");
 
 }
 

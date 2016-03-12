@@ -54,6 +54,7 @@ cNivel::cNivel(cSistema* sis, cNaveEspacial* naveEspacial,
 				const char* ficheroMapa, const char* ficheroTextura) : cSprite(sis) {
 	_naveEspacial = naveEspacial;
 	_posicion = 0;
+	_delay = NIVEL_DELAY;
 
 	if (!cargaMapa(tilesAncho, tilesAlto, anchoTile, altoTile, ficheroMapa)) {
 		stringstream errMsg;
@@ -126,30 +127,39 @@ void cNivel::delDisparo(cDisparo* disparo) {
 
 
 void cNivel::avanzaPosicion() {
-	// decidir aqui cuanto avanza el scroll por frame
-	int avanza = 1;
-	if (_posicion == 512) avanza = 0;		// es el final del escenario: detener el scroll
+	// avanzar si toca
+	int avanza = 0;
+	if (_delay) --_delay;
+	else { 
+		avanza = NIVEL_AVANCE;
+		_delay = NIVEL_DELAY;
+	}
+
+	// posicion final: 288*16 - 40*16 (anchura en tiles del mapa * ancho tile - anchura en tiles de la pantalla * ancho tile)
+	if (_posicion == 3968) avanza = 0;		// es el final del escenario: detener el scroll
 
 	// avanzar automaticamente todo
-	_posicion += avanza;
-	for (list<cItem*>::iterator it=_items.begin(); it!=_items.end(); ++it) {
-		int x, y;
-		(*it)->getPosicion(x, y);
-		(*it)->setPosicion(x + avanza, y);
+	if (avanza) {
+		_posicion += avanza;
+		for (list<cItem*>::iterator it=_items.begin(); it!=_items.end(); ++it) {
+			int x, y;
+			(*it)->getPosicion(x, y);
+			(*it)->setPosicion(x + avanza, y);
+		}
+		for (list<cDisparo*>::iterator it=_disparos.begin(); it!=_disparos.end(); ++it) {
+			int x, y;
+			(*it)->getPosicion(x, y);
+			(*it)->setPosicion(x + avanza, y);
+		}
+		for (list<cEnemigo*>::iterator it=_enemigos.begin(); it!=_enemigos.end(); ++it) {
+			int x, y;
+			(*it)->getPosicion(x, y);
+			(*it)->setPosicion(x + avanza, y);
+		}
+		int xNave, yNave;
+		_naveEspacial->getPosicion(xNave, yNave);
+		_naveEspacial->setPosicion(xNave + avanza, yNave);
 	}
-	for (list<cDisparo*>::iterator it=_disparos.begin(); it!=_disparos.end(); ++it) {
-		int x, y;
-		(*it)->getPosicion(x, y);
-		(*it)->setPosicion(x + avanza, y);
-	}
-	for (list<cEnemigo*>::iterator it=_enemigos.begin(); it!=_enemigos.end(); ++it) {
-		int x, y;
-		(*it)->getPosicion(x, y);
-		(*it)->setPosicion(x + avanza, y);
-	}
-	int xNave, yNave;
-	_naveEspacial->getPosicion(xNave, yNave);
-	_naveEspacial->setPosicion(xNave + avanza, yNave);
 }
 
 void cNivel::generaEnemigos() {
@@ -209,6 +219,54 @@ void cNivel::trataColisiones() {
 	// los items pueden atravesar paredes!
 }
 
+
+void cNivel::colision(cRect &caja, int &colMask) const {
+	colMask = 0;
+
+	int tileArriba = caja.y / _altoTile;
+	int tileAbajo = (caja.y + caja.h) / _altoTile;
+	int tileIzquierda = caja.x / _anchoTile;
+	int tileDerecha = (caja.x + caja.w) / _anchoTile;
+
+	// colisiona arriba
+	int i = tileArriba;
+	int j = tileIzquierda;
+	while (j <= tileDerecha) {
+		int tile = _mapa[i * _tilesAncho + j];
+		if (tile != -1) colMask |= COLISION_ARRIBA;
+		++j;
+	}
+	
+	// colisiona abajo
+	i = tileAbajo;
+	j = tileIzquierda;
+	while (j <= tileDerecha) {
+		int tile = _mapa[i * _tilesAncho + j];
+		if (tile != -1) colMask |= COLISION_ABAJO;
+		++j;
+	}
+
+	// colisiona izquierda 
+	i = tileArriba;
+	j = tileIzquierda;
+	while (i <= tileAbajo) {
+		int tile = _mapa[i * _tilesAncho + j];
+		if (tile != -1) colMask |= COLISION_IZQ;
+		++i;
+	}
+
+	// colisiona derecha
+	i = tileArriba;
+	j = tileDerecha;
+	while (i <= tileAbajo) {
+		int tile = _mapa[i * _tilesAncho + j];
+		if (tile != -1) colMask |= COLISION_DER;
+		++i;
+	}
+
+}
+
+
 // maneja toda la interaccion:
 //   nave espacial
 //   items
@@ -250,15 +308,18 @@ void cNivel::pinta() const {
 	_naveEspacial->pinta();
 
 	// pintar el fondo lo ultimo
-	float coordx_tile, coordy_tile;
 	int px, py;
 	int colIni = _posicion / _anchoTile;
+
+	float xTile, yTile, wTile, hTile;
+	int wTex, hTex;
+	_sis->getTamanoTextura(TEX_NIVEL1, wTex, hTex);
 
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, _sis->getIdTextura(TEX_NIVEL1));
 	glBegin(GL_QUADS);
-	for (int i = 0; i < 30; ++i) {
-		py =  _tilesAlto * _altoTile - (i+1) * _altoTile;
+	for (int i = 0; i < 28; ++i) {
+		py =  30 * _altoTile - (i+1) * _altoTile;
 
 		for (int j = 0; j < 40 + 1; ++j) {
 			int col = j + colIni;
@@ -266,21 +327,15 @@ void cNivel::pinta() const {
 				int index = i * _tilesAncho + col;
 				int tile = _mapa[index];
 				if (tile != -1) {
-					if (tile == 0) tile = 1;
-					else if (tile == 2) tile = 2;
-					else if (tile == 8) tile = 3;
-					else if (tile == 10) tile = 4;
-
-					if (tile % 2) coordx_tile = 0.0f;
-					else coordx_tile = 0.5f;
-					if (tile < 3) coordy_tile = 0.0f;
-					else coordy_tile = 0.5f;
-
+					xTile = (tile%12)/12.0f;
+					yTile = (tile/12)/10.0f;
+					wTile = _anchoTile/(float)wTex;
+					hTile = _altoTile/(float)hTex;
 					px = col * _anchoTile;
-					glTexCoord2f(coordx_tile, coordy_tile + 0.25f);			glVertex2i(px, py);
-					glTexCoord2f(coordx_tile + 0.25f, coordy_tile + 0.25f);	glVertex2i(px + _anchoTile, py);
-					glTexCoord2f(coordx_tile + 0.25f, coordy_tile);			glVertex2i(px + _anchoTile, py + _altoTile);
-					glTexCoord2f(coordx_tile, coordy_tile);					glVertex2i(px, py + _altoTile);
+					glTexCoord2f(xTile, yTile + hTile);			glVertex2i(px, py);
+					glTexCoord2f(xTile + wTile, yTile + hTile);	glVertex2i(px + _anchoTile, py);
+					glTexCoord2f(xTile + wTile, yTile);			glVertex2i(px + _anchoTile, py + _altoTile);
+					glTexCoord2f(xTile, yTile);					glVertex2i(px, py + _altoTile);
 				}
 			}
 		}
