@@ -13,10 +13,6 @@ class cEnemigo : public cSprite {
 protected:
 	
 	int _vida;				// vida del enemigo
-	
-	int _state;				// vivo o explotando
-	int _seq;				// numero del frame en la secuencia
-	int _delay;				// tiempo entre frames
 
 public:
 	//cEnemigo(cSistema* sis) : cSprite(sis) {};
@@ -46,6 +42,7 @@ public:
 	cEnemigo1(cSistema* sis, int x, int y);
 	~cEnemigo1();
 
+	void muerete();
 	void getCaja(cRect &rect) const;
 	
 	void colision(cRect &caja, int &colMask) const;

@@ -20,7 +20,7 @@ using namespace std;
 class cNivel : public cSprite {
 private:
 
-	int _posicion;
+	int _posicion;						// posicion del scroll
 
 	cNaveEspacial* _naveEspacial;		// nave espacial
 	list<cItem*> _items;				// items
@@ -31,8 +31,6 @@ private:
 	int _anchoTile, _altoTile;			// dimensiones de un solo tile en pixels
 
 	vector<int> _mapa;					// el mapa de tiles
-
-	int _delay;
 
 
 	bool cargaMapa(int tilesAncho, int tilesAlto, int anchoTile, int altoTile, 
@@ -67,11 +65,6 @@ public:
 	void pushItem(cItem* item);
 	void pushEnemigo(cEnemigo* enemigo);
 	void pushDisparo(cDisparo* disparo);
-
-	// eliminar
-	void delItem(cItem* item);
-	void delEnemigo(cEnemigo* enemigo);
-	void delDisparo(cDisparo* disparo);
 	
 	void colision(cRect &caja, int &colMask) const;
 

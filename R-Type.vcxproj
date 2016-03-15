@@ -89,22 +89,18 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="cBicho.cpp" />
     <ClCompile Include="cData.cpp" />
     <ClCompile Include="cDisparoNave.cpp" />
     <ClCompile Include="cEnemigo.cpp" />
     <ClCompile Include="cNivel.cpp" />
     <ClCompile Include="cGame.cpp" />
     <ClCompile Include="cNaveEspacial.cpp" />
-    <ClCompile Include="cPlayer.cpp" />
-    <ClCompile Include="cScene.cpp" />
     <ClCompile Include="cSistema.cpp" />
     <ClCompile Include="cSprite.cpp" />
     <ClCompile Include="cTexture.cpp" />
     <ClCompile Include="GLUTMain.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="cBicho.h" />
     <ClInclude Include="cData.h" />
     <ClInclude Include="cNivel.h" />
     <ClInclude Include="cDisparo.h" />
@@ -113,7 +109,6 @@
     <ClInclude Include="cItem.h" />
     <ClInclude Include="cNaveEspacial.h" />
     <ClInclude Include="cPlayer.h" />
-    <ClInclude Include="cScene.h" />
     <ClInclude Include="cSistema.h" />
     <ClInclude Include="cTexture.h" />
     <ClInclude Include="Globals.h" />

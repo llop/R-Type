@@ -42,10 +42,6 @@ private:
 	int _magias;			// cuantas magias quedan
 	int _tiempo_vida;		// cuanto tiempo lleva viva la nave
 
-	int _state;				// vivo o explotando
-	int _seq;				// numero del frame en la secuencia
-	int _delay;				// tiempo entre frames
-
 	bool _tiro_pulsado;		
 	int _ultimo_tiro;		// cuando disparo por ultima vez
 	int _carga_tiro;

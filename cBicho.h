@@ -13,12 +13,12 @@
 #define STATE_WALKLEFT		2
 #define STATE_WALKRIGHT		3
 
-class cRect
+/*class cRect
 {
 public:
 	int left,top,
 		right,bottom;
-};
+};*/
 
 class cBicho
 {

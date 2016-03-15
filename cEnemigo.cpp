@@ -42,6 +42,13 @@ cEnemigo1::~cEnemigo1(){
 	
 }
 
+void cEnemigo1::muerete() {
+	_vida = 0;
+	_state = ENEMIGO_EXPLO;
+	_seq = 0;
+	_delay = ENEMIGO1_MUERE_DELAY;
+}
+
 
 void cEnemigo1::getCaja(cRect &rect) const {
 	rect.w = e1mov[_seq][2] - 2;
@@ -53,7 +60,13 @@ void cEnemigo1::getCaja(cRect &rect) const {
 void cEnemigo1::colision(cRect &rect, int &colMask) const {
 	cRect myRect;
 	getCaja(myRect);
-	colMask = ((myRect.x>rect.x) && (myRect.x+myRect.w<rect.x + rect.w) && (myRect.y>rect.y) && (myRect.y+myRect.h<rect.y+rect.h));
+	colMask = 0;
+	if (_state == ENEMIGO_VIVE) {
+		if (myRect.x < rect.x+rect.w && myRect.x+myRect.w > rect.x &&
+			myRect.y < rect.y+rect.h && myRect.y+myRect.h > rect.y) {
+				colMask = 1;
+		}
+	}
 }
 
 void cEnemigo1::logica() {
@@ -70,6 +83,28 @@ void cEnemigo1::logica() {
 			return;
 		}
 
+		// se come algun disparo bueno?
+		cRect rect;
+		getCaja(rect);
+		list<cDisparo*> disparos = nivel->getDisparos();
+		for (list<cDisparo*>::iterator it = disparos.begin(); it != disparos.end(); ++it) {
+			cDisparo* disparo = *it;
+			if (!disparo->malo()) {
+				int colMask;
+  				disparo->colision(rect, colMask);
+				if (colMask) {
+					_vida -= disparo->dano();
+					disparo->muerete();
+				}
+			}
+		}
+
+		if (!_vida) {
+			muerete();
+			return;
+		}
+
+		// animacion
 		if (_delay) --_delay;
 		else {
 			_seq = (_seq + 1) % ENEMIGO1_NUM_FRAMES;
@@ -93,19 +128,19 @@ void cEnemigo1::logica() {
 
 void cEnemigo1::pinta() const{
 	if (_state == ENEMIGO_MUERE) return;
-
-	int tex = _sis->getIdTextura(TEX_ENE1);
-	int wTex, hTex;
-	_sis->getTamanoTextura(TEX_ENE1, wTex, hTex);
-
-	glEnable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D, tex);
-	glBegin(GL_QUADS);
-
+	
 	float xTexEne, yTexEne, wTexEne, hTexEne;
 	int xPixEne, yPixEne, yPixOffset, wPixEne, hPixEne;
 
 	if (_state == ENEMIGO_VIVE) {
+		int tex = _sis->getIdTextura(TEX_ENE1);
+		int wTex, hTex;
+		_sis->getTamanoTextura(TEX_ENE1, wTex, hTex);
+
+		glEnable(GL_TEXTURE_2D);
+		glBindTexture(GL_TEXTURE_2D, tex);
+		glBegin(GL_QUADS);
+
 		xTexEne = e1mov[_seq][0] / (float)wTex;
 		yTexEne = e1mov[_seq][1] / (float)hTex;
 		wTexEne = e1mov[_seq][2] / (float)wTex;
@@ -116,6 +151,14 @@ void cEnemigo1::pinta() const{
 		yPixOffset = e1movMid - e1mov[_seq][1];
 		yPixEne = GAME_HEIGHT - (_y - yPixOffset + hPixEne);
 	} else if (_state == ENEMIGO_EXPLO) {
+		int tex = _sis->getIdTextura(TEX_NAVE);
+		int wTex, hTex;
+		_sis->getTamanoTextura(TEX_NAVE, wTex, hTex);
+		
+		glEnable(GL_TEXTURE_2D);
+		glBindTexture(GL_TEXTURE_2D, tex);
+		glBegin(GL_QUADS);
+
 		xTexEne = e1die[_seq][0] / (float)wTex;
 		yTexEne = e1die[_seq][1] / (float)hTex;
 		wTexEne = e1die[_seq][2] / (float)wTex;

@@ -5,13 +5,16 @@
 #include "cSistema.h"
 
 
+#define DISPARO_VIVE 0
+#define DISPARO_EXPLO 1
+#define DISPARO_MUERE 2
+
+
 class cDisparo : public cSprite {
 protected:
 
 	bool _malo;		// si es malo, lo ha tirado un enemigo
 	int _dano;		// cuanta vida quita
-	int _seq;		// numero del frame en la secuencia
-	int _delay;		// tiempo entre frames
 
 public:
 	cDisparo(cSistema* sis) : cSprite(sis) {};
@@ -24,6 +27,7 @@ public:
 
 
 #define DISPARO_NAVE_DELAY 10
+#define DISPARO_EXPLO_DELAY 10
 
 // disparo de la nave
 class cDisparoNave : public cDisparo {
@@ -36,7 +40,11 @@ public:
 	cDisparoNave(cSistema* sis, int x, int y, int tamano);
 	~cDisparoNave();
 
+	void colision(cRect &rect, int &colMask) const;
+
 	void getCaja(cRect &rect) const;
+
+	void muerete();
 
 	void logica();
 	void pinta() const;

@@ -11,19 +11,10 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="cBicho.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="cData.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="cGame.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="cPlayer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="cScene.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="cTexture.cpp">
@@ -52,9 +43,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="cBicho.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="cData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -62,9 +50,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="cPlayer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="cScene.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="cTexture.h">

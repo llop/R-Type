@@ -72,10 +72,14 @@ public:
 class cSprite {
 protected:
 
-	int _x, _y;		// coordenadas
-	cData _data;	// texturas
-	cSistema* _sis;	// sistema donde vive
+	int _x, _y;			// coordenadas
+	cSistema* _sis;		// sistema donde vive
 	bool _muerto;		// esta muerto?
+
+
+	int _state;
+	int _seq;
+	int _delay;
 
 
 public:

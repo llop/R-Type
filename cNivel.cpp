@@ -113,18 +113,6 @@ void cNivel::pushDisparo(cDisparo* disparo) {
 	_disparos.insert(_disparos.end(), disparo);
 }
 
-void cNivel::delItem(cItem* item) {
-	_items.remove(item);
-}
-
-void cNivel::delEnemigo(cEnemigo* enemigo) {
-	_enemigos.remove(enemigo);
-}
-
-void cNivel::delDisparo(cDisparo* disparo) {
-	_disparos.remove(disparo);
-}
-
 
 void cNivel::avanzaPosicion() {
 	// avanzar si toca
@@ -295,7 +283,7 @@ void cNivel::pinta() const {
 	fish eye lens, etc. Think of the ModelView matrix as where you stand with the camera and the direction you point it.
 	*/
 	// Mover el mundo para poner lo que queremos frente a la camara
-	float xTranslate = (float)-_posicion;
+	float xTranslate = float(-_posicion);
 	glTranslatef(xTranslate, 0, 0);
 
 
