@@ -65,8 +65,11 @@ public:
 	void pushItem(cItem* item);
 	void pushEnemigo(cEnemigo* enemigo);
 	void pushDisparo(cDisparo* disparo);
+
+	void getCaja(cRect &rect) const;
 	
 	void colision(cRect &caja, int &colMask) const;
+	bool fueraLimites(cRect &caja) const;
 
 	void logica();
 	void pinta() const;

@@ -260,10 +260,14 @@ void cNaveEspacial::logica() {
 			enemigo->colision(rect, colMask);
 			if (colMask) {
 				// la nave muere
-				//muerete();
+				_vida = 0;
 				// y el enemigo tambien
 				enemigo->muerete();
 			}
+		}
+
+		if (_vida <= 0) {
+			muerete();
 		}
 
 	} else if (_state == NAVE_EXPLO) {
@@ -273,7 +277,7 @@ void cNaveEspacial::logica() {
 			++_seq;
 			_delay = NAVE_EXPLO_DELAY;
 		}
-		if (_seq == NAVE_EXPLO_FRAMES) {		// die.size() == NAVE_EXPLO_FRAMES == 8
+		if (_seq == NAVE_EXPLO_FRAMES) {
 			if (_vidas) reset();
 			else {
 				_state = NAVE_MUERE;
@@ -325,53 +329,55 @@ void cNaveEspacial::pinta() const {
 	glTexCoord2f(xTexNave + wTexNave, yTexNave);			glVertex2i(xPixNave + wPixNave, yPixNave + hPixNave);
 	glTexCoord2f(xTexNave, yTexNave);						glVertex2i(xPixNave, yPixNave + hPixNave);
 
-	if (_carga_tiro >= NAVE_TIRO_FACTOR * NAVE_TIRO_DELAY) {
-		// pintar la carga del disparo
-		float xTexTiro, yTexTiro, wTexTiro, hTexTiro;
-		int xPixTiro, yPixTiro, yPixOffsetTiro, wPixTiro, hPixTiro;
+	if (_state == NAVE_VIVE) {
+		if (_carga_tiro >= NAVE_TIRO_FACTOR * NAVE_TIRO_DELAY) {
+			// pintar la carga del disparo
+			float xTexTiro, yTexTiro, wTexTiro, hTexTiro;
+			int xPixTiro, yPixTiro, yPixOffsetTiro, wPixTiro, hPixTiro;
 		
-		int xTiro = _x + (wPixNave>>1);
-		int yTiro = _y;
-		int seqTiro = (_carga_tiro / NAVE_TIRO_DELAY) % 8;
-		xTexTiro = dis[seqTiro][0]/(float)wTex;
-		yTexTiro = dis[seqTiro][1]/(float)hTex;
-		wTexTiro = dis[seqTiro][2]/(float)wTex;
-		hTexTiro = dis[seqTiro][3]/(float)hTex;
-		wPixTiro = dis[seqTiro][2];
-		hPixTiro = dis[seqTiro][3];
-		xPixTiro = xTiro;
-		yPixOffsetTiro = disMid - dis[seqTiro][1];
-		yPixTiro = GAME_HEIGHT - (yTiro - yPixOffsetTiro + hPixTiro);
+			int xTiro = _x + (wPixNave>>1);
+			int yTiro = _y;
+			int seqTiro = (_carga_tiro / NAVE_TIRO_DELAY) % 8;
+			xTexTiro = dis[seqTiro][0]/(float)wTex;
+			yTexTiro = dis[seqTiro][1]/(float)hTex;
+			wTexTiro = dis[seqTiro][2]/(float)wTex;
+			hTexTiro = dis[seqTiro][3]/(float)hTex;
+			wPixTiro = dis[seqTiro][2];
+			hPixTiro = dis[seqTiro][3];
+			xPixTiro = xTiro;
+			yPixOffsetTiro = disMid - dis[seqTiro][1];
+			yPixTiro = GAME_HEIGHT - (yTiro - yPixOffsetTiro + hPixTiro);
 
-		glTexCoord2f(xTexTiro, yTexTiro + hTexTiro);			glVertex2i(xPixTiro, yPixTiro);
-		glTexCoord2f(xTexTiro + wTexTiro, yTexTiro + hTexTiro);	glVertex2i(xPixTiro + wPixTiro, yPixTiro);
-		glTexCoord2f(xTexTiro + wTexTiro, yTexTiro);			glVertex2i(xPixTiro + wPixTiro, yPixTiro + hPixTiro);
-		glTexCoord2f(xTexTiro, yTexTiro);						glVertex2i(xPixTiro, yPixTiro + hPixTiro);
-	}
+			glTexCoord2f(xTexTiro, yTexTiro + hTexTiro);			glVertex2i(xPixTiro, yPixTiro);
+			glTexCoord2f(xTexTiro + wTexTiro, yTexTiro + hTexTiro);	glVertex2i(xPixTiro + wPixTiro, yPixTiro);
+			glTexCoord2f(xTexTiro + wTexTiro, yTexTiro);			glVertex2i(xPixTiro + wPixTiro, yPixTiro + hPixTiro);
+			glTexCoord2f(xTexTiro, yTexTiro);						glVertex2i(xPixTiro, yPixTiro + hPixTiro);
+		}
 
-	int intervalo = _tiempo_vida - _ultimo_tiro;
-	if (intervalo < 2 * NAVE_FLASH_DELAY) {
-		// pintar el destello del proyectil cuando sale
-		float xTexFlash, yTexFlash, wTexFlash, hTexFlash;
-		int xPixFlash, yPixFlash, yPixOffsetFlash, wPixFlash, hPixFlash;
+		int intervalo = _tiempo_vida - _ultimo_tiro;
+		if (intervalo < 2 * NAVE_FLASH_DELAY) {
+			// pintar el destello del proyectil cuando sale
+			float xTexFlash, yTexFlash, wTexFlash, hTexFlash;
+			int xPixFlash, yPixFlash, yPixOffsetFlash, wPixFlash, hPixFlash;
 		
-		int xFlash = _x + (wPixNave>>1);
-		int yFlash = _y;
-		int seqFlash = intervalo / NAVE_FLASH_DELAY;
-		xTexFlash = flash[seqFlash][0]/(float)wTex;
-		yTexFlash = flash[seqFlash][1]/(float)hTex;
-		wTexFlash = flash[seqFlash][2]/(float)wTex;
-		hTexFlash = flash[seqFlash][3]/(float)hTex;
-		wPixFlash = flash[seqFlash][2];
-		hPixFlash = flash[seqFlash][3];
-		xPixFlash = xFlash;
-		yPixOffsetFlash = flashMid - flash[seqFlash][1];
-		yPixFlash = GAME_HEIGHT - (yFlash - yPixOffsetFlash + hPixFlash);
+			int xFlash = _x + (wPixNave>>1);
+			int yFlash = _y;
+			int seqFlash = intervalo / NAVE_FLASH_DELAY;
+			xTexFlash = flash[seqFlash][0]/(float)wTex;
+			yTexFlash = flash[seqFlash][1]/(float)hTex;
+			wTexFlash = flash[seqFlash][2]/(float)wTex;
+			hTexFlash = flash[seqFlash][3]/(float)hTex;
+			wPixFlash = flash[seqFlash][2];
+			hPixFlash = flash[seqFlash][3];
+			xPixFlash = xFlash;
+			yPixOffsetFlash = flashMid - flash[seqFlash][1];
+			yPixFlash = GAME_HEIGHT - (yFlash - yPixOffsetFlash + hPixFlash);
 
-		glTexCoord2f(xTexFlash, yTexFlash + hTexFlash);				glVertex2i(xPixFlash, yPixFlash);
-		glTexCoord2f(xTexFlash + wTexFlash, yTexFlash + hTexFlash);	glVertex2i(xPixFlash + wPixFlash, yPixFlash);
-		glTexCoord2f(xTexFlash + wTexFlash, yTexFlash);				glVertex2i(xPixFlash + wPixFlash, yPixFlash + hPixFlash);
-		glTexCoord2f(xTexFlash, yTexFlash);							glVertex2i(xPixFlash, yPixFlash + hPixFlash);
+			glTexCoord2f(xTexFlash, yTexFlash + hTexFlash);				glVertex2i(xPixFlash, yPixFlash);
+			glTexCoord2f(xTexFlash + wTexFlash, yTexFlash + hTexFlash);	glVertex2i(xPixFlash + wPixFlash, yPixFlash);
+			glTexCoord2f(xTexFlash + wTexFlash, yTexFlash);				glVertex2i(xPixFlash + wPixFlash, yPixFlash + hPixFlash);
+			glTexCoord2f(xTexFlash, yTexFlash);							glVertex2i(xPixFlash, yPixFlash + hPixFlash);
+		}
 	}
 
 	glEnd();

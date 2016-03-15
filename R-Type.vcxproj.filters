@@ -41,6 +41,9 @@
     <ClCompile Include="cEnemigo.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="cDisparoEnemigo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cData.h">

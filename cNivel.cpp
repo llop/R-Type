@@ -255,6 +255,27 @@ void cNivel::colision(cRect &caja, int &colMask) const {
 }
 
 
+void cNivel::getCaja(cRect &rect) const {
+	rect.x = _posicion;
+	rect.y = 0;
+	rect.w = GAME_WIDTH;
+	rect.h = GAME_HEIGHT - 32;
+}
+
+
+bool cNivel::fueraLimites(cRect &rect) const {
+	bool res = true;
+
+	cRect myRect;
+	getCaja(myRect);
+	if (myRect.x < rect.x+rect.w && myRect.x+myRect.w > rect.x &&
+		myRect.y < rect.y+rect.h && myRect.y+myRect.h > rect.y) {
+			res = false;
+	}
+
+	return res;
+}
+
 // maneja toda la interaccion:
 //   nave espacial
 //   items
@@ -286,14 +307,14 @@ void cNivel::pinta() const {
 	float xTranslate = float(-_posicion);
 	glTranslatef(xTranslate, 0, 0);
 
+	// pintar la nave
+	_naveEspacial->pinta();
 
+	
 	// pintar mierdas
 	for (list<cItem*>::const_iterator it = _items.begin(); it != _items.end(); ++it) (*it)->pinta();
 	for (list<cDisparo*>::const_iterator it = _disparos.begin(); it != _disparos.end(); ++it) (*it)->pinta();
 	for (list<cEnemigo*>::const_iterator it = _enemigos.begin(); it != _enemigos.end(); ++it) (*it)->pinta();
-
-	// pintar la nave
-	_naveEspacial->pinta();
 
 	// pintar el fondo lo ultimo
 	int px, py;

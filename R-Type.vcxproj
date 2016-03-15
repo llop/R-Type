@@ -90,6 +90,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="cData.cpp" />
+    <ClCompile Include="cDisparoEnemigo.cpp" />
     <ClCompile Include="cDisparoNave.cpp" />
     <ClCompile Include="cEnemigo.cpp" />
     <ClCompile Include="cNivel.cpp" />

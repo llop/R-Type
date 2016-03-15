@@ -99,7 +99,7 @@ void cEnemigo1::logica() {
 			}
 		}
 
-		if (!_vida) {
+		if (_vida <= 0) {
 			muerete();
 			return;
 		}
@@ -109,6 +109,20 @@ void cEnemigo1::logica() {
 		else {
 			_seq = (_seq + 1) % ENEMIGO1_NUM_FRAMES;
 			_delay = ENEMIGO1_MUEVE_DELAY;
+		}
+
+		//IA DISPAROS
+		int auxRandom = rand() % 1000;
+		if (auxRandom == 1) {
+			// meter el nuevo disparo en el nivel
+			int nX, nY;
+			((cNaveEspacial*)_sis->getNaveEspacial())->getPosicion(nX, nY);
+			float vectX = nX - _x;
+			float vectY = nY - _y;
+			float len = sqrt(vectX*vectX + vectY*vectY);
+			vectX /= len;
+			vectY /= len;
+			((cNivel*)_sis->getNivel())->pushDisparo(new cDisparoEnemigo(_sis, _x, _y, vectX, vectY));
 		}
 	}
 	if (_state == ENEMIGO_EXPLO) {
@@ -123,7 +137,6 @@ void cEnemigo1::logica() {
 			_muerto = true;
 		}
 	}
-	//IA disparos
 }
 
 void cEnemigo1::pinta() const{
