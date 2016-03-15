@@ -77,15 +77,15 @@ void cEnemigo1::logica() {
 		_y = int(_yBase + sin(_angle) * ENEMIGO1_ALT_MOV);
 
 		cNivel* nivel = (cNivel*)_sis->getNivel();
-		if (_x + e1mov[0][2] < nivel->getPosicion()) {
-			// matar el tiro cuando queda fuera de la pantalla
+		cRect rect;
+		getCaja(rect);
+		if (nivel->fueraLimites(rect)) {
+			// matar el enemigo cuando queda fuera de la pantalla
 			_muerto = true;
 			return;
 		}
 
 		// se come algun disparo bueno?
-		cRect rect;
-		getCaja(rect);
 		list<cDisparo*> disparos = nivel->getDisparos();
 		for (list<cDisparo*>::iterator it = disparos.begin(); it != disparos.end(); ++it) {
 			cDisparo* disparo = *it;

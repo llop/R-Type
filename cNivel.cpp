@@ -151,11 +151,12 @@ void cNivel::avanzaPosicion() {
 }
 
 void cNivel::generaEnemigos() {
-
+	cRect caja;
+	getCaja(caja);
 	// generar una cadena de malos
-	int inter = 12;
+	int inter = 8;
 	if (!(_posicion%inter) && _posicion<inter*6) {
-		cEnemigo1* n = new cEnemigo1(_sis, _posicion + GAME_WIDTH + 21, 200);
+		cEnemigo1* n = new cEnemigo1(_sis, caja.x + caja.w + 10, 200);
 		pushEnemigo(n);
 	}
 
@@ -307,14 +308,13 @@ void cNivel::pinta() const {
 	float xTranslate = float(-_posicion);
 	glTranslatef(xTranslate, 0, 0);
 
-	// pintar la nave
-	_naveEspacial->pinta();
-
-	
 	// pintar mierdas
 	for (list<cItem*>::const_iterator it = _items.begin(); it != _items.end(); ++it) (*it)->pinta();
 	for (list<cDisparo*>::const_iterator it = _disparos.begin(); it != _disparos.end(); ++it) (*it)->pinta();
 	for (list<cEnemigo*>::const_iterator it = _enemigos.begin(); it != _enemigos.end(); ++it) (*it)->pinta();
+	
+	// pintar la nave
+	_naveEspacial->pinta();
 
 	// pintar el fondo lo ultimo
 	int px, py;
