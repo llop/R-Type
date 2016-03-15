@@ -41,3 +41,24 @@ public:
 	void logica();
 	void pinta() const;
 };
+
+#define DISPARO_ENEMIGO_DELAY 10
+#define DANO_DISPARO_ENEMIGO 100
+#define VELOCIDAD_DISPARO_ENEMIGO 2
+
+// disparo enemigo
+class cDisparoEnemigo : public cDisparo {
+protected:
+
+	float _pixelsAvanzaX;
+	float _pixelsAvanzaY;
+
+public:
+	cDisparoEnemigo(cSistema* sis, int xene, int yene, float xu, float yu);
+	~cDisparoEnemigo();
+
+	void getCaja(cRect &rect) const;
+
+	void logica();
+	void pinta() const;
+};

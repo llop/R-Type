@@ -267,6 +267,13 @@ void cNivel::colision(cRect &caja, int &colMask) const {
 }
 
 
+bool cNivel::fueraLimites(cRect &caja) const {
+	bool res = false;
+
+
+	return res;
+}
+
 // maneja toda la interaccion:
 //   nave espacial
 //   items

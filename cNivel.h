@@ -74,6 +74,7 @@ public:
 	void delDisparo(cDisparo* disparo);
 	
 	void colision(cRect &caja, int &colMask) const;
+	bool fueraLimites(cRect &caja) const;
 
 	void logica();
 	void pinta() const;
