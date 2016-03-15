@@ -263,17 +263,14 @@ void cNivel::getCaja(cRect &rect) const {
 	rect.h = GAME_HEIGHT - 32;
 }
 
-
 bool cNivel::fueraLimites(cRect &rect) const {
 	bool res = true;
-
 	cRect myRect;
 	getCaja(myRect);
 	if (myRect.x < rect.x+rect.w && myRect.x+myRect.w > rect.x &&
 		myRect.y < rect.y+rect.h && myRect.y+myRect.h > rect.y) {
 			res = false;
 	}
-
 	return res;
 }
 

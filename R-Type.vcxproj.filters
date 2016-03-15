@@ -38,10 +38,13 @@
     <ClCompile Include="cDisparoNave.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="cEnemigo.cpp">
+    <ClCompile Include="cDisparoEnemigo.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="cDisparoEnemigo.cpp">
+    <ClCompile Include="cEnemigo1.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="cEnemigo2.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -19,8 +19,8 @@ int tiroEnemigoMid = 281;
 cDisparoEnemigo::cDisparoEnemigo(cSistema* sis, int x, int y, float xu, float yu) : cDisparo(sis, x, y) {
 	_dano = DANO_DISPARO_ENEMIGO;
 	
-	_xF = _x;
-	_yF = _y;
+	_xF = float(_x);
+	_yF = float(_y);
 
 	_state = DISPARO_VIVE;
 	_seq = 0;
@@ -32,8 +32,6 @@ cDisparoEnemigo::cDisparoEnemigo(cSistema* sis, int x, int y, float xu, float yu
 
 cDisparoEnemigo::~cDisparoEnemigo() {
 }
-
-
 
 void cDisparoEnemigo::muerete() {
 	_state = DISPARO_EXPLO;
@@ -54,7 +52,6 @@ void cDisparoEnemigo::colision(cRect &rect, int &colMask) const {
 	}
 }
 
-
 void cDisparoEnemigo::getCaja(cRect &rect) const {
 	rect.w = tiroEnemigo[_seq][2];
 	rect.h = tiroEnemigo[_seq][3];
@@ -68,8 +65,8 @@ void cDisparoEnemigo::logica() {
 		_xF += _pixelsAvanzaX*VELOCIDAD_DISPARO_ENEMIGO;
 		_yF += _pixelsAvanzaY*VELOCIDAD_DISPARO_ENEMIGO;
 	
-		_x = _xF;
-		_y = _yF;
+		_x = int(_xF);
+		_y = int(_yF);
 
 		cRect caja;
 		getCaja(caja);

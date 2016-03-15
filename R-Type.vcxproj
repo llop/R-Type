@@ -92,7 +92,8 @@
     <ClCompile Include="cData.cpp" />
     <ClCompile Include="cDisparoEnemigo.cpp" />
     <ClCompile Include="cDisparoNave.cpp" />
-    <ClCompile Include="cEnemigo.cpp" />
+    <ClCompile Include="cEnemigo1.cpp" />
+    <ClCompile Include="cEnemigo2.cpp" />
     <ClCompile Include="cNivel.cpp" />
     <ClCompile Include="cGame.cpp" />
     <ClCompile Include="cNaveEspacial.cpp" />
