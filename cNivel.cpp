@@ -6,17 +6,10 @@
 using namespace std;
 
 
-bool cNivel::cargaMapa(int tilesAncho, int tilesAlto, int anchoTile, int altoTile, 
-						const char* ficheroMapa) {
+bool cNivel::cargaMapa(const char* ficheroMapa) {
 	FILE *fd;
 	errno_t err = fopen_s(&fd, ficheroMapa, "r");
 	if (err != 0) return false;
-
-	_tilesAncho = tilesAncho;
-	_tilesAlto = tilesAlto;
-
-	_anchoTile = anchoTile;
-	_altoTile = altoTile;
 
 	int tamanoMapa = _tilesAncho * _tilesAlto;
 	_mapa.resize(tamanoMapa);
@@ -50,20 +43,46 @@ bool cNivel::cargaMapa(int tilesAncho, int tilesAlto, int anchoTile, int altoTil
 
 
 cNivel::cNivel(cSistema* sis, cNaveEspacial* naveEspacial, 
-				int tilesAncho, int tilesAlto, int anchoTile, int altoTile, 
-				const char* ficheroMapa, const char* ficheroTextura) : cSprite(sis) {
-	_naveEspacial = naveEspacial;
-	_posicion = 0;
-	_delay = NIVEL_DELAY;
+				int tilesAncho, int tilesAlto,
+				const char* ficheroMapa, 
+				int idTextura, int idFondo, 
+				const char* ficheroTextura,
+				const char* ficheroFondo) : cSprite(sis) {
 
-	if (!cargaMapa(tilesAncho, tilesAlto, anchoTile, altoTile, ficheroMapa)) {
+	_naveEspacial = naveEspacial;
+
+	_tilesAncho = tilesAncho;
+	_tilesAlto = tilesAlto;
+
+	// si no carga bien, mal rollo
+	if (!cargaMapa(ficheroMapa)) {
 		stringstream errMsg;
-		errMsg<<"Error cargando el mapa de tiles en '" << ficheroMapa << "'.\n"
-			<<"Dimensiones "<<tilesAncho<<"x"<<tilesAlto;
+		errMsg<<"Error cargando el mapa de tiles en '"<<ficheroMapa <<"'.\n"<<"Dimensiones "<<tilesAncho<<"x"<<tilesAlto;
 		throw exception(errMsg.str().c_str());
 	}
 
-	_sis->cargaTextura(TEX_NIVEL1, ficheroTextura);
+	_idTextura = idTextura;
+	_sis->cargaTextura(_idTextura, ficheroTextura);
+
+	int texWid, texHei;
+	_sis->tamanoTextura(_idTextura, texWid, texHei);
+	_tilesAnchoTex = texWid/TILE_WIDTH;
+	_tilesAltoTex = texHei/TILE_HEIGHT;
+	
+	_idFondo = idFondo;
+	_sis->cargaTextura(_idFondo, ficheroFondo);
+
+	
+
+	// posicion final del mapa en pixels
+	// por ejemplo: 288*16 - 40*16 (anchura en tiles del mapa * ancho tile - anchura en tiles de la pantalla * ancho tile)
+	// 40 = (GAME_WIDTH / _anchoTile)
+	_posicionFinal = _tilesAncho*TILE_WIDTH-MAP_WIDTH*TILE_WIDTH;
+	_posicion = 0;
+	_delay = NIVEL_DELAY;
+
+	// crear el hud
+	_hud = new cHud(_sis, 0, HUD_HPIX);
 }
 
 cNivel::~cNivel() {
@@ -83,6 +102,11 @@ cNivel::~cNivel() {
 		it = _enemigos.erase(it);
 		delete enemigo;
 	}
+	// el hud
+	if (_hud != NULL) {
+		delete _hud;
+		_hud = NULL;
+	}
 }
 
 
@@ -90,17 +114,22 @@ int cNivel::getPosicion() const {
 	return _posicion;
 }
 
-const list<cItem*> cNivel::getItems() const {
+const list<cItem*> cNivel::items() const {
 	return _items;
 }
 
-const list<cEnemigo*> cNivel::getEnemigos() const {
+const list<cEnemigo*> cNivel::enemigos() const {
 	return _enemigos;
 }
 
-const list<cDisparo*> cNivel::getDisparos() const {
+const list<cDisparo*> cNivel::disparos() const {
 	return _disparos;
 }
+
+const list<cEscudo*> cNivel::escudos() const {
+	return _escudos;
+}
+
 void cNivel::pushItem(cItem* item) {
 	_items.insert(_items.end(), item);
 }
@@ -113,53 +142,29 @@ void cNivel::pushDisparo(cDisparo* disparo) {
 	_disparos.insert(_disparos.end(), disparo);
 }
 
+void cNivel::pushEscudo(cEscudo* escudo) {
+	_escudos.insert(_escudos.end(), escudo);
+}
 
-void cNivel::avanzaPosicion() {
-	// avanzar si toca
-	int avanza = 0;
-	if (_delay) --_delay;
-	else { 
-		avanza = NIVEL_AVANCE;
-		_delay = NIVEL_DELAY;
-	}
 
-	// posicion final: 288*16 - 40*16 (anchura en tiles del mapa * ancho tile - anchura en tiles de la pantalla * ancho tile)
-	if (_posicion == 3968) avanza = 0;		// es el final del escenario: detener el scroll
+void cNivel::aplicaScroll() {
+	// es el final del escenario: detener el scroll
+	if (_posicion == _posicionFinal) return;
+
+	// que sea la subclase quien implementa el avance en cada momento
+	int avanza = avanzaPosicion();
 
 	// avanzar automaticamente todo
 	if (avanza) {
 		_posicion += avanza;
-		for (list<cItem*>::iterator it=_items.begin(); it!=_items.end(); ++it) {
-			int x, y;
-			(*it)->getPosicion(x, y);
-			(*it)->setPosicion(x + avanza, y);
-		}
-		for (list<cDisparo*>::iterator it=_disparos.begin(); it!=_disparos.end(); ++it) {
-			int x, y;
-			(*it)->getPosicion(x, y);
-			(*it)->setPosicion(x + avanza, y);
-		}
-		for (list<cEnemigo*>::iterator it=_enemigos.begin(); it!=_enemigos.end(); ++it) {
-			int x, y;
-			(*it)->getPosicion(x, y);
-			(*it)->setPosicion(x + avanza, y);
-		}
-		int xNave, yNave;
-		_naveEspacial->getPosicion(xNave, yNave);
-		_naveEspacial->setPosicion(xNave + avanza, yNave);
+		//for (list<cItem*>::iterator it=_items.begin(); it!=_items.end(); ++it) (*it)->offset(avanza, 0);
+		//for (list<cDisparo*>::iterator it=_disparos.begin(); it!=_disparos.end(); ++it) (*it)->offset(avanza, 0);
+		for (list<cEnemigo*>::iterator it=_enemigos.begin(); it!=_enemigos.end(); ++it) (*it)->offset(avanza, 0);
+		for (list<cEscudo*>::iterator it=_escudos.begin(); it!=_escudos.end(); ++it) (*it)->offset(avanza, 0);
+		// la nave y el hud
+		_naveEspacial->offset(avanza, 0);
+		_hud->offset(avanza, 0);
 	}
-}
-
-void cNivel::generaEnemigos() {
-	cRect caja;
-	getCaja(caja);
-	// generar una cadena de malos
-	int inter = 8;
-	if (!(_posicion%inter) && _posicion<inter*6) {
-		cEnemigo1* n = new cEnemigo1(_sis, caja.x + caja.w + 10, 200);
-		pushEnemigo(n);
-	}
-
 }
 
 void cNivel::aplicaLogicas() {
@@ -169,7 +174,10 @@ void cNivel::aplicaLogicas() {
 	
 	// jugador y enemigos (IA)
 	_naveEspacial->logica();
+  	for (list<cEscudo*>::iterator it=_escudos.begin(); it!=_escudos.end(); ++it) (*it)->logica();
+
 	for (list<cEnemigo*>::iterator it=_enemigos.begin(); it!=_enemigos.end(); ++it) (*it)->logica();
+	
 }
 
 void cNivel::aplicaMuertes() {
@@ -196,26 +204,25 @@ void cNivel::aplicaMuertes() {
 			delete enemigo;
 		} else ++it;
 	}
-}
-
-void cNivel::trataColisiones() {
-	// la nave
-
-	// los enemigos
-
-	// los disparos
-
-	// los items pueden atravesar paredes!
+	for (list<cEscudo*>::iterator it=_escudos.begin(); it!=_escudos.end();) {
+		cEscudo* escudo = *it;
+		if (escudo->muerto()) {
+			it = _escudos.erase(it);
+			delete escudo;
+		} else ++it;
+	}
 }
 
 
 void cNivel::colision(cRect &caja, int &colMask) const {
 	colMask = 0;
 
-	int tileArriba = caja.y / _altoTile;
-	int tileAbajo = (caja.y + caja.h) / _altoTile;
-	int tileIzquierda = caja.x / _anchoTile;
-	int tileDerecha = (caja.x + caja.w) / _anchoTile;
+	int tileArriba = max(0, caja.y / TILE_HEIGHT);
+	int tileAbajo = min(_tilesAlto-1, (caja.y + caja.h) / TILE_HEIGHT);
+	int tileIzquierda = max(0, caja.x / TILE_WIDTH);
+	int tileDerecha = min(_tilesAncho-1, (caja.x + caja.w) / TILE_WIDTH);
+
+	if (tileArriba>=_tilesAlto || tileIzquierda>=_tilesAncho || tileDerecha<0 || tileAbajo<0) return;
 
 	// colisiona arriba
 	int i = tileArriba;
@@ -256,17 +263,21 @@ void cNivel::colision(cRect &caja, int &colMask) const {
 }
 
 
-void cNivel::getCaja(cRect &rect) const {
+void cNivel::caja(cRect &rect) const {
 	rect.x = _posicion;
 	rect.y = 0;
 	rect.w = GAME_WIDTH;
-	rect.h = GAME_HEIGHT - 32;
+	rect.h = GAME_HEIGHT - HUD_HEIGHT;
 }
 
 bool cNivel::fueraLimites(cRect &rect) const {
 	bool res = true;
 	cRect myRect;
-	getCaja(myRect);
+	caja(myRect);
+	myRect.x -=10;
+	myRect.y -=5;
+	myRect.w += 20;
+	myRect.h += 10;
 	if (myRect.x < rect.x+rect.w && myRect.x+myRect.w > rect.x &&
 		myRect.y < rect.y+rect.h && myRect.y+myRect.h > rect.y) {
 			res = false;
@@ -281,7 +292,7 @@ bool cNivel::fueraLimites(cRect &rect) const {
 //   disparos
 //   decorado
 void cNivel::logica() {
-	avanzaPosicion();
+	aplicaScroll();
 	generaEnemigos();
 	trataColisiones();
 	aplicaLogicas();
@@ -289,7 +300,6 @@ void cNivel::logica() {
 }
 
 void cNivel::pinta() const {
-	
 	/*
 	https://www.opengl.org/archives/resources/faq/technical/viewing.htm
 	Where should my camera go, the ModelView or Projection matrix?
@@ -305,47 +315,78 @@ void cNivel::pinta() const {
 	float xTranslate = float(-_posicion);
 	glTranslatef(xTranslate, 0, 0);
 
+	// pintar el fondo del escenario
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, _sis->idTextura(_idFondo));
+	glBegin(GL_QUADS);
+	glTexCoord2f(0, 1);		glVertex2i(_posicion, HUD_HPIX);
+	glTexCoord2f(1, 1);		glVertex2i(_posicion+GAME_WIDTH, HUD_HPIX);
+	glTexCoord2f(1, 0);		glVertex2i(_posicion+GAME_WIDTH, GAME_HEIGHT);
+	glTexCoord2f(0, 0);		glVertex2i(_posicion, GAME_HEIGHT);
+	glEnd();
+	glDisable(GL_TEXTURE_2D);
+
 	// pintar mierdas
-	for (list<cItem*>::const_iterator it = _items.begin(); it != _items.end(); ++it) (*it)->pinta();
-	for (list<cDisparo*>::const_iterator it = _disparos.begin(); it != _disparos.end(); ++it) (*it)->pinta();
 	for (list<cEnemigo*>::const_iterator it = _enemigos.begin(); it != _enemigos.end(); ++it) (*it)->pinta();
+	for (list<cItem*>::const_iterator it = _items.begin(); it != _items.end(); ++it) (*it)->pinta();
 	
 	// pintar la nave
 	_naveEspacial->pinta();
 
-	// pintar el fondo lo ultimo
+	// pintar el fondo
 	int px, py;
-	int colIni = _posicion / _anchoTile;
+	int colIni = _posicion / TILE_WIDTH;
 
-	float xTile, yTile, wTile, hTile;
+	float xTile, yTile;
 	int wTex, hTex;
-	_sis->getTamanoTextura(TEX_NIVEL1, wTex, hTex);
+	_sis->tamanoTextura(_idTextura, wTex, hTex);
+
+	int alturaEnPixels = (MAP_HEIGHT+HUD_HEIGHT)*TILE_HEIGHT;
+	float wTile = TILE_WIDTH/float(wTex);
+	float hTile = TILE_HEIGHT/float(hTex);
 
 	glEnable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D, _sis->getIdTextura(TEX_NIVEL1));
+	glBindTexture(GL_TEXTURE_2D, _sis->idTextura(_idTextura));
 	glBegin(GL_QUADS);
-	for (int i = 0; i < 28; ++i) {
-		py =  30 * _altoTile - (i+1) * _altoTile;
-
-		for (int j = 0; j < 40 + 1; ++j) {
+	for (int i = 0; i < MAP_HEIGHT; ++i) {
+		py = alturaEnPixels - (i+1) * TILE_HEIGHT;
+		for (int j = 0; j <= MAP_WIDTH; ++j) {
 			int col = j + colIni;
 			if (col < _tilesAncho) {
 				int index = i * _tilesAncho + col;
 				int tile = _mapa[index];
 				if (tile != -1) {
-					xTile = (tile%12)/12.0f;
-					yTile = (tile/12)/10.0f;
-					wTile = _anchoTile/(float)wTex;
-					hTile = _altoTile/(float)hTex;
-					px = col * _anchoTile;
+					xTile = (tile%_tilesAnchoTex)/float(_tilesAnchoTex);
+					yTile = (tile/_tilesAnchoTex)/float(_tilesAltoTex);
+					px = col * TILE_WIDTH;
 					glTexCoord2f(xTile, yTile + hTile);			glVertex2i(px, py);
-					glTexCoord2f(xTile + wTile, yTile + hTile);	glVertex2i(px + _anchoTile, py);
-					glTexCoord2f(xTile + wTile, yTile);			glVertex2i(px + _anchoTile, py + _altoTile);
-					glTexCoord2f(xTile, yTile);					glVertex2i(px, py + _altoTile);
+					glTexCoord2f(xTile + wTile, yTile + hTile);	glVertex2i(px + TILE_WIDTH, py);
+					glTexCoord2f(xTile + wTile, yTile);			glVertex2i(px + TILE_WIDTH, py + TILE_HEIGHT);
+					glTexCoord2f(xTile, yTile);					glVertex2i(px, py + TILE_HEIGHT);
 				}
 			}
 		}
 	}
 	glEnd();
 	glDisable(GL_TEXTURE_2D);
+
+	// dejar los tiros por encima
+	for (list<cEscudo*>::const_iterator it = _escudos.begin(); it != _escudos.end(); ++it) (*it)->pinta();
+	for (list<cDisparo*>::const_iterator it = _disparos.begin(); it != _disparos.end(); ++it) (*it)->pinta();
+	
+	_hud->pinta();
+
+	/*
+	//  fade in/out
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glBegin(GL_QUADS);
+	glColor4f(1, 1, 1, 0.5f); 
+	glVertex2i(_posicion, 0);
+	glVertex2i(_posicion+GAME_WIDTH, 0);
+	glVertex2i(_posicion+GAME_WIDTH, GAME_HEIGHT);
+	glVertex2i(_posicion, GAME_HEIGHT);
+	glEnd();
+	glDisable(GL_BLEND);
+	*/
 }

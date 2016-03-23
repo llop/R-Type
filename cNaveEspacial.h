@@ -3,8 +3,9 @@
 
 // includes
 #include "cSistema.h"
-//#include <vector>
-//using namespace std;
+#include "cEscudo.h"
+#include <vector>
+using namespace std;
 
 
 #define NAVE_VIVE 0
@@ -24,28 +25,44 @@
 
 #define NAVE_PIXELS_MUEVE 2
 
-#define NAVE_TIRO_DELAY 10
-#define NAVE_TIRO_FACTOR 2
+#define NAVE_TIRO_DELAY 6
+#define NAVE_TIRO_CIR_DELAY 16
+#define NAVE_TIRO_FACTOR 1
 #define NAVE_FLASH_DELAY 5
+#define NAVE_FACTOR_CARGA_TIRO 4 
+#define NAVE_MAX_CARGA_TIRO 5
 
 #define NAVE_VIDAS_INICIO 3
 #define NAVE_VIDA_INICIAL 100
 #define NAVE_MAGIAS_INICIAL 3
 
+#define NAVE_SIN_ESCUDO 0
+#define NAVE_ESCUDO1 1
+#define NAVE_ESCUDO2 2
+#define NAVE_ESCUDO3 3
+
+#define NAVE_ESCUDO_SEC_X_OFFSET 8
+#define NAVE_ESCUDO_SEC_Y_OFFSET 32
 
 
 class cNaveEspacial : public cSprite {
 private:
 
-	int _vidas;				// cuantas vidas quedan
-	int _vida;				// cuantos toques le quedan a la nave
-	int _magias;			// cuantas magias quedan
-	int _tiempo_vida;		// cuanto tiempo lleva viva la nave
+	int _vidas;					// cuantas vidas quedan
+	int _vida;					// cuantos toques le quedan a la nave
+	int _magias;				// cuantas magias quedan
+	long long _tiempoVida;		// cuanto tiempo lleva viva la nave
 
-	bool _tiro_pulsado;		
-	int _ultimo_tiro;		// cuando disparo por ultima vez
-	int _carga_tiro;
+	int _tipoTiro;
+	long long _tiroDelay;
+	bool _tiroPulsado;		
+	long long _ultimoTiro;		// cuando disparo por ultima vez
+	int _cargaTiro;
 
+	long long _puntos;			// la puntuacion
+
+	int _nivelEscudos;
+	vector<cEscudo*> _escudos;
 
 	// acciones
 	void arriba();
@@ -60,17 +77,23 @@ private:
 
 	void reset();
 
+	void anadeEscudo();
+	void lanzaEscudo();
+
 public:
 	cNaveEspacial(cSistema* sis);
 	~cNaveEspacial();
 
+	void sumaPuntos(long long puntos);
+	long long puntos() const;
+	int vidas() const;
+	int cargaDisparo() const;
+
 	void muerete();
-	void getCaja(cRect &rect) const;
+	void caja(cRect &rect) const;
 
 	// solo necesita procesar las teclas
 	void procesaTeclas(unsigned char* keys);
-
-	
 	void logica();
 	void pinta() const;
 

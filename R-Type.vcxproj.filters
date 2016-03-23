@@ -47,6 +47,24 @@
     <ClCompile Include="cEnemigo2.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="cEscudo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="cNivel1.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="cHud.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="cEnemigoItem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="cItem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="cDisparoEscudo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cData.h">
@@ -80,6 +98,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="cNivel.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cEscudo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cHud.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

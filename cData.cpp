@@ -3,19 +3,15 @@
 cData::cData(void) {}
 cData::~cData(void){}
 
-int cData::GetID(int img) const {
-	return texture[img].GetID();
+int cData::getID(int img) const {
+	return texture[img].getID();
 }
 
-void cData::GetSize(int img, int *w, int *h) const {
-	texture[img].GetSize(w,h);
+void cData::getSize(int img, int* w, int* h) const {
+	texture[img].getSize(w, h);
 }
 
-bool cData::LoadImage(int img, const char *filename, int type) {
-	int res;
-
-	res = texture[img].Load(filename,type);
-	if(!res) return false;
-
-	return true;
+bool cData::loadImage(int img, const char* filename, int type) {
+	if (!texture[img].isLoaded()) texture[img].load(filename,type);
+	return texture[img].isLoaded();
 }

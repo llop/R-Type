@@ -47,15 +47,14 @@ int flash[2][4] = {
 int flashMid = 91;
 
 
-
-
 cNaveEspacial::cNaveEspacial(cSistema* sis) : cSprite(sis) {
-	_sis->cargaTextura(TEX_NAVE, "img\\r-typesheet1.png");
+	_sis->cargaTextura(TEX_NAVE1, "img\\r-typesheet1.png");
 
 	_x=100;
 	_y=100;
 
 	_vidas = NAVE_VIDAS_INICIO;
+	_puntos = 0;
 
 	reset();
 }
@@ -64,6 +63,19 @@ cNaveEspacial::~cNaveEspacial() {
 
 }
 
+
+void cNaveEspacial::sumaPuntos(long long puntos) {
+	_puntos+=puntos;
+}
+long long cNaveEspacial::puntos() const {
+	return _puntos;
+}
+int cNaveEspacial::vidas() const {
+	return _vidas;
+}
+int cNaveEspacial::cargaDisparo() const {
+	return _cargaTiro;
+}
 
 
 
@@ -124,50 +136,96 @@ void cNaveEspacial::atras() {
 }
 
 void cNaveEspacial::dispara() {
-	if (_tiro_pulsado) {
-		++_carga_tiro;
+	if (_tiroPulsado) {
+		++_cargaTiro;
 	} else {
-		_tiro_pulsado = true;
-		_carga_tiro = 0;
+		_tiroPulsado = true;
+		_cargaTiro = 0;
 	}
 }
 
 void cNaveEspacial::no_dispara() {
 	// disparar cuando el jugador suelta la tecla
-	if (_tiro_pulsado) {
-		_tiro_pulsado = false;
+	if (_tiroPulsado) {
+		_tiroPulsado = false;
+
+		// los escudos tambien le meten duro!
+		for (unsigned int i=0; i<_escudos.size(); ++i) _escudos[i]->dispara();
+
 		// no permitir disparar muy rapido
-		int intervalo = _tiempo_vida - _ultimo_tiro;
-		if (intervalo < NAVE_TIRO_DELAY) return;
-		_ultimo_tiro = _tiempo_vida;
+		long long intervalo = _tiempoVida - _ultimoTiro;
+		if (intervalo < _tiroDelay) return;
+		_ultimoTiro = _tiempoVida;
 
 		// el tiempo de carga determina lo tocho que saldra el proyectil
 		int xTiro = _x + (mov[_seq][2]>>1);
 		int yTiro = _y;
-		int tamano = min(_carga_tiro / NAVE_TIRO_DELAY - 2, 5);
-		cDisparoNave* tiro = new cDisparoNave(_sis, xTiro, yTiro, max(tamano, 0));
+
 		// meter el nuevo disparo en el nivel
-		((cNivel*)_sis->getNivel())->pushDisparo(tiro);
+		int tamano = max(0, _cargaTiro/NAVE_TIRO_DELAY);
+		tamano = min(NAVE_MAX_CARGA_TIRO, tamano/NAVE_FACTOR_CARGA_TIRO);
+		cDisparoNave* tiro = new cDisparoNave(_sis, xTiro, yTiro, _tipoTiro, tamano);
+		((cNivel*)_sis->nivel())->pushDisparo(tiro);
 	}
-	_carga_tiro = 0;
+	_cargaTiro = 0;
 }
 
 void cNaveEspacial::tira_magia() {
 
 }
 
+void cNaveEspacial::lanzaEscudo() {
+	if (_nivelEscudos >= NAVE_ESCUDO1) {
+		_escudos[0]->lanza();
+	}
+}
+
 
 void cNaveEspacial::reset() {
-	_tiempo_vida = 0;
-	_ultimo_tiro = -NAVE_TIRO_DELAY;
+	_tiempoVida = 0;
+	_ultimoTiro = -NAVE_TIRO_DELAY;
 	_vida = NAVE_VIDA_INICIAL;
 	_magias = NAVE_MAGIAS_INICIAL;
-	_tiro_pulsado = false;
+	_tiroPulsado = false;
 
 	_state = NAVE_VIVE;
 	_seq = NAVE_LADO;
 	_delay = 0;
 
+	_nivelEscudos = NAVE_SIN_ESCUDO;
+	for (unsigned int i=0; i<_escudos.size(); ++i) _escudos[i]->muerete();
+
+	_tipoTiro = DISPARO_NAVE_NORMAL;
+	_tiroDelay = NAVE_TIRO_DELAY;
+}
+
+void cNaveEspacial::anadeEscudo() {
+	if (_nivelEscudos == NAVE_SIN_ESCUDO) {
+		cNivel* nivel = (cNivel*)_sis->nivel();
+		cRect rectNivel;
+		nivel->caja(rectNivel);
+		int xEscudo = rectNivel.x-16;
+		int yEscudo = _y;
+		cEscudo* escudo = new cEscudo(_sis, xEscudo, yEscudo, ESCUDO_FRENTE);
+		nivel->pushEscudo(escudo);
+		_nivelEscudos = NAVE_ESCUDO1;
+		_escudos.push_back(escudo);
+	} else if (_nivelEscudos == NAVE_ESCUDO1) {
+		int xEscudo = _x - NAVE_ESCUDO_SEC_X_OFFSET;
+		int yEscudo = _y - NAVE_ESCUDO_SEC_Y_OFFSET;
+		cEscudo* escudo = new cEscudo(_sis, xEscudo, yEscudo, ESCUDO_ARRIBA);
+		((cNivel*)_sis->nivel())->pushEscudo(escudo);
+		_nivelEscudos = NAVE_ESCUDO2;
+		_escudos.push_back(escudo);
+		
+	} else if (_nivelEscudos == NAVE_ESCUDO2) {
+		int xEscudo = _x - NAVE_ESCUDO_SEC_X_OFFSET;
+		int yEscudo = _y + NAVE_ESCUDO_SEC_Y_OFFSET;
+		cEscudo* escudo = new cEscudo(_sis, xEscudo, yEscudo, ESCUDO_ABAJO);
+		((cNivel*)_sis->nivel())->pushEscudo(escudo);
+		_nivelEscudos = NAVE_ESCUDO3;
+		_escudos.push_back(escudo);
+	}
 }
 
 void cNaveEspacial::procesaTeclas(unsigned char *keys) {
@@ -183,6 +241,8 @@ void cNaveEspacial::procesaTeclas(unsigned char *keys) {
 		// disparo
 		if (keys[' ']) dispara();
 		else no_dispara();
+		// lanzar el escudo
+		if (keys['n']||keys['N']) lanzaEscudo();
 		// magias
 		if (keys['m']||keys['M']) tira_magia();
 	}
@@ -194,9 +254,12 @@ void cNaveEspacial::muerete() {
 	_state = NAVE_EXPLO;
 	_seq = 0;
 	_delay = NAVE_EXPLO_DELAY;
+
+	for (unsigned int i=0; i<_escudos.size(); ++i) _escudos[i]->muerete();
+	_escudos.clear();
 }
 
-void cNaveEspacial::getCaja(cRect &rect) const {
+void cNaveEspacial::caja(cRect &rect) const {
 	rect.w = mov[_seq][2] - 4;
 	rect.h = mov[_seq][3] - 4;
 	rect.x = _x - (rect.w>>1);
@@ -206,15 +269,15 @@ void cNaveEspacial::getCaja(cRect &rect) const {
 void cNaveEspacial::logica() {
 	if (_state == NAVE_VIVE) {
 		// subir el tiempo que lleva con vida
-		++_tiempo_vida;
+		++_tiempoVida;
 		// corregir la posicion de la nave para que no se salga de la pantalla
-		const cNivel* nivel = (const cNivel*)_sis->getNivel();
+		cNivel* nivel = (cNivel*)_sis->nivel();
 		int xPixNave, yPixNave, yPixOffset, wPixNave, hPixNave;
 		wPixNave = mov[_seq][2];
 		hPixNave = mov[_seq][3];
 		xPixNave = _x - (wPixNave>>1);
 		yPixOffset = movMid - mov[_seq][1];
-		yPixNave = GAME_HEIGHT - 32 - (_y - yPixOffset + hPixNave);
+		yPixNave = GAME_HEIGHT - HUD_HPIX - (_y - yPixOffset + hPixNave);
 
 		int posNivel = nivel->getPosicion();
 		int left = xPixNave - posNivel;
@@ -223,7 +286,7 @@ void cNaveEspacial::logica() {
 		int right = (posNivel + GAME_WIDTH) - (xPixNave + wPixNave);
 		if (right < 0) _x += right;
 
-		int top = GAME_HEIGHT - 32 - (yPixNave + hPixNave);
+		int top = GAME_HEIGHT - HUD_HPIX - (yPixNave + hPixNave);
 		if (top < 0) _y -= top;
 
 		int bottom = yPixNave;
@@ -231,13 +294,13 @@ void cNaveEspacial::logica() {
 
 		// ha chocado con el escenario?
 		cRect rect;
-		getCaja(rect);
+		caja(rect);
 		int colMask;
 		nivel->colision(rect, colMask);
 		if (colMask) muerete();
 
 		// ha chocado con algun disparo malo?
-		list<cDisparo*> disparos = nivel->getDisparos();
+		list<cDisparo*> disparos = nivel->disparos();
 		for (list<cDisparo*>::iterator it=disparos.begin(); it!=disparos.end(); ++it) {
 			cDisparo* disparo = *it;
 			if (disparo->malo()) {
@@ -254,7 +317,7 @@ void cNaveEspacial::logica() {
 		}
 
 		// ha chocado con algun enemigo?
-		list<cEnemigo*> enemigos = nivel->getEnemigos();
+		list<cEnemigo*> enemigos = nivel->enemigos();
 		for (list<cEnemigo*>::iterator it = enemigos.begin(); it != enemigos.end(); ++it) {
 			cEnemigo* enemigo = *it;
 			enemigo->colision(rect, colMask);
@@ -268,6 +331,29 @@ void cNaveEspacial::logica() {
 
 		if (_vida <= 0) {
 			muerete();
+			return;
+		}
+
+		// ha pillado algun item?
+		list<cItem*> items = nivel->items();
+		for (list<cItem*>::iterator it = items.begin(); it != items.end(); ++it) {
+			cItem* item = *it;
+			cRect myRect = rect;
+			myRect.x -= 2;
+			myRect.y -= 2;
+			myRect.w += 4;
+			myRect.h += 4;
+			int colMask;
+			item->colision(myRect, colMask);
+			if (colMask) {
+				int tipo = item->tipo();
+				if (tipo == ITEM_ESCUDO) anadeEscudo();
+				else if (tipo == ITEM_DISPARO_RB) {
+					_tipoTiro = DISPARO_NAVE_CIRCULAR;
+					_tiroDelay = NAVE_TIRO_CIR_DELAY;
+				}
+				item->muerete();
+			}
 		}
 
 	} else if (_state == NAVE_EXPLO) {
@@ -291,9 +377,9 @@ void cNaveEspacial::logica() {
 void cNaveEspacial::pinta() const {
 	if (_state == NAVE_MUERE) return;
 
-	int tex = _sis->getIdTextura(TEX_NAVE);
+	int tex = _sis->idTextura(TEX_NAVE1);
 	int wTex, hTex;
-	_sis->getTamanoTextura(TEX_NAVE, wTex, hTex);
+	_sis->tamanoTextura(TEX_NAVE1, wTex, hTex);
 
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, tex);
@@ -330,14 +416,19 @@ void cNaveEspacial::pinta() const {
 	glTexCoord2f(xTexNave, yTexNave);						glVertex2i(xPixNave, yPixNave + hPixNave);
 
 	if (_state == NAVE_VIVE) {
-		if (_carga_tiro >= NAVE_TIRO_FACTOR * NAVE_TIRO_DELAY) {
+		if (_cargaTiro >= NAVE_TIRO_FACTOR * NAVE_TIRO_DELAY) {
 			// pintar la carga del disparo
 			float xTexTiro, yTexTiro, wTexTiro, hTexTiro;
 			int xPixTiro, yPixTiro, yPixOffsetTiro, wPixTiro, hPixTiro;
 		
 			int xTiro = _x + (wPixNave>>1);
+			if (_nivelEscudos >= NAVE_ESCUDO1 && _escudos[0]->anclado()) {
+				cRect rectEscudo;
+				_escudos[0]->caja(rectEscudo);
+				xTiro += rectEscudo.w - 4;
+			}
 			int yTiro = _y;
-			int seqTiro = (_carga_tiro / NAVE_TIRO_DELAY) % 8;
+			int seqTiro = (_cargaTiro / NAVE_TIRO_DELAY) % 8;
 			xTexTiro = dis[seqTiro][0]/(float)wTex;
 			yTexTiro = dis[seqTiro][1]/(float)hTex;
 			wTexTiro = dis[seqTiro][2]/(float)wTex;
@@ -354,7 +445,7 @@ void cNaveEspacial::pinta() const {
 			glTexCoord2f(xTexTiro, yTexTiro);						glVertex2i(xPixTiro, yPixTiro + hPixTiro);
 		}
 
-		int intervalo = _tiempo_vida - _ultimo_tiro;
+		int intervalo = int(_tiempoVida - _ultimoTiro);
 		if (intervalo < 2 * NAVE_FLASH_DELAY) {
 			// pintar el destello del proyectil cuando sale
 			float xTexFlash, yTexFlash, wTexFlash, hTexFlash;

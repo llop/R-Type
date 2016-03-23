@@ -53,7 +53,7 @@ cEnemigo2::~cEnemigo2() {
 }
 
 
-void cEnemigo2::getCaja(cRect &caja) const {
+void cEnemigo2::caja(cRect &rect) const {
 
 }
 

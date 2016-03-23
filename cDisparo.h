@@ -27,21 +27,26 @@ public:
 
 
 #define DISPARO_NAVE_DELAY 10
+#define DISPARO_NAVE_CIR_DELAY 2
 #define DISPARO_EXPLO_DELAY 10
+
+#define DISPARO_NAVE_NORMAL 0
+#define DISPARO_NAVE_CIRCULAR 1
 
 // disparo de la nave
 class cDisparoNave : public cDisparo {
 protected:
 
+	int _tipo;			// normal o circular
 	int _tamano;		// tamano del proyectil
 	int _pixelsAvanza;	// cuantos pixels avanza por frame
 
 public:
-	cDisparoNave(cSistema* sis, int x, int y, int tamano);
+	cDisparoNave(cSistema* sis, int x, int y, int tipo, int tamano);
 	~cDisparoNave();
 
 	void colision(cRect &rect, int &colMask) const;
-	void getCaja(cRect &rect) const;
+	void caja(cRect &rect) const;
 
 	void muerete();
 
@@ -66,7 +71,37 @@ public:
 	~cDisparoEnemigo();
 	
 	void colision(cRect &rect, int &colMask) const;
-	void getCaja(cRect &rect) const;
+	void caja(cRect &rect) const;
+
+	void muerete();
+
+	void logica();
+	void pinta() const;
+};
+
+
+
+#define DISPARO_ESCUDO1_FRENTE 0
+#define DISPARO_ESCUDO1_ARRIBA 1
+#define DISPARO_ESCUDO1_ABAJO 2
+#define DISPARO_ESCUDO2_ARRIBA 3
+#define DISPARO_ESCUDO2_ABAJO 4
+
+#define DISPARO_ESCUDO_AVANCE 12
+#define DISPARO_ESCUDO_DANO 20
+
+class cDisparoEscudo : public cDisparo {
+protected:
+
+	int _tipo;
+
+
+public:
+	cDisparoEscudo(cSistema* sis, int x, int y, int tipo);
+	~cDisparoEscudo();
+
+	void colision(cRect &rect, int &colMask) const;
+	void caja(cRect &rect) const;
 
 	void muerete();
 

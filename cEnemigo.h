@@ -13,12 +13,13 @@ class cEnemigo : public cSprite {
 protected:
 	
 	int _vida;				// vida del enemigo
+	long long _puntos;		// los puntos que sumara si la nave lo mata
 
 public:
 	//cEnemigo(cSistema* sis) : cSprite(sis) {};
 	cEnemigo(cSistema* sis, int x, int y) : cSprite(sis, x, y) {};
-	virtual ~cEnemigo() {};
 
+	long long puntos() const { return _puntos; };
 
 };
 
@@ -30,6 +31,7 @@ public:
 #define ENEMIGO1_MUERE_DELAY 10
 #define ENEMIGO1_VIDA_INICIAL 20
 #define ENEMIGO1_EXPLO_FRAMES 6
+#define ENEMIGO1_PUNTOS 1
 
 class cEnemigo1 : public cEnemigo {
 private:
@@ -43,7 +45,7 @@ public:
 	~cEnemigo1();
 
 	void muerete();
-	void getCaja(cRect &rect) const;
+	void caja(cRect &rect) const;
 	
 	void colision(cRect &caja, int &colMask) const;
 
@@ -61,6 +63,7 @@ public:
 #define ENEMIGO2_MUERE_DELAY 10
 #define ENEMIGO2_VIDA_INICIAL 20
 #define ENEMIGO2_EXPLO_FRAMES 6
+#define ENEMIGO2_PUNTOS 1
 
 class cEnemigo2 : public cEnemigo {
 private:
@@ -72,7 +75,7 @@ public:
 	cEnemigo2(cSistema* sis, int x, int y);
 	~cEnemigo2();
 
-	void getCaja(cRect &rect) const;
+	void caja(cRect &rect) const;
 
 	void colision(cRect &caja, int &colMask) const;
 
@@ -80,3 +83,53 @@ public:
 	void pinta() const;
 
 };
+
+
+
+//--------------------------------------------------------------------
+// Enemigo que suelta item
+//--------------------------------------------------------------------
+
+#define ENEMIGO_ITEM_VUELA 0
+#define ENEMIGO_ITEM_ANDA 1
+
+#define ENEMIGO_ITEM_AVANCE 1
+
+#define ENEMIGO_ITEM_VIDA_INICIAL 20
+#define ENEMIGO_ITEM_PUNTOS 2
+
+#define ENEMIGO_ITEM_MUEVE_DELAY 10
+#define ENEMIGO_ITEM_MUERE_DELAY 10
+
+#define ENEMIGO_ITEM_VUELA_NUM_FRAMES 2
+#define ENEMIGO_ITEM_ANDA_NUM_FRAMES 4
+
+class cEnemigoItem : public cEnemigo {
+private:
+
+	int _subState;
+	float _xF, _yF;
+	float _ava;				// pixels que avanza a pie
+	float _xVec, _yVec;		// distancia que avanza volando
+	int _item;
+
+public:
+	cEnemigoItem(cSistema* sis, int x, int y, 
+					float xVec, float yVec, 
+					int item);
+	~cEnemigoItem();
+
+	void offset(int x, int y);
+
+	void muerete();
+	void caja(cRect &rect) const;
+	
+	void colision(cRect &caja, int &colMask) const;
+
+	void logica();
+	void pinta() const;
+
+};
+
+
+

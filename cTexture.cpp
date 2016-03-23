@@ -4,12 +4,13 @@
 #include "Globals.h"
 
 cTexture::cTexture(void) {
+	loaded = false;
 }
 
 cTexture::~cTexture(void) {
 }
 
-bool cTexture::Load(const char *filename,int type,int wraps,int wrapt,int magf,int minf,bool mipmap) {
+bool cTexture::load(const char *filename,int type,int wraps,int wrapt,int magf,int minf,bool mipmap) {
 	corona::Image* img;
 	int components;
 
@@ -20,9 +21,9 @@ bool cTexture::Load(const char *filename,int type,int wraps,int wrapt,int magf,i
 	} else if(type==GL_RGBA) {
 		//img = corona::OpenImage(filename,corona::PF_R8G8B8A8);
 		components = 4;
-	} else return false;
+	} else return loaded = false;
 
-	if (img == NULL) return false;
+	if (img == NULL) return loaded = false;
 
 	width  = img->getWidth();
 	height = img->getHeight();
@@ -44,12 +45,16 @@ bool cTexture::Load(const char *filename,int type,int wraps,int wrapt,int magf,i
 						  GL_UNSIGNED_BYTE,img->getPixels());
 	}
 
-	return true;
+	return loaded = true;
 }
-int cTexture::GetID() const {
+int cTexture::getID() const {
 	return id;
 }
-void cTexture::GetSize(int *w,int *h) const {
+void cTexture::getSize(int* w,int* h) const {
 	*w = width;
 	*h = height;
+}
+
+bool cTexture::isLoaded() const {
+	return loaded;
 }

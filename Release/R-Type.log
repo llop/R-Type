@@ -1,0 +1,38 @@
+﻿Build started 3/18/2016 8:58:43 AM.
+     1>Project "C:\Users\llop\Data\FIB\QP2015-2016\VJ\R-Type\R-Type.vcxproj" on node 2 (build target(s)).
+     1>InitializeBuildStatus:
+         Creating "Release\R-Type.unsuccessfulbuild" because "AlwaysCreate" was specified.
+       ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /Zi /nologo /W3 /WX- /O2 /Oy- /D WIN32 /D NDEBUG /D _CONSOLE /D _VC80_UPGRADE=0x0710 /D _MBCS /Gm- /EHsc /MT /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Release\\" /Fd"Release\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt cData.cpp cDisparoEnemigo.cpp cDisparoNave.cpp cEnemigo1.cpp cEnemigo2.cpp cEscudo.cpp cNivel.cpp cGame.cpp cNaveEspacial.cpp cSistema.cpp cSprite.cpp cTexture.cpp GLUTMain.cpp
+         cData.cpp
+     1>c:\users\llop\data\fib\qp2015-2016\vj\r-type\Globals.h(6): fatal error C1083: Cannot open include file: 'gl/glut.h': No such file or directory
+         cDisparoEnemigo.cpp
+     1>c:\users\llop\data\fib\qp2015-2016\vj\r-type\Globals.h(6): fatal error C1083: Cannot open include file: 'gl/glut.h': No such file or directory
+         cDisparoNave.cpp
+     1>c:\users\llop\data\fib\qp2015-2016\vj\r-type\Globals.h(6): fatal error C1083: Cannot open include file: 'gl/glut.h': No such file or directory
+         cEnemigo1.cpp
+     1>c:\users\llop\data\fib\qp2015-2016\vj\r-type\Globals.h(6): fatal error C1083: Cannot open include file: 'gl/glut.h': No such file or directory
+         cEnemigo2.cpp
+     1>c:\users\llop\data\fib\qp2015-2016\vj\r-type\Globals.h(6): fatal error C1083: Cannot open include file: 'gl/glut.h': No such file or directory
+         cEscudo.cpp
+     1>c:\users\llop\data\fib\qp2015-2016\vj\r-type\Globals.h(6): fatal error C1083: Cannot open include file: 'gl/glut.h': No such file or directory
+         cNivel.cpp
+     1>c:\users\llop\data\fib\qp2015-2016\vj\r-type\Globals.h(6): fatal error C1083: Cannot open include file: 'gl/glut.h': No such file or directory
+         cGame.cpp
+     1>c:\users\llop\data\fib\qp2015-2016\vj\r-type\Globals.h(6): fatal error C1083: Cannot open include file: 'gl/glut.h': No such file or directory
+         cNaveEspacial.cpp
+     1>c:\users\llop\data\fib\qp2015-2016\vj\r-type\Globals.h(6): fatal error C1083: Cannot open include file: 'gl/glut.h': No such file or directory
+         cSistema.cpp
+     1>c:\users\llop\data\fib\qp2015-2016\vj\r-type\Globals.h(6): fatal error C1083: Cannot open include file: 'gl/glut.h': No such file or directory
+         cSprite.cpp
+     1>c:\users\llop\data\fib\qp2015-2016\vj\r-type\Globals.h(6): fatal error C1083: Cannot open include file: 'gl/glut.h': No such file or directory
+         cTexture.cpp
+     1>c:\users\llop\data\fib\qp2015-2016\vj\r-type\Globals.h(6): fatal error C1083: Cannot open include file: 'gl/glut.h': No such file or directory
+         GLUTMain.cpp
+     1>c:\users\llop\data\fib\qp2015-2016\vj\r-type\Globals.h(6): fatal error C1083: Cannot open include file: 'gl/glut.h': No such file or directory
+         Generating Code...
+     1>Done Building Project "C:\Users\llop\Data\FIB\QP2015-2016\VJ\R-Type\R-Type.vcxproj" (build target(s)) -- FAILED.
+
+Build FAILED.
+
+Time Elapsed 00:00:04.52

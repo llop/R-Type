@@ -24,6 +24,11 @@ void cSprite::setPosicion(int x, int y) {
 	_y = y;
 }
 
+void cSprite::offset(int x, int y) {
+	_x += x;
+	_y += y;
+}
+
 bool cSprite::muerto() const {
 	return _muerto;
 }

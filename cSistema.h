@@ -7,6 +7,15 @@
 #define GAME_WIDTH	640
 #define GAME_HEIGHT 480
 
+#define TILE_WIDTH 16
+#define TILE_HEIGHT 16
+
+#define MAP_WIDTH 40
+#define MAP_HEIGHT 28
+
+#define HUD_HEIGHT 2
+#define HUD_HPIX 32
+
 
 #define MENU 0
 #define NIVEL 1
@@ -41,17 +50,17 @@ public:
 	~cSistema();
 
 	
-	cSprite* getNaveEspacial() const;
+	cSprite* naveEspacial() const;
 	void setNaveEspacial(cSprite* naveEspacial);
 	void delNaveEspacial();
 
-	cSprite* getNivel() const;
+	cSprite* nivel() const;
 	void setNivel(cSprite* nivel);
 	void delNivel();
 
 	void cargaTextura(int id, const char* ficheroTextura);
-	int getIdTextura(int id) const;
-	void getTamanoTextura(int id, int &width, int &height) const;
+	int idTextura(int id) const;
+	void tamanoTextura(int id, int &width, int &height) const;
 
 	// esto para el game loop
 	void procesaTeclas(unsigned char *keys);
@@ -91,13 +100,14 @@ public:
 
 	void getPosicion(int &x, int &y) const;
 	void setPosicion(int x, int y);
+	virtual void offset(int x, int y);
 
 
 	bool muerto() const;		// dice si el sprite esta definitivamente muerto
 	virtual void muerete() {};	// manda al sprite que se muera
 
 	// que cada sprite calcula su caja como le de la gana
-	virtual void getCaja(cRect &caja) const {};
+	virtual void caja(cRect &caja) const {};
 	
 	// por donde colisiona
 	virtual void colision(cRect &caja, int &colMask) const {};

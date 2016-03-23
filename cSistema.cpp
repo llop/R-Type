@@ -28,24 +28,24 @@ cSistema::~cSistema() {
 
 
 void cSistema::cargaTextura(int id, const char* ficheroTextura) {
-	_data->LoadImage(id, ficheroTextura, GL_RGBA);
+	_data->loadImage(id, ficheroTextura, GL_RGBA);
 }
 
-int cSistema::getIdTextura(int id) const {
-	return _data->GetID(id);
+int cSistema::idTextura(int id) const {
+	return _data->getID(id);
 }
 
-void cSistema::getTamanoTextura(int id, int &width, int &height) const {
-	_data->GetSize(id, &width, &height);
+void cSistema::tamanoTextura(int id, int &width, int &height) const {
+	_data->getSize(id, &width, &height);
 }
 
 
 // consultar
-cSprite* cSistema::getNaveEspacial() const {
+cSprite* cSistema::naveEspacial() const {
 	return _naveEspacial;
 }
 
-cSprite* cSistema::getNivel() const {
+cSprite* cSistema::nivel() const {
 	return _nivel;
 }
 
@@ -92,7 +92,11 @@ void cSistema::logicaMenu() {
 
 	// carga nivel 1
 	_naveEspacial = new cNaveEspacial(this);
-	_nivel = new cNivel(this, (cNaveEspacial*)_naveEspacial, 288, 28, 16, 16, "maps\\level-02.csv", "maps\\textura-nivel2.png");
+	_nivel = new cNivel1(this, (cNaveEspacial*)_naveEspacial, 
+							328, 28, "maps\\level-01.csv", 
+							TEX_NIVEL2, TEX_FONDO1, 
+							"maps\\stage1-01.png", 
+							"img\\Outer-Space-Wallpaper.png");
 
 }
 

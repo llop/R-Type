@@ -91,12 +91,18 @@
   <ItemGroup>
     <ClCompile Include="cData.cpp" />
     <ClCompile Include="cDisparoEnemigo.cpp" />
+    <ClCompile Include="cDisparoEscudo.cpp" />
     <ClCompile Include="cDisparoNave.cpp" />
     <ClCompile Include="cEnemigo1.cpp" />
     <ClCompile Include="cEnemigo2.cpp" />
+    <ClCompile Include="cEnemigoItem.cpp" />
+    <ClCompile Include="cEscudo.cpp" />
+    <ClCompile Include="cHud.cpp" />
+    <ClCompile Include="cItem.cpp" />
     <ClCompile Include="cNivel.cpp" />
     <ClCompile Include="cGame.cpp" />
     <ClCompile Include="cNaveEspacial.cpp" />
+    <ClCompile Include="cNivel1.cpp" />
     <ClCompile Include="cSistema.cpp" />
     <ClCompile Include="cSprite.cpp" />
     <ClCompile Include="cTexture.cpp" />
@@ -104,6 +110,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cData.h" />
+    <ClInclude Include="cEscudo.h" />
+    <ClInclude Include="cHud.h" />
     <ClInclude Include="cNivel.h" />
     <ClInclude Include="cDisparo.h" />
     <ClInclude Include="cEnemigo.h" />

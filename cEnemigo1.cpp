@@ -27,6 +27,7 @@ int e1dieMid = 311;
 
 cEnemigo1::cEnemigo1(cSistema* sis, int x, int y) : cEnemigo(sis, x, y) {
 	_sis->cargaTextura(TEX_ENE1, "img\\r-typesheet5.png");
+	_sis->cargaTextura(TEX_NAVE1, "img\\r-typesheet1.png");
 
 	_angle = 0;
 	_yBase = _y;
@@ -36,6 +37,7 @@ cEnemigo1::cEnemigo1(cSistema* sis, int x, int y) : cEnemigo(sis, x, y) {
 	_delay = ENEMIGO1_MUEVE_DELAY;
 	
 	_vida = ENEMIGO1_VIDA_INICIAL;
+	_puntos = ENEMIGO1_PUNTOS;
 }
 
 cEnemigo1::~cEnemigo1(){
@@ -50,7 +52,7 @@ void cEnemigo1::muerete() {
 }
 
 
-void cEnemigo1::getCaja(cRect &rect) const {
+void cEnemigo1::caja(cRect &rect) const {
 	rect.w = e1mov[_seq][2] - 2;
 	rect.h = e1mov[_seq][3] - 2;
 	rect.x = _x - (rect.w>>1);
@@ -59,7 +61,7 @@ void cEnemigo1::getCaja(cRect &rect) const {
 
 void cEnemigo1::colision(cRect &rect, int &colMask) const {
 	cRect myRect;
-	getCaja(myRect);
+	caja(myRect);
 	colMask = 0;
 	if (_state == ENEMIGO_VIVE) {
 		if (myRect.x < rect.x+rect.w && myRect.x+myRect.w > rect.x &&
@@ -71,34 +73,61 @@ void cEnemigo1::colision(cRect &rect, int &colMask) const {
 
 void cEnemigo1::logica() {
 	if (_state == ENEMIGO_VIVE) {
-		_angle += ENEMIGO1_INC_ANGLE;
 
+		// actualizar posicion
+		_angle += ENEMIGO1_INC_ANGLE;
 		_x -= ENEMIGO1_SPEED_LEFT;
 		_y = int(_yBase + sin(_angle) * ENEMIGO1_ALT_MOV);
 
-		cNivel* nivel = (cNivel*)_sis->getNivel();
+		// estos los necesitaremos por ahi
+		cNivel* nivel = (cNivel*)_sis->nivel();
+		cNaveEspacial* nave = (cNaveEspacial*)_sis->naveEspacial();
+
+		// matar el enemigo cuando queda fuera de la pantalla
 		cRect rect;
-		getCaja(rect);
+		caja(rect);
 		if (nivel->fueraLimites(rect)) {
-			// matar el enemigo cuando queda fuera de la pantalla
 			_muerto = true;
 			return;
 		}
+		
+		// se lo habra cargado la nave?
+		bool naveLoMata = false;
 
 		// se come algun disparo bueno?
-		list<cDisparo*> disparos = nivel->getDisparos();
+		list<cDisparo*> disparos = nivel->disparos();
 		for (list<cDisparo*>::iterator it = disparos.begin(); it != disparos.end(); ++it) {
 			cDisparo* disparo = *it;
 			if (!disparo->malo()) {
 				int colMask;
   				disparo->colision(rect, colMask);
 				if (colMask) {
-					_vida -= disparo->dano();
 					disparo->muerete();
+					// aplicar efecto del disparo
+					_vida -= disparo->dano();
+					if (_vida <= 0) naveLoMata = true;
 				}
 			}
 		}
 
+		// se come algun escudo?
+		list<cEscudo*> escudos = nivel->escudos();
+		for (list<cEscudo*>::iterator it = escudos.begin(); it != escudos.end(); ++it) {
+			cEscudo* escudo = *it;
+			int colMask;
+  			escudo->colision(rect, colMask);
+			if (colMask) {
+				_vida -= escudo->dano();
+				if (_vida <= 0) naveLoMata = true;
+			}
+		}
+
+		// si ha sido la nave, habra que darle los puntos
+		if (naveLoMata) {
+			nave->sumaPuntos(_puntos);
+		}
+		
+		// si acaba de palmar, nos detenemos aquí
 		if (_vida <= 0) {
 			muerete();
 			return;
@@ -116,16 +145,16 @@ void cEnemigo1::logica() {
 		if (auxRandom == 1) {
 			// meter el nuevo disparo en el nivel
 			int nX, nY;
-			((cNaveEspacial*)_sis->getNaveEspacial())->getPosicion(nX, nY);
+			nave->getPosicion(nX, nY);
 			float vectX = float(nX - _x);
 			float vectY = float(nY - _y);
 			float len = sqrt(vectX*vectX + vectY*vectY);
 			vectX /= len;
 			vectY /= len;
-			((cNivel*)_sis->getNivel())->pushDisparo(new cDisparoEnemigo(_sis, _x, _y, vectX, vectY));
+			nivel->pushDisparo(new cDisparoEnemigo(_sis, _x, _y, vectX, vectY));
 		}
-	}
-	if (_state == ENEMIGO_EXPLO) {
+	} else if (_state == ENEMIGO_EXPLO) {
+		// avanzar en la animacion
 		if (_delay) {
 			--_delay;
 		} else {
@@ -146,9 +175,9 @@ void cEnemigo1::pinta() const{
 	int xPixEne, yPixEne, yPixOffset, wPixEne, hPixEne;
 
 	if (_state == ENEMIGO_VIVE) {
-		int tex = _sis->getIdTextura(TEX_ENE1);
+		int tex = _sis->idTextura(TEX_ENE1);
 		int wTex, hTex;
-		_sis->getTamanoTextura(TEX_ENE1, wTex, hTex);
+		_sis->tamanoTextura(TEX_ENE1, wTex, hTex);
 
 		glEnable(GL_TEXTURE_2D);
 		glBindTexture(GL_TEXTURE_2D, tex);
@@ -164,9 +193,9 @@ void cEnemigo1::pinta() const{
 		yPixOffset = e1movMid - e1mov[_seq][1];
 		yPixEne = GAME_HEIGHT - (_y - yPixOffset + hPixEne);
 	} else if (_state == ENEMIGO_EXPLO) {
-		int tex = _sis->getIdTextura(TEX_NAVE);
+		int tex = _sis->idTextura(TEX_NAVE1);
 		int wTex, hTex;
-		_sis->getTamanoTextura(TEX_NAVE, wTex, hTex);
+		_sis->tamanoTextura(TEX_NAVE1, wTex, hTex);
 		
 		glEnable(GL_TEXTURE_2D);
 		glBindTexture(GL_TEXTURE_2D, tex);
