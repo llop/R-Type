@@ -31,11 +31,16 @@ void cNivel1::generaEnemigos() {
 	caja(rect);
 	// generar una cadena de malos
 	int inter = 8;
-	if (!(_posicion%inter) && !_delay && _posicion<inter*6) {
+	if (!(_posicion%inter) && !_delay && _posicion < inter * 6) {
 		cEnemigo1* e = new cEnemigo1(_sis, rect.x + rect.w + 10, 200);
 		pushEnemigo(e);
 	}
-	
+
+	if (!(_posicion%inter) && !_delay && _posicion < (inter * 4)) { // cambiar posicio
+		cEnemigo2* e = new cEnemigo2(_sis, rect.x + rect.w + 10, 100);
+		pushEnemigo(e);
+	}
+
 	if (_posicion==200 && !_delay) {
 		cEnemigoItem* e = new cEnemigoItem(_sis, rect.x + rect.w + 8, 200, -5.0f, 0.0f, ITEM_DISPARO_RB);
 		pushEnemigo(e);
@@ -52,6 +57,7 @@ void cNivel1::generaEnemigos() {
 		cEnemigoItem* e = new cEnemigoItem(_sis, rect.x + rect.w + 8, 200, -5.0f, 0.0f, ITEM_ESCUDO);
 		pushEnemigo(e);
 	}
+
 }
 
 void cNivel1::trataColisiones() {

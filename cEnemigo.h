@@ -58,7 +58,7 @@ public:
 #define ENEMIGO2_ALT_MOV 50
 #define ENEMIGO2_SPEED_LEFT 2
 #define ENEMIGO2_INC_ANGLE 0.04f
-#define ENEMIGO2_NUM_FRAMES 8
+#define ENEMIGO2_NUM_FRAMES 5
 #define ENEMIGO2_MUEVE_DELAY 10
 #define ENEMIGO2_MUERE_DELAY 10
 #define ENEMIGO2_VIDA_INICIAL 20
@@ -70,11 +70,13 @@ private:
 
 	float _angle;
 	int _yBase;
+	bool _up;
 
 public:
 	cEnemigo2(cSistema* sis, int x, int y);
 	~cEnemigo2();
 
+	void muerete();
 	void caja(cRect &rect) const;
 
 	void colision(cRect &caja, int &colMask) const;
