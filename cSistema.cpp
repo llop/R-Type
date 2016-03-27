@@ -97,6 +97,18 @@ void cSistema::logicaMenu() {
 							TEX_NIVEL1, TEX_FONDO1, 
 							"maps\\stage1-01.png", 
 							"img\\Outer-Space-Wallpaper.png");
+
+	//_nivel = new cNivel1(this, (cNaveEspacial*)_naveEspacial, 
+	//						288, 28, "maps\\level-02.csv", 
+	//						TEX_NIVEL2, TEX_FONDO2, 
+	//						"maps\\textura-nivel2.png", 
+	//						"img\\Outer-Space-Wallpaper.png");
+
+	//_nivel = new cNivel1(this, (cNaveEspacial*)_naveEspacial, 
+	//						288, 28, "maps\\level-03.csv", 
+	//						TEX_NIVEL3, TEX_FONDO3, 
+	//						"maps\\textura-nivel3.png", 
+	//						"img\\Outer-Space-Wallpaper.png");
 	int x, y;
 	((cNivel*)_nivel)->posicionRespawn(x, y);
 	((cNaveEspacial*)_naveEspacial)->renace(x, y);
