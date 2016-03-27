@@ -41,7 +41,6 @@ protected:
 
 	virtual int avanzaPosicion() = 0;		// se encarga del scroll
 	virtual void generaEnemigos() {};		// genera los enemigos del nivel
-	virtual void trataColisiones() {};		// mira si alguien ha chocado con alguna pared
 
 	void aplicaScroll();
 	void aplicaLogicas();		// hace que todo el mundo corra su lógica
@@ -74,9 +73,24 @@ public:
 	void pushDisparo(cDisparo* disparo);
 	void pushEscudo(cEscudo* escudo);
 
+	virtual void posicionRespawn(int &x, int &y) {}
+
+	// para el nivel la caja es el rectangulo que representa las coordenadas de la pantalla
 	void caja(cRect &rect) const;
 	
+	// rect: miramos si este rectangulo ha chocado contra algo del nivel
+	// colisionMask: indica si ha chocado arriba, abajo, izquierda o derecha
+	//               es una mascara de bits (COLISION_ARRIBA, COLISION_ABAJO, COLISION_IZQ, COLISION_DER)
+	//               por ejemplo, para saber is ha chocado la base del rectangulo:
+	//                 colisionMask & COLISION_ABAJO
+	// x, y: las coordenadas del choque, sólo si se ha producido
+	// objeto: si hubo colision, el tipo de objeto contra el que ha chocado el rectangulo
+	//         puede ser un tile (COLISION_TILE) o los limites de la pantalla (COLISION_PANTALLA)
+	void colisionNivel(const cRect &rect, int &colisionMask, int &x, int &y, int &objeto);
+
 	void colision(cRect &caja, int &colMask) const;
+
+	// determina si un rectangulo queda fuera de la pantalla
 	bool fueraLimites(cRect &caja) const;
 
 	void logica();
@@ -94,7 +108,6 @@ protected:
 
 	int avanzaPosicion();
 	void generaEnemigos();
-	void trataColisiones();
 
 public:
 
@@ -105,4 +118,5 @@ public:
 			const char* ficheroTextura,
 			const char* ficheroFondo);
 
+	void posicionRespawn(int &x, int &y);
 };

@@ -107,6 +107,12 @@ void cDisparoNave::colision(cRect &rect, int &colMask) const {
 	}
 }
 
+void cDisparoNave::explota() {
+	_state = DISPARO_EXPLO;
+	_seq = 0;
+	_delay = DISPARO_EXPLO_DELAY;
+}
+
 void cDisparoNave::muerete() {
 	if (!_tamano && _tipo==DISPARO_NAVE_NORMAL) {
 		_state = DISPARO_EXPLO;
@@ -119,22 +125,22 @@ void cDisparoNave::logica() {
 	if (_state == DISPARO_VIVE) {
 		cNivel* nivel = ((cNivel*)_sis->nivel());
 		
+		// avanza disparo
 		bool circular = !_tamano && _tipo==DISPARO_NAVE_CIRCULAR;
 		if (circular) _x += tiroCircAva[_seq];
 		else _x += _pixelsAvanza;
 
 
+		// si queda fuera del escenario, matarlo de inmediato
 		if (_x > GAME_WIDTH + nivel->getPosicion()) {
 			// matar el tiro cuando queda fuera de la pantalla
 			_muerto = true;
 			return;
 		}
 
-		// si choca contra el escenario, muerte
+		// los tiros tienen una hit box menor sólo para las colisiones con el escenario
 		cRect rect;
 		caja(rect);
-		
-		// los tiros tienen una hit box menor sólo para las colisiones con el escenario
 		int h=min(rect.h, 4);
 		rect.y=rect.y+(rect.h>>1)-(h>>1);
 		rect.h=h;
@@ -144,9 +150,7 @@ void cDisparoNave::logica() {
 		if (colMask) {
 			// aunque pueden atravesar varios enemigos de una, 
 			// los disparos grandes mueren contra el escenario
-			_state = DISPARO_EXPLO;
-			_seq = 0;
-			_delay = DISPARO_EXPLO_DELAY;
+			explota();
 			return;
 		}
 
@@ -162,7 +166,7 @@ void cDisparoNave::logica() {
 			}
 		}
 	} else if (_state == DISPARO_EXPLO) {
-		if (_delay) --_delay;
+  		if (_delay) --_delay;
 		else {
 			if (_seq) {
 				_state = DISPARO_MUERE;
@@ -178,6 +182,7 @@ void cDisparoNave::logica() {
 void cDisparoNave::pinta() const {
 	if (_state == DISPARO_MUERE) return;
 
+	// el disparo circular tiene un tratamiento especial
 	bool circular = !_tamano && _tipo==DISPARO_NAVE_CIRCULAR;
 	
 	float xTexTiro, yTexTiro, wTexTiro, hTexTiro;
@@ -193,15 +198,15 @@ void cDisparoNave::pinta() const {
 		glBindTexture(GL_TEXTURE_2D, tex);
 		glBegin(GL_QUADS);
 
-		
+		// estos parametros dependen del tipo de tiro
 		int seqTiro = circular ? _seq : 2 + (2 * _tamano) + _seq;
 		int* tiro = circular ? tiroCirMov[seqTiro] : tiroNave[seqTiro];
 		int mid = circular ? tiroCircMid[_seq] : tiroNaveMid[_tamano];
 
-		xTexTiro = tiro[0]/(float)wTex;
-		yTexTiro = tiro[1]/(float)hTex;
-		wTexTiro = tiro[2]/(float)wTex;
-		hTexTiro = tiro[3]/(float)hTex;
+		xTexTiro = tiro[0]/float(wTex);
+		yTexTiro = tiro[1]/float(hTex);
+		wTexTiro = tiro[2]/float(wTex);
+		hTexTiro = tiro[3]/float(hTex);
 		wPixTiro = tiro[2];
 		hPixTiro = tiro[3];
 		xPixTiro = _x;

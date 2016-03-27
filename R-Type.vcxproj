@@ -92,6 +92,7 @@
     <ClCompile Include="cData.cpp" />
     <ClCompile Include="cDisparoEnemigo.cpp" />
     <ClCompile Include="cDisparoEscudo.cpp" />
+    <ClCompile Include="cDisparoJefe1.cpp" />
     <ClCompile Include="cDisparoNave.cpp" />
     <ClCompile Include="cEnemigo1.cpp" />
     <ClCompile Include="cEnemigo2.cpp" />
@@ -99,6 +100,7 @@
     <ClCompile Include="cEscudo.cpp" />
     <ClCompile Include="cHud.cpp" />
     <ClCompile Include="cItem.cpp" />
+    <ClCompile Include="cJefe1.cpp" />
     <ClCompile Include="cNivel.cpp" />
     <ClCompile Include="cGame.cpp" />
     <ClCompile Include="cNaveEspacial.cpp" />

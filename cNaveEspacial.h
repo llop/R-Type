@@ -44,6 +44,9 @@ using namespace std;
 #define NAVE_ESCUDO_SEC_X_OFFSET 8
 #define NAVE_ESCUDO_SEC_Y_OFFSET 32
 
+#define NAVE_TIEMPO_INVENCIBLE 500
+#define NAVE_TIEMPO_PARPADEO 5
+
 
 class cNaveEspacial : public cSprite {
 private:
@@ -60,6 +63,8 @@ private:
 	int _cargaTiro;
 
 	long long _puntos;			// la puntuacion
+
+	int _lastX, _lastY;
 
 	int _nivelEscudos;
 	vector<cEscudo*> _escudos;
@@ -89,6 +94,7 @@ public:
 	int vidas() const;
 	int cargaDisparo() const;
 
+	void renace(int x, int y);
 	void muerete();
 	void caja(cRect &rect) const;
 

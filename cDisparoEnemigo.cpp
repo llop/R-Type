@@ -4,8 +4,6 @@
 #include <gl/glut.h>
 
 
-#include "cDisparo.h"
-
 
 int tiroEnemigo[4][4] = {
 	{ 212, 279, 6, 6 },
@@ -33,6 +31,10 @@ cDisparoEnemigo::cDisparoEnemigo(cSistema* sis, int x, int y, float xu, float yu
 }
 
 cDisparoEnemigo::~cDisparoEnemigo() {
+}
+
+void cDisparoEnemigo::explota() {
+	muerete();
 }
 
 void cDisparoEnemigo::muerete() {

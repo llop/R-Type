@@ -194,9 +194,25 @@ void cNaveEspacial::reset() {
 
 	_nivelEscudos = NAVE_SIN_ESCUDO;
 	for (unsigned int i=0; i<_escudos.size(); ++i) _escudos[i]->muerete();
+	_escudos.clear();
 
 	_tipoTiro = DISPARO_NAVE_NORMAL;
 	_tiroDelay = NAVE_TIRO_DELAY;
+
+	if (_sis->nivel() != NULL) {
+		int x, y;
+		((cNivel*)_sis->nivel())->posicionRespawn(x, y);
+		renace(x, y);
+	}
+
+	_lastX = _x;
+	_lastY = _y;
+}
+
+void cNaveEspacial::renace(int x, int y) {
+	_tiempoVida = 0;
+	_x = x;
+	_y = y;
 }
 
 void cNaveEspacial::anadeEscudo() {
@@ -270,46 +286,92 @@ void cNaveEspacial::logica() {
 	if (_state == NAVE_VIVE) {
 		// subir el tiempo que lleva con vida
 		++_tiempoVida;
-		// corregir la posicion de la nave para que no se salga de la pantalla
-		cNivel* nivel = (cNivel*)_sis->nivel();
-		int xPixNave, yPixNave, yPixOffset, wPixNave, hPixNave;
-		wPixNave = mov[_seq][2];
-		hPixNave = mov[_seq][3];
-		xPixNave = _x - (wPixNave>>1);
-		yPixOffset = movMid - mov[_seq][1];
-		yPixNave = GAME_HEIGHT - HUD_HPIX - (_y - yPixOffset + hPixNave);
 
-		int posNivel = nivel->getPosicion();
-		int left = xPixNave - posNivel;
-		if (left < 0) _x -= left;
-
-		int right = (posNivel + GAME_WIDTH) - (xPixNave + wPixNave);
-		if (right < 0) _x += right;
-
-		int top = GAME_HEIGHT - HUD_HPIX - (yPixNave + hPixNave);
-		if (top < 0) _y -= top;
-
-		int bottom = yPixNave;
-		if (bottom < 0) _y += bottom;
-
-		// ha chocado con el escenario?
+		// sacar la hit box
 		cRect rect;
 		caja(rect);
-		int colMask;
-		nivel->colision(rect, colMask);
-		if (colMask) muerete();
+
+		// buscar colisiones con el escenario
+		cNivel* nivel = (cNivel*)_sis->nivel();
+		int colisionMask, x, y, objeto;
+		nivel->colisionNivel(rect, colisionMask, x, y, objeto);
+
+		// tratamiento especial para las colisiones cuando la nave sea invencible
+		bool invencible = _tiempoVida<NAVE_TIEMPO_INVENCIBLE;
+		if (invencible) {
+			if (colisionMask && objeto == COLISION_TILE) {
+				// si es invencible y ha chocado con un tile, corregirle la posicion
+				//if (colisionMask & COLISION_ARRIBA) _y += y - rect.y;
+				//else if (colisionMask & COLISION_ABAJO) _y += y - (rect.y+rect.h);
+				//else if (colisionMask & COLISION_IZQ) _x += x - rect.x;
+				//else if (colisionMask & COLISION_DER) _x += x - (rect.x+rect.w);
+
+				// chapucilla para no permitir que la nave se meta por los tiles cuando es invencible
+				if (colisionMask & COLISION_IZQ || colisionMask & COLISION_DER) _x = _lastX;
+				if (colisionMask & COLISION_ARRIBA || colisionMask & COLISION_ABAJO) _y = _lastY;
+
+				// ok, ahora es posible que se salga de los limites de la pantalla
+				// si es así, empujar la nave para dentro
+				caja(rect);
+				nivel->colisionNivel(rect, colisionMask, x, y, objeto);
+			}
+			if (colisionMask && objeto == COLISION_PANTALLA) {
+				if (colisionMask & COLISION_ARRIBA) _y += y - rect.y;
+				else if (colisionMask & COLISION_ABAJO) _y += y - (rect.y+rect.h);
+				if (colisionMask & COLISION_IZQ) _x += x - rect.x;
+				else if (colisionMask & COLISION_DER) _x += x - (rect.x+rect.w);
+			}
+		} else {
+			// se sale de la pantalla?
+			if (colisionMask && objeto == COLISION_PANTALLA) {
+				if (colisionMask & COLISION_ARRIBA) _y += y - rect.y;
+				else if (colisionMask & COLISION_ABAJO) _y += y - (rect.y+rect.h);
+				if (colisionMask & COLISION_IZQ) _x += x - rect.x;
+				else if (colisionMask & COLISION_DER) _x += x - (rect.x+rect.w);
+				// puede que al empujar la nave, esta choque contra un tile
+				caja(rect);
+				nivel->colisionNivel(rect, colisionMask, x, y, objeto);
+			}
+			// choca contra un tile? que reviente!
+			if (colisionMask && objeto == COLISION_TILE) {
+				_vida = 0;
+			}
+		}
+
+		/*
+		if (colisionMask) {
+			if (objeto == COLISION_PANTALLA || 
+					(objeto == COLISION_PANTALLA && )) {
+				// corregir la posicion de la nave para que no se salga de la pantalla
+				if (colisionMask & COLISION_ARRIBA) {
+					_y += y - rect.y;
+				} else if (colisionMask & COLISION_ABAJO) {
+					_y += y - (rect.y+rect.h);
+				} else if (colisionMask & COLISION_IZQ) {
+					_x += x - rect.x;
+				} else if (colisionMask & COLISION_DER) {
+					_x += x - (rect.x+rect.w);
+				}
+			} else if (objeto == COLISION_TILE) {
+				// si ha chocado contra un tile, que se muera!
+				muerete();
+			}
+		}
+		*/
 
 		// ha chocado con algun disparo malo?
 		list<cDisparo*> disparos = nivel->disparos();
 		for (list<cDisparo*>::iterator it=disparos.begin(); it!=disparos.end(); ++it) {
 			cDisparo* disparo = *it;
 			if (disparo->malo()) {
+				int colMask;
 				disparo->colision(rect, colMask);
 				if (colMask) {
 					// hace pupa!!!
 					// Y si hacemos que la nave muera de un tiro?
-					int dano = disparo->dano();
-					_vida -= dano;
+					// int dano = disparo->dano();
+					// _vida -= dano;
+					_vida = 0;
 					// el disparo muere
 					disparo->muerete();
 				}
@@ -320,6 +382,7 @@ void cNaveEspacial::logica() {
 		list<cEnemigo*> enemigos = nivel->enemigos();
 		for (list<cEnemigo*>::iterator it = enemigos.begin(); it != enemigos.end(); ++it) {
 			cEnemigo* enemigo = *it;
+			int colMask;
 			enemigo->colision(rect, colMask);
 			if (colMask) {
 				// la nave muere
@@ -356,6 +419,9 @@ void cNaveEspacial::logica() {
 			}
 		}
 
+		_lastX = _x;
+		_lastY = _y;
+
 	} else if (_state == NAVE_EXPLO) {
 		if (_delay) {
 			--_delay;
@@ -376,6 +442,13 @@ void cNaveEspacial::logica() {
 
 void cNaveEspacial::pinta() const {
 	if (_state == NAVE_MUERE) return;
+
+	// el parpadeo indica que la nave es invencible
+	bool invencible = _state==NAVE_VIVE && _tiempoVida<NAVE_TIEMPO_INVENCIBLE;
+	if (invencible) {
+		long long t = _tiempoVida/NAVE_TIEMPO_PARPADEO;
+		if (t%2) return;
+	}
 
 	int tex = _sis->idTextura(TEX_NAVE1);
 	int wTex, hTex;

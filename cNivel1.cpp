@@ -12,7 +12,9 @@ cNivel1::cNivel1(cSistema* sis, cNaveEspacial* naveEspacial,
 														ficheroMapa, 
 														idTextura, idFondo, 
 														ficheroTextura,
-														ficheroFondo) {}
+														ficheroFondo) {
+	_posicion = 4200;
+}
 
 
 int cNivel1::avanzaPosicion() {
@@ -52,14 +54,15 @@ void cNivel1::generaEnemigos() {
 		cEnemigoItem* e = new cEnemigoItem(_sis, rect.x + rect.w + 8, 200, -5.0f, 0.0f, ITEM_ESCUDO);
 		pushEnemigo(e);
 	}
+
+	// generar el jefe
+	if (_posicion==4200 && !_delay) {
+		cJefe1* jefe = new cJefe1(_sis);
+		pushEnemigo(jefe);
+	}
 }
 
-void cNivel1::trataColisiones() {
-	// la nave
-
-	// los enemigos
-
-	// los disparos
-
-	// los items pueden atravesar paredes!
+void cNivel1::posicionRespawn(int &x, int &y) {
+	x = _posicion+100;
+	y = 255;
 }

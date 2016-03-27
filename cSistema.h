@@ -70,10 +70,15 @@ public:
 };
 
 
+
 #define COLISION_ARRIBA 1
 #define COLISION_ABAJO 2
 #define COLISION_IZQ 4
 #define COLISION_DER 8
+
+#define COLISION_TILE 0
+#define COLISION_PANTALLA 1
+
 
 /**
  * Un sprite es un coso que se tiene que implementar

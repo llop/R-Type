@@ -21,8 +21,12 @@ public:
 	cDisparo(cSistema* sis, int x, int y) : cSprite(sis, x, y) {};
 	virtual ~cDisparo() {};
 
-	bool malo() { return _malo; };
-	int dano() { return _dano; };
+	bool malo() const { return _malo; };
+	int dano() const { return _dano; };
+
+	bool vive() const { return _state==DISPARO_VIVE; }
+
+	virtual void explota() {};
 };
 
 
@@ -48,6 +52,7 @@ public:
 	void colision(cRect &rect, int &colMask) const;
 	void caja(cRect &rect) const;
 
+	void explota();
 	void muerete();
 
 	void logica();
@@ -73,6 +78,7 @@ public:
 	void colision(cRect &rect, int &colMask) const;
 	void caja(cRect &rect) const;
 
+	void explota();
 	void muerete();
 
 	void logica();
@@ -103,6 +109,33 @@ public:
 	void colision(cRect &rect, int &colMask) const;
 	void caja(cRect &rect) const;
 
+	void explota();
+	void muerete();
+
+	void logica();
+	void pinta() const;
+};
+
+
+// disparo jefe1
+
+#define VELOCIDAD_DISPARO_JEFE1 8
+#define DISPARO_JEFE1_DELAY 10
+
+class cDisparoJefe1 : public cDisparo {
+protected:
+
+	float _xF, _yF;
+	float _xVec, _yVec;
+
+public:
+	cDisparoJefe1(cSistema* sis, int x, int y, float xVec, float yVec);
+	~cDisparoJefe1();
+	
+	void colision(cRect &rect, int &colMask) const;
+	void caja(cRect &rect) const;
+
+	void explota();
 	void muerete();
 
 	void logica();

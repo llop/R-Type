@@ -16,7 +16,7 @@ protected:
 	long long _puntos;		// los puntos que sumara si la nave lo mata
 
 public:
-	//cEnemigo(cSistema* sis) : cSprite(sis) {};
+	cEnemigo(cSistema* sis) : cSprite(sis) {};
 	cEnemigo(cSistema* sis, int x, int y) : cSprite(sis, x, y) {};
 
 	long long puntos() const { return _puntos; };
@@ -123,6 +123,60 @@ public:
 
 	void muerete();
 	void caja(cRect &rect) const;
+	
+	void colision(cRect &caja, int &colMask) const;
+
+	void logica();
+	void pinta() const;
+
+};
+
+
+
+
+//----------------------------------------------------------------------
+// jefe nivel 1
+//----------------------------------------------------------------------
+
+#define JEFE1_MUEVE_DELAY 10
+#define JEFE1_VIDA_INICIAL 5000
+#define JEFE1_PUNTOS 35
+
+#define JEFE1_NUM_FRAMES 24
+
+#define JEFE1_ALIEN_DENTRO 0
+#define JEFE1_ALIEN_SALIENDO 1
+#define JEFE1_ALIEN_FUERA 2
+#define JEFE1_ALIEN_VOMITA 3
+
+#define JEFE1_TIRO_DELAY 400
+
+#define JEFE1_INC_ANG_COLA 0.02f
+#define JEFE1_INC_MOV 1
+
+#define JEFE1_MUERE_DELAY 10
+
+
+class cJefe1 : public cEnemigo {
+protected:
+
+	long long _tiempoVida;
+	long long _ultimoTiro;
+	
+	int _subState;
+
+	bool _anguloCrece;
+	float _anguloCola;
+
+	bool _sube;
+
+public:
+	cJefe1(cSistema* sis);
+	~cJefe1();
+
+	void muerete();
+	void caja(cRect &rect) const;
+	void offset(int x, int y);
 	
 	void colision(cRect &caja, int &colMask) const;
 

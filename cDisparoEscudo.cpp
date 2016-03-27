@@ -69,6 +69,10 @@ void cDisparoEscudo::colision(cRect &rect, int &colMask) const {
 	}
 }
 
+void cDisparoEscudo::explota() {
+	muerete();
+}
+
 void cDisparoEscudo::muerete() {
 	_state = DISPARO_EXPLO;
 	_seq = 0;

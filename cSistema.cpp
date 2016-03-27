@@ -94,9 +94,13 @@ void cSistema::logicaMenu() {
 	_naveEspacial = new cNaveEspacial(this);
 	_nivel = new cNivel1(this, (cNaveEspacial*)_naveEspacial, 
 							328, 28, "maps\\level-01.csv", 
-							TEX_NIVEL2, TEX_FONDO1, 
+							TEX_NIVEL1, TEX_FONDO1, 
 							"maps\\stage1-01.png", 
 							"img\\Outer-Space-Wallpaper.png");
+	int x, y;
+	((cNivel*)_nivel)->posicionRespawn(x, y);
+	((cNaveEspacial*)_naveEspacial)->renace(x, y);
+
 
 }
 

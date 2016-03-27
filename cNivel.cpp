@@ -50,7 +50,7 @@ cNivel::cNivel(cSistema* sis, cNaveEspacial* naveEspacial,
 				const char* ficheroFondo) : cSprite(sis) {
 
 	_naveEspacial = naveEspacial;
-
+	
 	_tilesAncho = tilesAncho;
 	_tilesAlto = tilesAlto;
 
@@ -149,7 +149,10 @@ void cNivel::pushEscudo(cEscudo* escudo) {
 
 void cNivel::aplicaScroll() {
 	// es el final del escenario: detener el scroll
-	if (_posicion == _posicionFinal) return;
+	if (_posicion >= _posicionFinal) {
+		//_posicion = _posicionFinal;
+		return;
+	}
 
 	// que sea la subclase quien implementa el avance en cada momento
 	int avanza = avanzaPosicion();
@@ -213,6 +216,110 @@ void cNivel::aplicaMuertes() {
 	}
 }
 
+
+// rect: miramos si este rectangulo ha chocado contra algo del nivel
+// colisionMask: indica si ha chocado arriba, abajo, izquierda o derecha
+//               es una mascara de bits (COLISION_ARRIBA, COLISION_ABAJO, COLISION_IZQ, COLISION_DER)
+//               por ejemplo, para saber is ha chocado la base del rectangulo:
+//                 colisionMask & COLISION_ABAJO
+// x, y: las coordenadas del choque, sólo si se ha producido
+// objeto: si hubo colision, el tipo de objeto contra el que ha chocado el rectangulo
+//         puede ser un tile (COLISION_TILE) o los limites de la pantalla (COLISION_PANTALLA)
+void cNivel::colisionNivel(const cRect &rect, int &colisionMask, int &x, int &y, int &objeto) {
+	colisionMask = 0;
+
+	int tileArriba = rect.y / TILE_HEIGHT;
+	int tileAbajo = (rect.y+rect.h) / TILE_HEIGHT;
+	int tileIzquierda = rect.x / TILE_WIDTH;
+	int tileDerecha = (rect.x+rect.w) / TILE_WIDTH;
+
+	//--------------------------------------------------------------------------
+	// mirar los tiles
+	//--------------------------------------------------------------------------
+	if (tileArriba<_tilesAlto && tileIzquierda<_tilesAncho && tileDerecha>=0 && tileAbajo>=0) {
+		// colisiona arriba
+		if (tileArriba>=0) {
+			int i = tileArriba;
+			int j = max(0, tileIzquierda);
+			int k = min(_tilesAncho-1, tileDerecha);
+			while (j <= k) {
+				int tile = _mapa[i * _tilesAncho + j];
+				if (tile != -1) {
+					colisionMask |= COLISION_ARRIBA;
+					y = (tileArriba+1)*TILE_HEIGHT;
+				}
+				++j;
+			}
+		}
+		// colisiona abajo
+		if (tileAbajo<_tilesAlto) {
+			int i = tileAbajo;
+			int j = max(0, tileIzquierda);
+			int k = min(_tilesAncho-1, tileDerecha);
+			while (j <= k) {
+				int tile = _mapa[i * _tilesAncho + j];
+				if (tile != -1) {
+					colisionMask |= COLISION_ABAJO;
+					y = tileAbajo*TILE_HEIGHT;
+				}
+				++j;
+			}
+		}
+		// colisiona izquierda 
+		if (tileIzquierda>=0) {
+			int i = max(0, tileArriba);
+			int j = tileIzquierda;
+			int k = min(_tilesAlto-1, tileAbajo);
+			while (i <= k) {
+				int tile = _mapa[i * _tilesAncho + j];
+				if (tile != -1) {
+					colisionMask |= COLISION_IZQ;
+					x = (tileIzquierda+1)*TILE_WIDTH;
+				}
+				++i;
+			}
+		}
+		// colisiona derecha
+		if (tileDerecha<_tilesAncho) {
+			int i = max(0, tileArriba);
+			int j = tileDerecha;
+			int k = min(_tilesAlto-1, tileAbajo);
+			while (i <= k) {
+				int tile = _mapa[i * _tilesAncho + j];
+				if (tile != -1) {
+					colisionMask |= COLISION_DER;
+					x = tileDerecha*TILE_WIDTH;
+				}
+				++i;
+			}
+		}
+		// si ha chocado con un tile, paramos
+		if (colisionMask) {
+			objeto = COLISION_TILE;
+			return;
+		}
+	}
+
+	// mirar si queda fuera de la pantalla
+	if (rect.y+rect.h >= GAME_HEIGHT - HUD_HPIX) {
+		colisionMask |= COLISION_ABAJO;
+		y = GAME_HEIGHT - HUD_HPIX;
+	} else if (rect.y < 0) {
+		colisionMask |= COLISION_ARRIBA;
+		y = 0;
+	}
+	if (rect.x+rect.w >= _posicion + GAME_WIDTH) {
+		colisionMask |= COLISION_DER;
+		x = _posicion + GAME_WIDTH;
+	} else if (rect.x < _posicion) {
+		colisionMask |= COLISION_IZQ;
+		x = _posicion;
+	}
+	if (colisionMask) {
+		objeto = COLISION_PANTALLA;
+	}
+	
+}
 
 void cNivel::colision(cRect &caja, int &colMask) const {
 	colMask = 0;
@@ -294,7 +401,6 @@ bool cNivel::fueraLimites(cRect &rect) const {
 void cNivel::logica() {
 	aplicaScroll();
 	generaEnemigos();
-	trataColisiones();
 	aplicaLogicas();
 	aplicaMuertes();
 }
