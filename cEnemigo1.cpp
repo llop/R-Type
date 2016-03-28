@@ -75,9 +75,9 @@ void cEnemigo1::logica() {
 	if (_state == ENEMIGO_VIVE) {
 
 		// actualizar posicion
-		_angle += ENEMIGO1_INC_ANGLE;
+		//_angle += ENEMIGO1_INC_ANGLE;
 		_x -= ENEMIGO1_SPEED_LEFT;
-		_y = int(_yBase + sin(_angle) * ENEMIGO1_ALT_MOV);
+		//_y = int(_yBase + sin(_angle) * ENEMIGO1_ALT_MOV);
 
 		// estos los necesitaremos por ahi
 		cNivel* nivel = (cNivel*)_sis->nivel();
@@ -141,7 +141,7 @@ void cEnemigo1::logica() {
 		}
 
 		//IA DISPAROS
-		int auxRandom = rand() % 1000;
+		int auxRandom = rand() % 250;
 		if (auxRandom == 1) {
 			// meter el nuevo disparo en el nivel
 			int nX, nY;

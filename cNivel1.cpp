@@ -34,11 +34,12 @@ void cNivel1::generaEnemigos() {
 	// generar una cadena de malos
 	int inter = 8;
 	if (!(_posicion%inter) && !_delay && _posicion < inter * 6) {
-		cEnemigo1* e = new cEnemigo1(_sis, rect.x + rect.w + 10, 200);
+		int alturaRandom = rand() % 400;
+		cEnemigo1* e = new cEnemigo1(_sis, rect.x + rect.w + 10, alturaRandom);
 		pushEnemigo(e);
 	}
 
-	if (!(_posicion%inter) && !_delay && _posicion < (inter * 4)) { // cambiar posicio
+	if (_posicion >= 800 && !(_posicion%inter) && !_delay && _posicion < 800+(inter * 4)) {
 		cEnemigo2* e = new cEnemigo2(_sis, rect.x + rect.w + 10, 100);
 		pushEnemigo(e);
 	}

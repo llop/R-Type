@@ -107,6 +107,7 @@
     <ClCompile Include="cNaveEspacial.cpp" />
     <ClCompile Include="cNivel1.cpp" />
     <ClCompile Include="cNivel2.cpp" />
+    <ClCompile Include="cNivel3.cpp" />
     <ClCompile Include="cSistema.cpp" />
     <ClCompile Include="cSprite.cpp" />
     <ClCompile Include="cTexture.cpp" />
