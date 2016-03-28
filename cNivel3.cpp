@@ -2,33 +2,33 @@
 #include "cNivel.h"
 
 
-cNivel1::cNivel1(cSistema* sis, cNaveEspacial* naveEspacial, 
-					int tilesAncho, int tilesAlto,
-					const char* ficheroMapa, 
-					int idTextura, int idFondo, 
-					const char* ficheroTextura,
-					const char* ficheroFondo) : cNivel(sis, naveEspacial, 
-														tilesAncho, tilesAlto,
-														ficheroMapa, 
-														idTextura, idFondo, 
-														ficheroTextura,
-														ficheroFondo) {
+cNivel3::cNivel3(cSistema* sis, cNaveEspacial* naveEspacial,
+	int tilesAncho, int tilesAlto,
+	const char* ficheroMapa,
+	int idTextura, int idFondo,
+	const char* ficheroTextura,
+	const char* ficheroFondo) : cNivel(sis, naveEspacial,
+		tilesAncho, tilesAlto,
+		ficheroMapa,
+		idTextura, idFondo,
+		ficheroTextura,
+		ficheroFondo) {
 	//_posicion = 4200;
 }
 
 
-int cNivel1::avanzaPosicion() {
+int cNivel3::avanzaPosicion() {
 	// avanzar si toca
 	int avanza = 0;
 	if (_delay) --_delay;
-	else { 
+	else {
 		avanza = NIVEL_AVANCE;
 		_delay = NIVEL_DELAY;
 	}
 	return avanza;
 }
 
-void cNivel1::generaEnemigos() {
+void cNivel3::generaEnemigos() {
 	cRect rect;
 	caja(rect);
 	// generar una cadena de malos
@@ -39,36 +39,36 @@ void cNivel1::generaEnemigos() {
 		pushEnemigo(e);
 	}
 
-	if (_posicion >= 800 && !(_posicion%inter) && !_delay && _posicion < 800+(inter * 4)) {
+	if (_posicion >= 800 && !(_posicion%inter) && !_delay && _posicion < 800 + (inter * 4)) {
 		cEnemigo2* e = new cEnemigo2(_sis, rect.x + rect.w + 10, 100);
 		pushEnemigo(e);
 	}
 
-	if (_posicion==200 && !_delay) {
+	if (_posicion == 200 && !_delay) {
 		cEnemigoItem* e = new cEnemigoItem(_sis, rect.x + rect.w + 8, 200, -5.0f, 0.0f, ITEM_DISPARO_RB);
 		pushEnemigo(e);
 	}
-	if (_posicion==300 && !_delay) {
+	if (_posicion == 300 && !_delay) {
 		cEnemigoItem* e = new cEnemigoItem(_sis, rect.x + rect.w + 8, 200, -5.0f, 0.0f, ITEM_ESCUDO);
 		pushEnemigo(e);
 	}
-	if (_posicion==400 && !_delay) {
+	if (_posicion == 400 && !_delay) {
 		cEnemigoItem* e = new cEnemigoItem(_sis, rect.x + rect.w + 8, 200, -5.0f, 0.0f, ITEM_ESCUDO);
 		pushEnemigo(e);
 	}
-	if (_posicion==500 && !_delay) {
+	if (_posicion == 500 && !_delay) {
 		cEnemigoItem* e = new cEnemigoItem(_sis, rect.x + rect.w + 8, 200, -5.0f, 0.0f, ITEM_ESCUDO);
 		pushEnemigo(e);
 	}
 
 	// generar el jefe
-	if (_posicion==4200 && !_delay) {
+	if (_posicion == 4200 && !_delay) {
 		cJefe1* jefe = new cJefe1(_sis);
 		pushEnemigo(jefe);
 	}
 }
 
-void cNivel1::posicionRespawn(int &x, int &y) {
-	x = _posicion+100;
+void cNivel3::posicionRespawn(int &x, int &y) {
+	x = _posicion + 100;
 	y = 255;
 }

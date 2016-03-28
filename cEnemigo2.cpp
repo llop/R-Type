@@ -149,7 +149,7 @@ void cEnemigo2::logica() { // cambiar logica quan es vegi
 		}
 
 		//IA DISPAROS
-		int auxRandom = rand() % 1000;
+		int auxRandom = rand() % 250;
 		if (auxRandom == 1) {
 			// meter el nuevo disparo en el nivel
 			int nX, nY;

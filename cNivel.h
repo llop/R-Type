@@ -120,3 +120,21 @@ public:
 
 	void posicionRespawn(int &x, int &y);
 };
+
+class cNivel3 : public cNivel {
+protected:
+
+	int avanzaPosicion();
+	void generaEnemigos();
+
+public:
+
+	cNivel3(cSistema* sis, cNaveEspacial* naveEspaciall,
+		int tilesAncho, int tilesAlto,
+		const char* ficheroMapa,
+		int idTextura, int idFondo,
+		const char* ficheroTextura,
+		const char* ficheroFondo);
+
+	void posicionRespawn(int &x, int &y);
+};

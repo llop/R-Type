@@ -92,11 +92,11 @@ void cSistema::logicaMenu() {
 
 	// carga nivel 1
 	_naveEspacial = new cNaveEspacial(this);
-	_nivel = new cNivel1(this, (cNaveEspacial*)_naveEspacial, 
-							328, 28, "maps\\level-01.csv", 
-							TEX_NIVEL1, TEX_FONDO1, 
-							"maps\\stage1-01.png", 
-							"img\\Outer-Space-Wallpaper.png");
+	//_nivel = new cNivel1(this, (cNaveEspacial*)_naveEspacial, 
+	//						328, 28, "maps\\level-01.csv", 
+	//						TEX_NIVEL1, TEX_FONDO1, 
+	//						"maps\\stage1-01.png", 
+	//						"img\\Outer-Space-Wallpaper.png");
 
 	//_nivel = new cNivel1(this, (cNaveEspacial*)_naveEspacial, 
 	//						288, 28, "maps\\level-02.csv", 
@@ -104,11 +104,11 @@ void cSistema::logicaMenu() {
 	//						"maps\\textura-nivel2.png", 
 	//						"img\\Outer-Space-Wallpaper.png");
 
-	//_nivel = new cNivel1(this, (cNaveEspacial*)_naveEspacial, 
-	//						288, 28, "maps\\level-03.csv", 
-	//						TEX_NIVEL3, TEX_FONDO3, 
-	//						"maps\\textura-nivel3.png", 
-	//						"img\\Outer-Space-Wallpaper.png");
+	_nivel = new cNivel3(this, (cNaveEspacial*)_naveEspacial, // funcionaaa yuhuuu!!!!
+							328, 28, "maps\\level-03.csv", 
+							TEX_NIVEL3, TEX_FONDO3, 
+							"maps\\stage3-03.png", 
+							"img\\Outer-Space-Wallpaper.png");
 
 	int x, y;
 	((cNivel*)_nivel)->posicionRespawn(x, y);
