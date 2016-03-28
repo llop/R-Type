@@ -9,16 +9,16 @@
 #define ESCUDO_NUM_FRAMES 4
 #define ESCUDO_SEC_NUM_FRAMES 12
 
-#define ESCUDO_TIRO_SPEED 16
+#define ESCUDO_TIRO_SPEED 16.0f
 #define ESCUDO_VUELTA_SPEED 2
 
 #define ESCUDO_TIRO 0
 #define ESCUDO_VUELTA 1
 #define ESCUDO_ANCLADO 2
 
-#define ESCUDO_DIST_ANCLA 4.0f
+#define ESCUDO_DIST_ANCLA 10.0f
 
-#define ESCUDO_DANO 200
+#define ESCUDO_DANO 500
 
 #define ESCUDO_FRENTE 0
 #define ESCUDO_ARRIBA 1
@@ -26,7 +26,10 @@
 
 
 class cEscudo : public cSprite {
-private:
+protected:
+
+	float _xF, _yF;
+	float _xAnt, _yAnt;
 
 	int _dano;
 	int _tipo;
@@ -38,6 +41,7 @@ public:
 
 	void dispara();
 	void lanza();
+	void choca();
 
 	bool anclado() const;
 	int dano() const;

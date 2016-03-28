@@ -246,6 +246,7 @@ void cNivel::colisionNivel(const cRect &rect, int &colisionMask, int &x, int &y,
 				int tile = _mapa[i * _tilesAncho + j];
 				if (tile != -1) {
 					colisionMask |= COLISION_ARRIBA;
+					objeto |= COLISION_TILE;
 					y = (tileArriba+1)*TILE_HEIGHT;
 				}
 				++j;
@@ -260,6 +261,7 @@ void cNivel::colisionNivel(const cRect &rect, int &colisionMask, int &x, int &y,
 				int tile = _mapa[i * _tilesAncho + j];
 				if (tile != -1) {
 					colisionMask |= COLISION_ABAJO;
+					objeto |= COLISION_TILE;
 					y = tileAbajo*TILE_HEIGHT;
 				}
 				++j;
@@ -274,6 +276,7 @@ void cNivel::colisionNivel(const cRect &rect, int &colisionMask, int &x, int &y,
 				int tile = _mapa[i * _tilesAncho + j];
 				if (tile != -1) {
 					colisionMask |= COLISION_IZQ;
+					objeto |= COLISION_TILE;
 					x = (tileIzquierda+1)*TILE_WIDTH;
 				}
 				++i;
@@ -288,35 +291,34 @@ void cNivel::colisionNivel(const cRect &rect, int &colisionMask, int &x, int &y,
 				int tile = _mapa[i * _tilesAncho + j];
 				if (tile != -1) {
 					colisionMask |= COLISION_DER;
+					objeto |= COLISION_TILE;
 					x = tileDerecha*TILE_WIDTH;
 				}
 				++i;
 			}
-		}
-		// si ha chocado con un tile, paramos
-		if (colisionMask) {
-			objeto = COLISION_TILE;
-			return;
 		}
 	}
 
 	// mirar si queda fuera de la pantalla
 	if (rect.y+rect.h >= GAME_HEIGHT - HUD_HPIX) {
 		colisionMask |= COLISION_ABAJO;
+		objeto |= COLISION_PANTALLA;
 		y = GAME_HEIGHT - HUD_HPIX;
-	} else if (rect.y < 0) {
+	} 
+	if (rect.y < 0) {
 		colisionMask |= COLISION_ARRIBA;
+		objeto |= COLISION_PANTALLA;
 		y = 0;
 	}
 	if (rect.x+rect.w >= _posicion + GAME_WIDTH) {
 		colisionMask |= COLISION_DER;
+		objeto |= COLISION_PANTALLA;
 		x = _posicion + GAME_WIDTH;
-	} else if (rect.x < _posicion) {
+	} 
+	if (rect.x < _posicion) {
 		colisionMask |= COLISION_IZQ;
+		objeto |= COLISION_PANTALLA;
 		x = _posicion;
-	}
-	if (colisionMask) {
-		objeto = COLISION_PANTALLA;
 	}
 	
 }

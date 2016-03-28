@@ -16,12 +16,21 @@ protected:
 	
 	int _vida;				// vida del enemigo
 	long long _puntos;		// los puntos que sumara si la nave lo mata
+	bool _esJefe;
 
 public:
-	cEnemigo(cSistema* sis) : cSprite(sis) {};
-	cEnemigo(cSistema* sis, int x, int y) : cSprite(sis, x, y) {};
+	cEnemigo(cSistema* sis) : cSprite(sis), _esJefe(false) {};
+	cEnemigo(cSistema* sis, int x, int y) : cSprite(sis, x, y), _esJefe(false) {};
 
 	long long puntos() const { return _puntos; };
+	virtual void restaVida(int vida) {
+		_vida -= vida;
+		if (_vida<=0) {
+			((cNaveEspacial*)_sis->naveEspacial())->sumaPuntos(_puntos);
+			muerete();
+		}
+	};
+	bool jefe() const { return _esJefe; };
 
 };
 
@@ -146,7 +155,7 @@ struct cExplo {
 //----------------------------------------------------------------------
 
 #define JEFE1_MUEVE_DELAY 10
-#define JEFE1_VIDA_INICIAL 100
+#define JEFE1_VIDA_INICIAL 500
 #define JEFE1_PUNTOS 35
 
 #define JEFE1_NUM_FRAMES 24
@@ -168,7 +177,7 @@ struct cExplo {
 #define JEFE1_EXPLO_NUM_FRAMES 9
 #define JEFE1_MAX_NUM_EXPLO 5
 
-#define JEFE1_FLASH_IMPACTO 20
+#define JEFE1_FLASH_IMPACTO 24
 
 
 class cJefe1 : public cEnemigo {
@@ -198,6 +207,7 @@ public:
 	cJefe1(cSistema* sis);
 	~cJefe1();
 
+	void restaVida(int vida);
 	void muerete();
 	void caja(cRect &rect) const;
 	void offset(int x, int y);
@@ -210,4 +220,58 @@ public:
 };
 
 
+
+//----------------------------------------------------------------------
+// jefe nivel 2
+//----------------------------------------------------------------------
+
+#define JEFE2_MUEVE_DELAY 10
+#define JEFE2_VIDA_INICIAL 2000
+#define JEFE2_PUNTOS 65
+
+#define JEFE2_FLASH_IMPACTO 24
+
+#define JEFE2_IDLE 0
+#define JEFE2_VULVA_CERRADA 1
+#define JEFE2_VULVA_ABIERTA 2
+
+#define JEFE2_MUERE_DELAY 10
+
+#define JEFE2_INTERVALO_ATAQUE1 500
+#define JEFE2_INTERVALO_ATAQUE2 800
+#define JEFE2_INTERVALO_SALIDA 200
+#define JEFE2_INTERVALO_ENTRADA 600
+
+class cJefe2 : public cEnemigo {
+protected:
+
+	long long _tiempoVida;
+	long long _ultimaSalida;
+	long long _ultimoAtaque;
+	long long _ultimoImpacto;
+	
+	int _subState;
+
+	int _seqExplo;
+	
+	list<cExplo> _exploCuerpo;
+	
+	void pintaVivo() const;
+	void pintaExplo() const;
+
+public:
+	cJefe2(cSistema* sis);
+	~cJefe2();
+
+	void restaVida(int vida);
+	void muerete();
+	void caja(cRect &rect) const;
+	void offset(int x, int y);
+	
+	void colision(cRect &caja, int &colMask) const;
+
+	void logica();
+	void pinta() const;
+
+};
 

@@ -101,10 +101,12 @@
     <ClCompile Include="cHud.cpp" />
     <ClCompile Include="cItem.cpp" />
     <ClCompile Include="cJefe1.cpp" />
+    <ClCompile Include="cJefe2.cpp" />
     <ClCompile Include="cNivel.cpp" />
     <ClCompile Include="cGame.cpp" />
     <ClCompile Include="cNaveEspacial.cpp" />
     <ClCompile Include="cNivel1.cpp" />
+    <ClCompile Include="cNivel2.cpp" />
     <ClCompile Include="cSistema.cpp" />
     <ClCompile Include="cSprite.cpp" />
     <ClCompile Include="cTexture.cpp" />

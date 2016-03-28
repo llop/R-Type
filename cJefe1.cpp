@@ -1,4 +1,4 @@
- #include "cNivel.h"
+#include "cNivel.h"
 #include "cEnemigo.h"
 #include <gl/glut.h>
 
@@ -119,6 +119,8 @@ cJefe1::cJefe1(cSistema* sis) : cEnemigo(sis) {
 	_anguloCola = acos(-1.0f);
 
 	_sube = false;
+
+	_esJefe = true;
 }
 
 cJefe1::~cJefe1() {
@@ -136,12 +138,16 @@ void cJefe1::muerete() {
 }
 
 void cJefe1::offset(int x, int y) {
-
+	// el nivel no lo mueve
 }
 
 void cJefe1::caja(cRect &rect) const {
-	
+	// estes no es necesario para un jefe
 }
+
+void cJefe1::restaVida(int vida) {
+	// impactos fisicos de la nave no le quitan vida
+};
 
 void cJefe1::colision(cRect &rect, int &colMask) const {
 	colMask=0;
@@ -159,7 +165,7 @@ void cJefe1::colision(cRect &rect, int &colMask) const {
 			int wPixCola = jefe1Cola[0][2];
 			int hPixCola = jefe1Cola[0][3]; 
 			int xPixCola = int(x - (wPixCola>>1));
-			int yPixCola = int(GAME_HEIGHT - (y - (hPixCola>>1) + hPixCola));
+			int yPixCola = int(y - (hPixCola>>1));
 
 			if (xPixCola < rect.x+rect.w && xPixCola+wPixCola > rect.x &&
 				yPixCola < rect.y+rect.h && yPixCola+hPixCola > rect.y) {
@@ -176,7 +182,7 @@ void cJefe1::colision(cRect &rect, int &colMask) const {
 			int wPixCola = jefe1Cola[1][2];
 			int hPixCola = jefe1Cola[1][3]; 
 			int xPixCola = int(x - (wPixCola>>1));
-			int yPixCola = int(GAME_HEIGHT - (y - (hPixCola>>1) + hPixCola));
+			int yPixCola = int(y - (hPixCola>>1) + hPixCola);
 
 			if (xPixCola < rect.x+rect.w && xPixCola+wPixCola > rect.x &&
 				yPixCola < rect.y+rect.h && yPixCola+hPixCola > rect.y) {
@@ -193,7 +199,7 @@ void cJefe1::colision(cRect &rect, int &colMask) const {
 			int wPixCola = jefe1Cola[2][2];
 			int hPixCola = jefe1Cola[2][3]; 
 			int xPixCola = int(x - (wPixCola>>1));
-			int yPixCola = int(GAME_HEIGHT - (y - (hPixCola>>1) + hPixCola));
+			int yPixCola = int(y - (hPixCola>>1));
 
 			if (xPixCola < rect.x+rect.w && xPixCola+wPixCola > rect.x &&
 				yPixCola < rect.y+rect.h && yPixCola+hPixCola > rect.y) {
@@ -209,7 +215,7 @@ void cJefe1::colision(cRect &rect, int &colMask) const {
 		int wPixCola = jefe1Cola[3][2];
 		int hPixCola = jefe1Cola[3][3]; 
 		int xPixCola = int(x - (wPixCola>>1));
-		int yPixCola = int(GAME_HEIGHT - (y - (hPixCola>>1) + hPixCola));
+		int yPixCola = int(y - (hPixCola>>1));
 		
 		if (xPixCola < rect.x+rect.w && xPixCola+wPixCola > rect.x &&
 			yPixCola < rect.y+rect.h && yPixCola+hPixCola > rect.y) {
@@ -283,11 +289,31 @@ void cJefe1::logica() {
 			}
 		}
 
+		list<cEscudo*> escudos = nivel->escudos();
+		for (list<cEscudo*>::iterator it = escudos.begin(); it != escudos.end(); ++it) {
+			cEscudo* escudo = *it;
+			int colMask;
+			escudo->colision(rect, colMask);
+			if (colMask && _subState>=JEFE1_ALIEN_SALIENDO) {
+				escudo->choca();
+				long long tiempoFlash = _tiempoVida - _ultimoImpacto;
+				if (tiempoFlash >= JEFE1_FLASH_IMPACTO) {
+					_vida -= escudo->dano();
+					_ultimoImpacto = _tiempoVida;
+				}
+			} else {
+				cRect rectDisp;
+				escudo->caja(rectDisp);
+  				colision(rectDisp, colMask);
+				if (colMask) escudo->choca();
+			}
+		}
+
 		if (_vida <= 0) {
+			nave->sumaPuntos(_puntos);
 			muerete();
 			return;
 		}
-
 
 		// actualizar estado
 		if (_tiempoVida == 816) {
@@ -313,7 +339,7 @@ void cJefe1::logica() {
 				float xVec = float(xNave - xTiro);
 				float yVec = float(yNave - yTiro);
 				cDisparoJefe1* tiro = new cDisparoJefe1(_sis, xTiro, yTiro, xVec, yVec);
-				((cNivel*)_sis->nivel())->pushDisparo(tiro);
+				nivel->pushDisparo(tiro);
 			}
 		} else if (_subState == JEFE1_ALIEN_VOMITA) {
 			long long intervalo = _tiempoVida - _ultimoTiro;
@@ -332,7 +358,7 @@ void cJefe1::logica() {
 					float xVec = float(xNave - xTiro);
 					float yVec = float(yNave - yTiro);
 					cDisparoJefe1* tiro = new cDisparoJefe1(_sis, xTiro, yTiro, xVec, yVec);
-					((cNivel*)_sis->nivel())->pushDisparo(tiro);
+					nivel->pushDisparo(tiro);
 				}
 			}
 		}
@@ -445,9 +471,7 @@ void cJefe1::pintaVivo() const {
 	glTexCoord2f(xTexEne + wTexEne, yTexEne + hTexEne);	glVertex2i(xPixEne + wPixEne, yPixEne);
 	glTexCoord2f(xTexEne + wTexEne, yTexEne);			glVertex2i(xPixEne + wPixEne, yPixEne + hPixEne);
 	glTexCoord2f(xTexEne, yTexEne);						glVertex2i(xPixEne, yPixEne + hPixEne);
-	if (tiempoFlash < JEFE1_FLASH_IMPACTO) glColor3f(1, 1, 1);
-
-
+	
 	// vamos a pintar la cola
 	//X=R*Cos(theta)
 	//Y=R*Sin(theta) 
@@ -533,6 +557,7 @@ void cJefe1::pintaVivo() const {
 	glTexCoord2f(xTexCola + wTexCola, yTexCola);			glVertex2i(xPixCola + wPixCola, yPixCola + hPixCola);
 	glTexCoord2f(xTexCola, yTexCola);						glVertex2i(xPixCola, yPixCola + hPixCola);
 
+	if (tiempoFlash < JEFE1_FLASH_IMPACTO) glColor3f(1, 1, 1);
 	glEnd();
 	glDisable(GL_TEXTURE_2D);
 }

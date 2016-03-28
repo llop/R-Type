@@ -40,6 +40,11 @@ cEscudo::cEscudo(cSistema* sis, int x, int y, int tipo) : cSprite(sis, x, y) {
 
 	_numFrames = ESCUDO_NUM_FRAMES;
 	if (_tipo != ESCUDO_FRENTE) _numFrames = ESCUDO_SEC_NUM_FRAMES;
+	
+	_xF = float(_x);
+	_yF = float(_y);
+	_xAnt = _xF;
+	_yAnt = _yF;
 }
 
 cEscudo::~cEscudo() {
@@ -73,6 +78,10 @@ void cEscudo::lanza() {
 	if (_state == ESCUDO_ANCLADO) _state = ESCUDO_TIRO;
 }
 
+void cEscudo::choca() {
+	if (_state == ESCUDO_TIRO) _state = ESCUDO_VUELTA;
+}
+
 void cEscudo::muerete() {
 	_muerto = true;
 }
@@ -87,8 +96,8 @@ int cEscudo::dano() const {
 void cEscudo::caja(cRect &rect) const {
 	rect.w = escudoMov[_seq][2];
 	rect.h = escudoMov[_seq][3];
-	rect.x = _x - (rect.w>>1);
-	rect.y = _y - (rect.h>>1);
+	rect.x = int(_xF - (rect.w>>1));
+	rect.y = int(_yF - (rect.h>>1));
 }
 void cEscudo::colision(cRect &rect, int &colMask) const {
 	cRect myRect;
@@ -108,78 +117,58 @@ void cEscudo::logica() {
 			int xNave, yNave;
 			nave->getPosicion(xNave, yNave);
 			xNave -= 4;
-			int xEscudo = _x - (escudoMov[_seq][2]>>1);
-			int yEscudo = _y;
+			float xEscudo = _xF - (escudoMov[_seq][2]>>1);
+			float yEscudo = _yF;
 
-			float xVec = float(xNave - xEscudo);
-			float yVec = float(yNave - yEscudo);
+			float xVec = xNave - xEscudo;
+			float yVec = yNave - yEscudo;
 			float dist = sqrt(xVec*xVec + yVec*yVec);
 
 			if (dist <= ESCUDO_DIST_ANCLA) {
 				_state = ESCUDO_ANCLADO;
-				_x = xNave + (escudoMov[_seq][2]>>1);
-				_y = yNave;
+				_xF = float(xNave + (escudoMov[_seq][2]>>1));
+				_yF = float(yNave);
 			} else {
 				xVec /= dist;
 				yVec /= dist;
 				xVec *= ESCUDO_VUELTA_SPEED;
 				yVec *= ESCUDO_VUELTA_SPEED;
-				_x = int(_x + xVec);
-				_y = int(_y + yVec);
+				_xF += xVec;
+				_yF += yVec;
 			}
 		} else if (_state == ESCUDO_ANCLADO) {
 			cNaveEspacial* nave = (cNaveEspacial*)_sis->naveEspacial();
 			int xNave, yNave;
 			nave->getPosicion(xNave, yNave);
 			xNave -= 4;
-			_x = xNave + (escudoMov[_seq][2]>>1);
-			_y = yNave;
+			_xF = float(xNave + (escudoMov[_seq][2]>>1));
+			_yF = float(yNave);
 		} else if (_state == ESCUDO_TIRO) {
-			_x += ESCUDO_TIRO_SPEED;
-
-			cNivel* nivel = (cNivel*)_sis->nivel();
-			int xPixEsc, yPixEsc, yPixOffset, wPixEsc, hPixEsc;
-			wPixEsc = escudoMov[_seq][2];
-			hPixEsc = escudoMov[_seq][3];
-			xPixEsc = _x - (wPixEsc>>1);
-			yPixOffset = escudoMid - escudoMov[_seq][1];
-			yPixEsc = GAME_HEIGHT - HUD_HPIX - (_y - yPixOffset + hPixEsc);
-
-			// ha llegado al limite de la pantalla?
-			bool corregido = false;
-			int posNivel = nivel->getPosicion();
-			int left = xPixEsc - posNivel;
-			if (left < 0) _x -= left, corregido = true;
-			int right = (posNivel + GAME_WIDTH) - (xPixEsc + wPixEsc);
-			if (right < 0) _x += right, corregido = true;
-			int top = GAME_HEIGHT - HUD_HPIX - (yPixEsc + hPixEsc);
-			if (top < 0) _y -= top, corregido = true;
-			int bottom = yPixEsc;
-			if (bottom < 0) _y += bottom, corregido = true;
-
+			_xF += ESCUDO_TIRO_SPEED;
 			// ha chocado con el escenario?
 			cRect rect;
 			caja(rect);
-			int colMask;
-			nivel->colision(rect, colMask);
-			if (colMask) corregido = true;
-
+			int colisionMask, x, y, objeto;
+			cNivel* nivel = (cNivel*)_sis->nivel();
+			nivel->colisionNivel(rect, colisionMask, x, y, objeto);
 			// si ha chocado, que se vuelva a la nave
-			if (corregido) _state = ESCUDO_VUELTA;
+			if (colisionMask) _state = ESCUDO_VUELTA;
 		}
 	} else if (_tipo == ESCUDO_ARRIBA) {
 		cNaveEspacial* nave = (cNaveEspacial*)_sis->naveEspacial();
 		int xNave, yNave;
 		nave->getPosicion(xNave, yNave);
-		_x = xNave - NAVE_ESCUDO_SEC_X_OFFSET;
-		_y = yNave - NAVE_ESCUDO_SEC_Y_OFFSET;
+		_xF = float(xNave - NAVE_ESCUDO_SEC_X_OFFSET);
+		_yF = float(yNave - NAVE_ESCUDO_SEC_Y_OFFSET);
 	} else if (_tipo == ESCUDO_ABAJO) {
 		cNaveEspacial* nave = (cNaveEspacial*)_sis->naveEspacial();
 		int xNave, yNave;
 		nave->getPosicion(xNave, yNave);
-		_x = xNave - NAVE_ESCUDO_SEC_X_OFFSET;
-		_y = yNave + NAVE_ESCUDO_SEC_Y_OFFSET;
+		_xF = float(xNave - NAVE_ESCUDO_SEC_X_OFFSET);
+		_yF = float(yNave + NAVE_ESCUDO_SEC_Y_OFFSET);
 	}
+	_x = int(_xF);
+	_y = int(_yF);
 
 	// placa algun disparo malo?
 	cRect rect;
@@ -188,7 +177,7 @@ void cEscudo::logica() {
 	list<cDisparo*> disparos = nivel->disparos();
 	for (list<cDisparo*>::iterator it = disparos.begin(); it != disparos.end(); ++it) {
 		cDisparo* disparo = *it;
-		if (disparo->malo()) {
+		if (disparo->malo() && disparo->dano()<ESCUDO_DANO) {
 			int colMask;
   			disparo->colision(rect, colMask);
 			if (colMask) disparo->muerete();

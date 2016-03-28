@@ -17,7 +17,7 @@ int tiroJefe1Mid = 2072;
 cDisparoJefe1::cDisparoJefe1(cSistema* sis, int x, int y, float xVec, float yVec) : cDisparo(sis, x, y) {
 	_sis->cargaTextura(TEX_JEFE1, "img\\r-typesheet30.png");
 
-	_dano = DANO_DISPARO_ENEMIGO;
+	_dano = DANO_DISPARO_JEFE1;
 	_malo = true;
 	
 	_xF = float(_x);

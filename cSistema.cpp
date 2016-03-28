@@ -98,7 +98,7 @@ void cSistema::logicaMenu() {
 							"maps\\stage1-01.png", 
 							"img\\Outer-Space-Wallpaper.png");
 
-	//_nivel = new cNivel1(this, (cNaveEspacial*)_naveEspacial, 
+	//_nivel = new cNivel2(this, (cNaveEspacial*)_naveEspacial, 
 	//						288, 28, "maps\\level-02.csv", 
 	//						TEX_NIVEL2, TEX_FONDO2, 
 	//						"maps\\textura-nivel2.png", 

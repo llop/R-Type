@@ -121,6 +121,7 @@ public:
 
 #define VELOCIDAD_DISPARO_JEFE1 8
 #define DISPARO_JEFE1_DELAY 10
+#define DANO_DISPARO_JEFE1 500
 
 class cDisparoJefe1 : public cDisparo {
 protected:

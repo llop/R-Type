@@ -76,8 +76,8 @@ public:
 #define COLISION_IZQ 4
 #define COLISION_DER 8
 
-#define COLISION_TILE 0
-#define COLISION_PANTALLA 1
+#define COLISION_TILE 1
+#define COLISION_PANTALLA 2
 
 
 /**
