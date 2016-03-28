@@ -73,8 +73,32 @@ int jefe1Solido[31][4] = {
 
 int jefe1HitBox[4] = { 72, 94, 32, 32 };
 
+int jefe1ColaExplo[6][4] = {
+	{ 130, 2, 30, 28 },
+	{ 162, 1, 31, 32 },
+	{ 194, 1, 32, 32 },
+	{ 228, 2, 31, 30 },
+	{ 261, 2, 31, 30 },
+	{ 295, 1, 31, 31 }
+};
+int jefe1ColaExploMid = 16;
+
+int jefe1Explo[9][4] = {
+	{ 1, 38, 64, 56 },
+	{ 66, 38, 64, 56 },
+	{ 141, 47, 42, 38 },
+	{ 203, 46, 51, 42 },
+	{ 265, 40, 55, 52 },
+	{ 1, 99, 64, 64 },
+	{ 66, 99, 64, 64 },
+	{ 131, 99, 64, 64 },
+	{ 196, 99, 64, 64 }
+};
+int jefe1ExploMid[2] = { 65, 131 };
+
 cJefe1::cJefe1(cSistema* sis) : cEnemigo(sis) {
 	_sis->cargaTextura(TEX_JEFE1, "img\\r-typesheet30.png");
+	_sis->cargaTextura(TEX_EXPLO2, "img\\r-typesheet44.png");
 	
 	_state = ENEMIGO_VIVE;
 	_seq = 0;
@@ -84,6 +108,7 @@ cJefe1::cJefe1(cSistema* sis) : cEnemigo(sis) {
 	_puntos = JEFE1_PUNTOS;
 
 	_tiempoVida = 0;
+	_ultimoImpacto = -JEFE1_FLASH_IMPACTO;
 
 	_x = 5084;
 	_y = 96;
@@ -103,8 +128,11 @@ cJefe1::~cJefe1() {
 void cJefe1::muerete() {
 	_vida = 0;
 	_state = ENEMIGO_EXPLO;
-	_seq = 0;
+	_seq = 21;
 	_delay = JEFE1_MUERE_DELAY;
+	_bolaExplo = 0;
+	_seqExplo = 0;
+	_delayExploCola = JEFE1_COLA_EXPLO_DELAY;
 }
 
 void cJefe1::offset(int x, int y) {
@@ -242,8 +270,8 @@ void cJefe1::logica() {
 				if (colMask && _subState>=JEFE1_ALIEN_SALIENDO) {
 					disparo->explota();
 					// aplicar efecto del disparo
-					//_vida -= disparo->dano();
-					_vida = 0;
+					_vida -= disparo->dano();
+					_ultimoImpacto = _tiempoVida;
 				} else {
 					cRect rectDisp;
 					disparo->caja(rectDisp);
@@ -351,13 +379,42 @@ void cJefe1::logica() {
 			}
 		}
 	} else if (_state == ENEMIGO_EXPLO) {
+		// animacion explosiones cuerpo
+		for (list<cExplo>::iterator it=_exploCuerpo.begin(); it!=_exploCuerpo.end();) {
+			cExplo &explo = *it;
+			bool borra = false;
+			if (explo.delay) --explo.delay;
+			else {
+  				++explo.seq;
+				explo.delay = JEFE1_EXPLO_DELAY;
+				borra = explo.seq == JEFE1_EXPLO_NUM_FRAMES;
+			}
+			if (borra) it = _exploCuerpo.erase(it);
+			else ++it;
+		}
+		// genera una explosion random
+		if (_exploCuerpo.size() < JEFE1_MAX_NUM_EXPLO && !(rand() % 4)) {
+			cExplo explo;
+  			explo.seq = 0;
+			explo.delay = JEFE1_EXPLO_DELAY;
+			int boxIndex = rand() % 31;
+			explo.x = _x + jefe1Solido[boxIndex][0] + (rand() % jefe1Solido[boxIndex][2]);
+			explo.y = _y + jefe1Solido[boxIndex][1] + (rand() % jefe1Solido[boxIndex][3]);
+			_exploCuerpo.push_back(explo);
+		}
 
+		// animacion explosion cola
+  		if (_delayExploCola) --_delayExploCola;
+		else {
+			_seqExplo = (_seqExplo + 1) % JEFE1_COLA_EXPLO_NUM_FRAMES;
+   			if (!_seqExplo) ++_bolaExplo;
+			_delayExploCola = JEFE1_COLA_EXPLO_DELAY;
+		}
 	}
 }
 
-void cJefe1::pinta() const{
-	if (_state == ENEMIGO_MUERE) return;
 
+void cJefe1::pintaVivo() const {
 	// textura jefe
 	int tex = _sis->idTextura(TEX_JEFE1);
 	int wTex, hTex;
@@ -377,10 +434,18 @@ void cJefe1::pinta() const{
 	int xPixEne = _x;
 	int yPixEne = GAME_HEIGHT - (_y + hPixEne);
 
+	long long tiempoFlash = _tiempoVida - _ultimoImpacto;
+	if (tiempoFlash < JEFE1_FLASH_IMPACTO) {
+		float r = tiempoFlash%3 == 0;
+		float g = tiempoFlash%3 == 1;
+		float b = tiempoFlash%3 == 2;
+		glColor3f(r, g, b);
+	}
 	glTexCoord2f(xTexEne, yTexEne + hTexEne);			glVertex2i(xPixEne, yPixEne);
 	glTexCoord2f(xTexEne + wTexEne, yTexEne + hTexEne);	glVertex2i(xPixEne + wPixEne, yPixEne);
 	glTexCoord2f(xTexEne + wTexEne, yTexEne);			glVertex2i(xPixEne + wPixEne, yPixEne + hPixEne);
 	glTexCoord2f(xTexEne, yTexEne);						glVertex2i(xPixEne, yPixEne + hPixEne);
+	if (tiempoFlash < JEFE1_FLASH_IMPACTO) glColor3f(1, 1, 1);
 
 
 	// vamos a pintar la cola
@@ -468,7 +533,259 @@ void cJefe1::pinta() const{
 	glTexCoord2f(xTexCola + wTexCola, yTexCola);			glVertex2i(xPixCola + wPixCola, yPixCola + hPixCola);
 	glTexCoord2f(xTexCola, yTexCola);						glVertex2i(xPixCola, yPixCola + hPixCola);
 
+	glEnd();
+	glDisable(GL_TEXTURE_2D);
+}
+
+void cJefe1::pintaExplo() const {
+	// textura jefe
+	int tex = _sis->idTextura(TEX_JEFE1);
+	int wTex, hTex;
+	_sis->tamanoTextura(TEX_JEFE1, wTex, hTex);
+
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, tex);
+	glBegin(GL_QUADS);
+
+	// para este, sus coordenadas (_x, _y) corresponden con su esquina superior izquierda
+	float xTexEne = jefe1Mov[_seq][0] / (float)wTex;
+	float yTexEne = jefe1Mov[_seq][1] / (float)hTex;
+	float wTexEne = jefe1Mov[_seq][2] / (float)wTex;
+	float hTexEne = jefe1Mov[_seq][3] / (float)hTex;
+	int wPixEne = jefe1Mov[_seq][2];
+	int hPixEne = jefe1Mov[_seq][3]; 
+	int xPixEne = _x;
+	int yPixEne = GAME_HEIGHT - (_y + hPixEne);
+
+	glTexCoord2f(xTexEne, yTexEne + hTexEne);			glVertex2i(xPixEne, yPixEne);
+	glTexCoord2f(xTexEne + wTexEne, yTexEne + hTexEne);	glVertex2i(xPixEne + wPixEne, yPixEne);
+	glTexCoord2f(xTexEne + wTexEne, yTexEne);			glVertex2i(xPixEne + wPixEne, yPixEne + hPixEne);
+	glTexCoord2f(xTexEne, yTexEne);						glVertex2i(xPixEne, yPixEne + hPixEne);
 
 	glEnd();
 	glDisable(GL_TEXTURE_2D);
+
+	// explosiones
+	int texExplo = _sis->idTextura(TEX_EXPLO2);
+	_sis->tamanoTextura(TEX_EXPLO2, wTex, hTex);
+
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, texExplo);
+	glBegin(GL_QUADS);
+
+	for (list<cExplo>::const_iterator it=_exploCuerpo.begin(); it!=_exploCuerpo.end(); ++it) {
+		const cExplo &explo = *it;
+		float xTexCola = jefe1Explo[explo.seq][0] / (float)wTex;
+		float yTexCola = jefe1Explo[explo.seq][1] / (float)hTex;
+		float wTexCola = jefe1Explo[explo.seq][2] / (float)wTex;
+		float hTexCola = jefe1Explo[explo.seq][3] / (float)hTex;
+		int wPixCola = jefe1Explo[explo.seq][2];
+		int hPixCola = jefe1Explo[explo.seq][3]; 
+		int xPixCola = int(explo.x - (wPixCola>>1));
+		int yPixOffset =  jefe1ExploMid[explo.seq / 5] - jefe1Explo[explo.seq][1];
+		int yPixCola = int(GAME_HEIGHT - (explo.y - yPixOffset + hPixCola));
+				
+		glTexCoord2f(xTexCola, yTexCola + hTexCola);			glVertex2i(xPixCola, yPixCola);
+		glTexCoord2f(xTexCola + wTexCola, yTexCola + hTexCola);	glVertex2i(xPixCola + wPixCola, yPixCola);
+		glTexCoord2f(xTexCola + wTexCola, yTexCola);			glVertex2i(xPixCola + wPixCola, yPixCola + hPixCola);
+		glTexCoord2f(xTexCola, yTexCola);						glVertex2i(xPixCola, yPixCola + hPixCola);
+
+	}
+
+	bool bolaExploPintada = false;
+	int accBolaExplo = 0;
+
+
+	// 8 bols grandes
+	float rad = 0;
+	float xCola = float(_x + 63);
+	float yCola = float(_y + 187);
+	for (int i=0; i<8; ++i, ++accBolaExplo) {
+		if (i) rad += jefe1Cola[0][2]*0.75f;
+
+		if (accBolaExplo < _bolaExplo) continue;
+
+		float x = xCola + rad*cos(_anguloCola);
+		float y = yCola + rad*sin(_anguloCola);
+
+		float xTexCola, yTexCola, wTexCola, hTexCola;
+		int wPixCola, hPixCola, xPixCola, yPixCola;
+		if (bolaExploPintada) {
+			xTexCola = jefe1Cola[0][0] / (float)wTex;
+			yTexCola = jefe1Cola[0][1] / (float)hTex;
+			wTexCola = jefe1Cola[0][2] / (float)wTex;
+			hTexCola = jefe1Cola[0][3] / (float)hTex;
+			wPixCola = jefe1Cola[0][2];
+			hPixCola = jefe1Cola[0][3]; 
+			xPixCola = int(x - (wPixCola>>1));
+			yPixCola = int(GAME_HEIGHT - (y - (hPixCola>>1) + hPixCola));
+		} else {
+			xTexCola = jefe1ColaExplo[_seqExplo][0] / (float)wTex;
+			yTexCola = jefe1ColaExplo[_seqExplo][1] / (float)hTex;
+			wTexCola = jefe1ColaExplo[_seqExplo][2] / (float)wTex;
+			hTexCola = jefe1ColaExplo[_seqExplo][3] / (float)hTex;
+			wPixCola = jefe1ColaExplo[_seqExplo][2];
+			hPixCola = jefe1ColaExplo[_seqExplo][3]; 
+			xPixCola = int(x - (wPixCola>>1));
+			int yPixOffset =  jefe1ColaExploMid - jefe1ColaExplo[_seqExplo][1];
+			yPixCola = int(GAME_HEIGHT - (y - yPixOffset + hPixCola));
+		}
+		
+		glTexCoord2f(xTexCola, yTexCola + hTexCola);			glVertex2i(xPixCola, yPixCola);
+		glTexCoord2f(xTexCola + wTexCola, yTexCola + hTexCola);	glVertex2i(xPixCola + wPixCola, yPixCola);
+		glTexCoord2f(xTexCola + wTexCola, yTexCola);			glVertex2i(xPixCola + wPixCola, yPixCola + hPixCola);
+		glTexCoord2f(xTexCola, yTexCola);						glVertex2i(xPixCola, yPixCola + hPixCola);
+
+		if (accBolaExplo == _bolaExplo) {
+			bolaExploPintada = true;
+			glEnd();
+			glDisable(GL_TEXTURE_2D);
+			_sis->tamanoTextura(TEX_JEFE1, wTex, hTex);
+			glEnable(GL_TEXTURE_2D);
+			glBindTexture(GL_TEXTURE_2D, tex);
+			glBegin(GL_QUADS);
+		}
+	}
+	// 6 medianas
+	for (int i=0; i<6; ++i, ++accBolaExplo) {
+		rad += jefe1Cola[1][2]*0.75f;
+
+		if (accBolaExplo < _bolaExplo) continue;
+
+		float x = xCola + rad*cos(_anguloCola);
+		float y = yCola + rad*sin(_anguloCola);
+
+		float xTexCola, yTexCola, wTexCola, hTexCola;
+		int wPixCola, hPixCola, xPixCola, yPixCola;
+		if (bolaExploPintada) {
+			xTexCola = jefe1Cola[1][0] / float(wTex);
+			yTexCola = jefe1Cola[1][1] / float(hTex);
+			wTexCola = jefe1Cola[1][2] / float(wTex);
+			hTexCola = jefe1Cola[1][3] / float(hTex);
+			wPixCola = jefe1Cola[1][2];
+			hPixCola = jefe1Cola[1][3]; 
+			xPixCola = int(x - (wPixCola>>1));
+			yPixCola = int(GAME_HEIGHT - (y - (hPixCola>>1) + hPixCola));
+		} else {
+			xTexCola = jefe1ColaExplo[_seqExplo][0] / (float)wTex;
+			yTexCola = jefe1ColaExplo[_seqExplo][1] / (float)hTex;
+			wTexCola = jefe1ColaExplo[_seqExplo][2] / (float)wTex;
+			hTexCola = jefe1ColaExplo[_seqExplo][3] / (float)hTex;
+			wPixCola = jefe1ColaExplo[_seqExplo][2];
+			hPixCola = jefe1ColaExplo[_seqExplo][3]; 
+			xPixCola = int(x - (wPixCola>>1));
+			int yPixOffset =  jefe1ColaExploMid - jefe1ColaExplo[_seqExplo][1];
+			yPixCola = int(GAME_HEIGHT - (y - yPixOffset + hPixCola));
+		}
+
+		glTexCoord2f(xTexCola, yTexCola + hTexCola);			glVertex2i(xPixCola, yPixCola);
+		glTexCoord2f(xTexCola + wTexCola, yTexCola + hTexCola);	glVertex2i(xPixCola + wPixCola, yPixCola);
+		glTexCoord2f(xTexCola + wTexCola, yTexCola);			glVertex2i(xPixCola + wPixCola, yPixCola + hPixCola);
+		glTexCoord2f(xTexCola, yTexCola);						glVertex2i(xPixCola, yPixCola + hPixCola);
+
+		if (accBolaExplo == _bolaExplo) {
+			bolaExploPintada = true;
+			glEnd();
+			glDisable(GL_TEXTURE_2D);
+			_sis->tamanoTextura(TEX_JEFE1, wTex, hTex);
+			glEnable(GL_TEXTURE_2D);
+			glBindTexture(GL_TEXTURE_2D, tex);
+			glBegin(GL_QUADS);
+		}
+	}
+	// 6 pequeñas
+	for (int i=0; i<6; ++i, ++accBolaExplo) {
+		rad += jefe1Cola[2][2]*0.75f;
+
+		if (accBolaExplo < _bolaExplo) continue;
+
+		float x = xCola + rad*cos(_anguloCola);
+		float y = yCola + rad*sin(_anguloCola);
+
+		float xTexCola, yTexCola, wTexCola, hTexCola;
+		int wPixCola, hPixCola, xPixCola, yPixCola;
+		if (bolaExploPintada) {
+			xTexCola = jefe1Cola[2][0] / float(wTex);
+			yTexCola = jefe1Cola[2][1] / float(hTex);
+			wTexCola = jefe1Cola[2][2] / float(wTex);
+			hTexCola = jefe1Cola[2][3] / float(hTex);
+			wPixCola = jefe1Cola[2][2];
+			hPixCola = jefe1Cola[2][3]; 
+			xPixCola = int(x - (wPixCola>>1));
+			yPixCola = int(GAME_HEIGHT - (y - (hPixCola>>1) + hPixCola));
+		} else {
+			xTexCola = jefe1ColaExplo[_seqExplo][0] / (float)wTex;
+			yTexCola = jefe1ColaExplo[_seqExplo][1] / (float)hTex;
+			wTexCola = jefe1ColaExplo[_seqExplo][2] / (float)wTex;
+			hTexCola = jefe1ColaExplo[_seqExplo][3] / (float)hTex;
+			wPixCola = jefe1ColaExplo[_seqExplo][2];
+			hPixCola = jefe1ColaExplo[_seqExplo][3]; 
+			xPixCola = int(x - (wPixCola>>1));
+			int yPixOffset =  jefe1ColaExploMid - jefe1ColaExplo[_seqExplo][1];
+			yPixCola = int(GAME_HEIGHT - (y - yPixOffset + hPixCola));
+		}
+
+		glTexCoord2f(xTexCola, yTexCola + hTexCola);			glVertex2i(xPixCola, yPixCola);
+		glTexCoord2f(xTexCola + wTexCola, yTexCola + hTexCola);	glVertex2i(xPixCola + wPixCola, yPixCola);
+		glTexCoord2f(xTexCola + wTexCola, yTexCola);			glVertex2i(xPixCola + wPixCola, yPixCola + hPixCola);
+		glTexCoord2f(xTexCola, yTexCola);						glVertex2i(xPixCola, yPixCola + hPixCola);
+		
+		if (accBolaExplo == _bolaExplo) {
+			bolaExploPintada = true;
+			glEnd();
+			glDisable(GL_TEXTURE_2D);
+			_sis->tamanoTextura(TEX_JEFE1, wTex, hTex);
+			glEnable(GL_TEXTURE_2D);
+			glBindTexture(GL_TEXTURE_2D, tex);
+			glBegin(GL_QUADS);
+		}
+	}
+	
+	if (_bolaExplo > accBolaExplo) {
+		glEnd();
+		glDisable(GL_TEXTURE_2D);
+		return;
+	}
+
+	// la punta
+	rad += jefe1Cola[3][2]*0.75f;
+	float x = xCola + rad*cos(_anguloCola);
+	float y = yCola + rad*sin(_anguloCola);
+
+	float xTexCola, yTexCola, wTexCola, hTexCola;
+	int wPixCola, hPixCola, xPixCola, yPixCola;
+	if (bolaExploPintada) {
+		xTexCola = jefe1Cola[3][0] / (float)wTex;
+		yTexCola = jefe1Cola[3][1] / (float)hTex;
+		wTexCola = jefe1Cola[3][2] / (float)wTex;
+		hTexCola = jefe1Cola[3][3] / (float)hTex;
+		wPixCola = jefe1Cola[3][2];
+		hPixCola = jefe1Cola[3][3]; 
+		xPixCola = int(x - (wPixCola>>1));
+		yPixCola = int(GAME_HEIGHT - (y - (hPixCola>>1) + hPixCola));
+	} else {
+		xTexCola = jefe1ColaExplo[_seqExplo][0] / (float)wTex;
+		yTexCola = jefe1ColaExplo[_seqExplo][1] / (float)hTex;
+		wTexCola = jefe1ColaExplo[_seqExplo][2] / (float)wTex;
+		hTexCola = jefe1ColaExplo[_seqExplo][3] / (float)hTex;
+		wPixCola = jefe1ColaExplo[_seqExplo][2];
+		hPixCola = jefe1ColaExplo[_seqExplo][3]; 
+		xPixCola = int(x - (wPixCola>>1));
+		int yPixOffset =  jefe1ColaExploMid - jefe1ColaExplo[_seqExplo][1];
+		yPixCola = int(GAME_HEIGHT - (y - yPixOffset + hPixCola));
+	}
+
+	glTexCoord2f(xTexCola, yTexCola + hTexCola);			glVertex2i(xPixCola, yPixCola);
+	glTexCoord2f(xTexCola + wTexCola, yTexCola + hTexCola);	glVertex2i(xPixCola + wPixCola, yPixCola);
+	glTexCoord2f(xTexCola + wTexCola, yTexCola);			glVertex2i(xPixCola + wPixCola, yPixCola + hPixCola);
+	glTexCoord2f(xTexCola, yTexCola);						glVertex2i(xPixCola, yPixCola + hPixCola);
+
+	glEnd();
+	glDisable(GL_TEXTURE_2D);
+}
+
+void cJefe1::pinta() const{
+	if (_state == ENEMIGO_MUERE) return;
+	if (_state == ENEMIGO_VIVE) pintaVivo();
+	else if (_state == ENEMIGO_EXPLO) pintaExplo();
 }

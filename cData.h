@@ -8,7 +8,7 @@
 // texture array size
 //----------------------------------------------------------
 
-#define NUM_IMG	15
+#define NUM_IMG	17
 
 
 //----------------------------------------------------------
@@ -32,11 +32,15 @@
 // items
 #define TEX_ITEMS 10
 
+// explosiones
+#define TEX_EXPLO1 11
+#define TEX_EXPLO2 12
+
 // enemigos
-#define TEX_ENE1 11
-#define TEX_ENE2 12
-#define TEX_ENE_ITEM 13
-#define TEX_JEFE1 14
+#define TEX_ENE1 13
+#define TEX_ENE2 14
+#define TEX_ENE_ITEM 15
+#define TEX_JEFE1 16
 
 
 

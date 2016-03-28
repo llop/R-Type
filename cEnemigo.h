@@ -3,6 +3,8 @@
 
 // includes
 #include "cSistema.h"
+#include <list>
+using namespace std;
 
 
 #define ENEMIGO_VIVE 0
@@ -134,13 +136,17 @@ public:
 
 
 
+struct cExplo {
+	int x, y;
+	int seq, delay;
+};
 
 //----------------------------------------------------------------------
 // jefe nivel 1
 //----------------------------------------------------------------------
 
 #define JEFE1_MUEVE_DELAY 10
-#define JEFE1_VIDA_INICIAL 5000
+#define JEFE1_VIDA_INICIAL 100
 #define JEFE1_PUNTOS 35
 
 #define JEFE1_NUM_FRAMES 24
@@ -156,6 +162,13 @@ public:
 #define JEFE1_INC_MOV 1
 
 #define JEFE1_MUERE_DELAY 10
+#define JEFE1_COLA_EXPLO_DELAY 6
+#define JEFE1_EXPLO_DELAY 4
+#define JEFE1_COLA_EXPLO_NUM_FRAMES 6
+#define JEFE1_EXPLO_NUM_FRAMES 9
+#define JEFE1_MAX_NUM_EXPLO 5
+
+#define JEFE1_FLASH_IMPACTO 20
 
 
 class cJefe1 : public cEnemigo {
@@ -163,6 +176,7 @@ protected:
 
 	long long _tiempoVida;
 	long long _ultimoTiro;
+	long long _ultimoImpacto;
 	
 	int _subState;
 
@@ -170,6 +184,15 @@ protected:
 	float _anguloCola;
 
 	bool _sube;
+
+	int _seqExplo;
+	int _delayExploCola;
+	int _bolaExplo;
+	
+	list<cExplo> _exploCuerpo;
+	
+	void pintaVivo() const;
+	void pintaExplo() const;
 
 public:
 	cJefe1(cSistema* sis);

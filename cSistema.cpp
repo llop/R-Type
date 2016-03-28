@@ -109,6 +109,7 @@ void cSistema::logicaMenu() {
 	//						TEX_NIVEL3, TEX_FONDO3, 
 	//						"maps\\textura-nivel3.png", 
 	//						"img\\Outer-Space-Wallpaper.png");
+
 	int x, y;
 	((cNivel*)_nivel)->posicionRespawn(x, y);
 	((cNaveEspacial*)_naveEspacial)->renace(x, y);
