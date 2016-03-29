@@ -4,7 +4,8 @@
 #include <gl/glut.h>
 
 
-
+/*
+// tiro viejo (TEX_NAVE1)
 int tiroEnemigo[4][4] = {
 	{ 212, 279, 6, 6 },
 	{ 227, 278, 10, 8 },
@@ -12,10 +13,25 @@ int tiroEnemigo[4][4] = {
 	{ 272, 276, 14, 12 }
 };
 int tiroEnemigoMid = 281;
+*/
 
+int tiroEnemigo[4][4] = {
+	{ 136, 6, 7, 6 },
+	{ 153, 6, 7, 6 },
+	{ 170, 6, 7, 6 },
+	{ 188, 6, 7, 6 }
+};
+
+int tiroEnemigoExplo[5][4] = {
+	{ 118, 22, 9, 8 },
+	{ 135, 22, 9, 8 },
+	{ 151, 21, 11, 10 },
+	{ 167, 20, 13, 12 },
+	{ 183, 19, 15, 14 }
+};
 
 cDisparoEnemigo::cDisparoEnemigo(cSistema* sis, int x, int y, float xu, float yu) : cDisparo(sis, x, y) {
-	_sis->cargaTextura(TEX_NAVE1, "img\\r-typesheet1.png");
+	_sis->cargaTextura(TEX_EXPLO1, "img\\r-typesheet43.png");
 
 	_dano = DANO_DISPARO_ENEMIGO;
 	
@@ -39,7 +55,7 @@ void cDisparoEnemigo::explota() {
 
 void cDisparoEnemigo::muerete() {
 	_state = DISPARO_EXPLO;
-	_seq = 3;
+	_seq = 0;
 	_delay = DISPARO_EXPLO_DELAY;
 }
 
@@ -59,8 +75,8 @@ void cDisparoEnemigo::colision(cRect &rect, int &colMask) const {
 void cDisparoEnemigo::caja(cRect &rect) const {
 	rect.w = tiroEnemigo[_seq][2];
 	rect.h = tiroEnemigo[_seq][3];
-	rect.x = _x;
-	rect.y = _y;
+	rect.x = _x - (rect.w>>1);
+	rect.y = _y - (rect.h>>1);
 }
 
 void cDisparoEnemigo::logica() {
@@ -78,10 +94,29 @@ void cDisparoEnemigo::logica() {
 			_muerto = true;
 			return;
 		}
+
+		int colMask;
+  		nivel->colision(rect, colMask);
+		if (colMask) {
+			explota();
+			return;
+		}
+
+		// animacion
+		if (_delay) --_delay;
+		else {
+			_seq = (_seq+1) % DISPARO_ENEMIGO_VIVE_FRAMES;
+			_delay = DISPARO_ENEMIGO_DELAY;
+		}
 	} else if (_state == DISPARO_EXPLO) {
 		if (_delay) --_delay;
 		else {
- 			_muerto = true;
+			++_seq;
+			if (_seq == DISPARO_ENEMIGO_EXPLO_FRAMES) {
+				_state = DISPARO_MUERE;
+ 				_muerto = true;
+			}
+			_delay = DISPARO_ENEMIGO_DELAY;
 		}
 	}
 }
@@ -89,30 +124,36 @@ void cDisparoEnemigo::logica() {
 void cDisparoEnemigo::pinta() const {
 	if (_state == DISPARO_MUERE) return;
 
-	int tex = _sis->idTextura(TEX_NAVE1);
+	int tex = _sis->idTextura(TEX_EXPLO1);
 	int wTex, hTex;
-	_sis->tamanoTextura(TEX_NAVE1, wTex, hTex);
+	_sis->tamanoTextura(TEX_EXPLO1, wTex, hTex);
 
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, tex);
 	glBegin(GL_QUADS);
 
 	float xTexTiro, yTexTiro, wTexTiro, hTexTiro;
-	int xPixTiro, yPixTiro, yPixOffsetTiro, wPixTiro, hPixTiro;
+	int xPixTiro, yPixTiro, wPixTiro, hPixTiro;
 
-	//if (_state == DISPARO_VIVE) {
+	if (_state == DISPARO_VIVE) {
 		xTexTiro = tiroEnemigo[_seq][0] / (float)wTex;
 		yTexTiro = tiroEnemigo[_seq][1] / (float)hTex;
 		wTexTiro = tiroEnemigo[_seq][2] / (float)wTex;
 		hTexTiro = tiroEnemigo[_seq][3] / (float)hTex;
 		wPixTiro = tiroEnemigo[_seq][2];
 		hPixTiro = tiroEnemigo[_seq][3];
-		xPixTiro = _x;
-		yPixOffsetTiro = tiroEnemigoMid - tiroEnemigo[_seq][1];
-		yPixTiro = GAME_HEIGHT - (_y - yPixOffsetTiro + hPixTiro);
-	//} else if (_state == DISPARO_EXPLO) {
-
-	//}
+		xPixTiro = _x - (wPixTiro>>1);
+		yPixTiro = GAME_HEIGHT - (_y + (hPixTiro>>1));
+	} else if (_state == DISPARO_EXPLO) {
+		xTexTiro = tiroEnemigoExplo[_seq][0] / (float)wTex;
+		yTexTiro = tiroEnemigoExplo[_seq][1] / (float)hTex;
+		wTexTiro = tiroEnemigoExplo[_seq][2] / (float)wTex;
+		hTexTiro = tiroEnemigoExplo[_seq][3] / (float)hTex;
+		wPixTiro = tiroEnemigoExplo[_seq][2];
+		hPixTiro = tiroEnemigoExplo[_seq][3];
+		xPixTiro = _x - (wPixTiro>>1);
+		yPixTiro = GAME_HEIGHT - (_y + (hPixTiro>>1));
+	}
 
 	glTexCoord2f(xTexTiro, yTexTiro + hTexTiro);			glVertex2i(xPixTiro, yPixTiro);
 	glTexCoord2f(xTexTiro + wTexTiro, yTexTiro + hTexTiro);	glVertex2i(xPixTiro + wPixTiro, yPixTiro);

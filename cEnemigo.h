@@ -3,6 +3,7 @@
 
 // includes
 #include "cSistema.h"
+#include <vector>
 #include <list>
 using namespace std;
 
@@ -31,6 +32,9 @@ public:
 		}
 	};
 	bool jefe() const { return _esJefe; };
+	virtual void explota() {
+		muerete();
+	};
 
 };
 
@@ -199,7 +203,6 @@ protected:
 	int _bolaExplo;
 	
 	list<cExplo> _exploCuerpo;
-	
 	void pintaVivo() const;
 	void pintaExplo() const;
 
@@ -219,6 +222,49 @@ public:
 
 };
 
+
+
+
+
+#define ENEMIGO3_INC_ANGLE 0.04f
+#define ENEMIGO3_MUEVE_DELAY 10
+#define ENEMIGO3_MUERE_DELAY 10
+#define ENEMIGO3_VIDA_INICIAL 40
+#define ENEMIGO3_EXPLO_FRAMES 6
+#define ENEMIGO3_PUNTOS 2
+#define ENEMIGO3_MAX_NUM_EXPLO 3
+
+class cEnemigo3 : public cEnemigo {
+private:
+	
+	float _angle;
+	float _incAngle;
+	float _diffAngle;
+	int _numPiezas;
+	float _radio;
+	bool _antihorario;
+	vector<vector<int>> _piezas;
+	
+	list<cExplo> _exploCuerpo;
+	void pintaVivo() const;
+	void pintaExplo() const;
+
+public:
+	cEnemigo3(cSistema* sis, int x, int y, int numPiezas, float radio, float angle, float incAngle, bool antihorario);
+	~cEnemigo3();
+	
+	void explota();
+	void muerete();
+	void restaVida(int vida);
+	void caja(cRect &rect) const;
+
+	void offset(int x, int y);
+	void colision(cRect &caja, int &colMask) const;
+
+	void logica();
+	void pinta() const;
+
+};
 
 
 //----------------------------------------------------------------------
@@ -242,6 +288,11 @@ public:
 #define JEFE2_INTERVALO_SALIDA 200
 #define JEFE2_INTERVALO_ENTRADA 600
 
+#define JEFE2_INTERVALO_GUSANO1 800
+#define JEFE2_TIEMPO_GUSANO1 320
+#define JEFE2_INTERVALO_GUSANO2 500
+#define JEFE2_TIEMPO_GUSANO2 320
+
 class cJefe2 : public cEnemigo {
 protected:
 
@@ -250,10 +301,12 @@ protected:
 	long long _ultimoAtaque;
 	long long _ultimoImpacto;
 	
-	int _subState;
-
-	int _seqExplo;
+	vector<cEnemigo3*> _gusanos;
+	vector<long long> _ultimaSalidaGusano;
+	vector<long long> _tiempoGusano;
 	
+	int _subState;
+	int _seqExplo;
 	list<cExplo> _exploCuerpo;
 	
 	void pintaVivo() const;
@@ -274,4 +327,5 @@ public:
 	void pinta() const;
 
 };
+
 

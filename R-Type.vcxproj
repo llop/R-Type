@@ -91,11 +91,13 @@
   <ItemGroup>
     <ClCompile Include="cData.cpp" />
     <ClCompile Include="cDisparoEnemigo.cpp" />
+    <ClCompile Include="cDisparoEnemigo3.cpp" />
     <ClCompile Include="cDisparoEscudo.cpp" />
     <ClCompile Include="cDisparoJefe1.cpp" />
     <ClCompile Include="cDisparoNave.cpp" />
     <ClCompile Include="cEnemigo1.cpp" />
     <ClCompile Include="cEnemigo2.cpp" />
+    <ClCompile Include="cEnemigo3.cpp" />
     <ClCompile Include="cEnemigoItem.cpp" />
     <ClCompile Include="cEscudo.cpp" />
     <ClCompile Include="cHud.cpp" />

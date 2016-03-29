@@ -13,7 +13,7 @@ cNivel2::cNivel2(cSistema* sis, cNaveEspacial* naveEspacial,
 														idTextura, idFondo, 
 														ficheroTextura,
 														ficheroFondo) {
-	_posicion = 3900;
+	_posicion = 3392;
 }
 
 
@@ -61,7 +61,7 @@ void cNivel2::generaEnemigos() {
 	}
 
 	// generar el jefe
-	if (_posicion==3900 && !_delay) {
+	if (_posicion==3392 && !_delay) {
 		cJefe2* jefe = new cJefe2(_sis);
 		pushEnemigo(jefe);
 	}

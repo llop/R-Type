@@ -13,7 +13,7 @@ cNivel1::cNivel1(cSistema* sis, cNaveEspacial* naveEspacial,
 														idTextura, idFondo, 
 														ficheroTextura,
 														ficheroFondo) {
-	_posicion = 4200;
+	//_posicion = 3217;
 }
 
 
@@ -59,6 +59,15 @@ void cNivel1::generaEnemigos() {
 	if (_posicion==500 && !_delay) {
 		cEnemigoItem* e = new cEnemigoItem(_sis, rect.x + rect.w + 8, 200, -5.0f, 0.0f, ITEM_ESCUDO);
 		pushEnemigo(e);
+	}
+
+	// enemigo 3 (251, 14) -> (4016, 224), radio (14-5) -> 144, spawnPos = (4016-144-15-640) = 3217
+	if (_posicion==3217 && !_delay) {
+		cEnemigo3* enemigo3 = new cEnemigo3(_sis, 4016, 224, 10, 144.0f, 0.0f, 0.005f, false);
+		pushEnemigo(enemigo3);
+		
+		enemigo3 = new cEnemigo3(_sis, 4016, 224, 10, 144.0f, acos(-1.0f), 0.005f, false);
+		pushEnemigo(enemigo3);
 	}
 
 	// generar el jefe

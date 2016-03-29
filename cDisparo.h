@@ -59,7 +59,9 @@ public:
 	void pinta() const;
 };
 
-#define DISPARO_ENEMIGO_DELAY 10
+#define DISPARO_ENEMIGO_DELAY 6
+#define DISPARO_ENEMIGO_VIVE_FRAMES 4
+#define DISPARO_ENEMIGO_EXPLO_FRAMES 5
 #define DANO_DISPARO_ENEMIGO 100
 #define VELOCIDAD_DISPARO_ENEMIGO 2
 
@@ -74,6 +76,32 @@ protected:
 public:
 	cDisparoEnemigo(cSistema* sis, int xene, int yene, float xu, float yu);
 	~cDisparoEnemigo();
+	
+	void colision(cRect &rect, int &colMask) const;
+	void caja(cRect &rect) const;
+
+	void explota();
+	void muerete();
+
+	void logica();
+	void pinta() const;
+};
+
+
+// disparo enemigo 3
+#define DISPARO_ENEMIGO3_EXPLO_FRAMES 5
+#define DISPARO_ENEMIGO3_EXPLO_DELAY 6
+
+class cDisparoEnemigo3 : public cDisparo {
+protected:
+
+	float _xF, _yF;
+	float _pixelsAvanzaX;
+	float _pixelsAvanzaY;
+
+public:
+	cDisparoEnemigo3(cSistema* sis, int xene, int yene, float xu, float yu);
+	~cDisparoEnemigo3();
 	
 	void colision(cRect &rect, int &colMask) const;
 	void caja(cRect &rect) const;

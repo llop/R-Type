@@ -85,7 +85,7 @@ public:
 	//                 colisionMask & COLISION_ABAJO
 	// x, y: las coordenadas del choque, sólo si se ha producido
 	// objeto: si hubo colision, el tipo de objeto contra el que ha chocado el rectangulo
-	//         puede ser un tile (COLISION_TILE) o los limites de la pantalla (COLISION_PANTALLA)
+	//         es una mascara de bits -puede ser un tile (COLISION_TILE) y/o los limites de la pantalla (COLISION_PANTALLA)
 	void colisionNivel(const cRect &rect, int &colisionMask, int &x, int &y, int &objeto);
 
 	void colision(cRect &caja, int &colMask) const;

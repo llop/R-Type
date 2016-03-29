@@ -151,8 +151,11 @@ void cNaveEspacial::no_dispara() {
 		_tiroPulsado = false;
 
 		// los escudos tambien le meten duro!
-		for (unsigned int i=0; i<_escudos.size(); ++i) _escudos[i]->dispara();
-
+		long long intervaloEscudo = _tiempoVida - _ultimoTiroEscudo;
+		if (intervaloEscudo >= NAVE_TIRO_ESCUDO_DELAY && !_escudos.empty()) {
+			_ultimoTiroEscudo = _tiempoVida;
+			for (unsigned int i=0; i<_escudos.size(); ++i) _escudos[i]->dispara();
+		}
 		// no permitir disparar muy rapido
 		long long intervalo = _tiempoVida - _ultimoTiro;
 		if (intervalo < _tiroDelay) return;
@@ -185,6 +188,7 @@ void cNaveEspacial::lanzaEscudo() {
 void cNaveEspacial::reset() {
 	_tiempoVida = 0;
 	_ultimoTiro = -NAVE_TIRO_DELAY;
+	_ultimoTiroEscudo = -NAVE_TIRO_ESCUDO_DELAY;
 	_vida = NAVE_VIDA_INICIAL;
 	_magias = NAVE_MAGIAS_INICIAL;
 	_tiroPulsado = false;
@@ -265,9 +269,12 @@ void cNaveEspacial::procesaTeclas(unsigned char *keys) {
 
 		// debug
 		if (keys['o']||keys['O']) {
+			// chetar la nave
 			anadeEscudo();
 			anadeEscudo();
 			anadeEscudo();
+			_tipoTiro = DISPARO_NAVE_CIRCULAR;
+			_tiroDelay = NAVE_TIRO_CIR_DELAY;
 		}
 	
 	}

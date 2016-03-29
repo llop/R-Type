@@ -25,6 +25,7 @@ using namespace std;
 
 #define NAVE_PIXELS_MUEVE 2
 
+#define NAVE_TIRO_ESCUDO_DELAY 6
 #define NAVE_TIRO_DELAY 6
 #define NAVE_TIRO_CIR_DELAY 16
 #define NAVE_TIRO_FACTOR 1
@@ -60,6 +61,7 @@ private:
 	long long _tiroDelay;
 	bool _tiroPulsado;		
 	long long _ultimoTiro;		// cuando disparo por ultima vez
+	long long _ultimoTiroEscudo;
 	int _cargaTiro;
 
 	long long _puntos;			// la puntuacion

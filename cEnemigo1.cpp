@@ -98,7 +98,7 @@ void cEnemigo1::logica() {
 		list<cDisparo*> disparos = nivel->disparos();
 		for (list<cDisparo*>::iterator it = disparos.begin(); it != disparos.end(); ++it) {
 			cDisparo* disparo = *it;
-			if (!disparo->malo()) {
+			if (!disparo->malo() && disparo->vive()) {
 				int colMask;
   				disparo->colision(rect, colMask);
 				if (colMask) {

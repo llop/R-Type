@@ -94,11 +94,19 @@ int cEscudo::dano() const {
 }
 
 void cEscudo::caja(cRect &rect) const {
-	rect.w = escudoMov[_seq][2];
-	rect.h = escudoMov[_seq][3];
-	rect.x = int(_xF - (rect.w>>1));
-	rect.y = int(_yF - (rect.h>>1));
+	if (_tipo == ESCUDO_FRENTE) {
+		rect.w = escudoMov[_seq][2];
+		rect.h = escudoMov[_seq][3];
+		rect.x = _x;
+		rect.y = _y - (escudoMid - escudoMov[_seq][1]);
+	} else {
+		rect.w = escudoSecMov[_seq][2];
+		rect.h = escudoSecMov[_seq][3];
+		rect.x = _x - (rect.w>>1);
+		rect.y = _y - (escudoSecMid - escudoSecMov[_seq][1]);
+	}
 }
+
 void cEscudo::colision(cRect &rect, int &colMask) const {
 	cRect myRect;
 	caja(myRect);

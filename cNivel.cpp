@@ -435,7 +435,7 @@ void cNivel::pinta() const {
 	glDisable(GL_TEXTURE_2D);
 
 	// pintar mierdas
-	for (list<cEnemigo*>::const_iterator it = _enemigos.begin(); it != _enemigos.end(); ++it) (*it)->pinta();
+	for (list<cEnemigo*>::const_reverse_iterator it = _enemigos.rbegin(); it != _enemigos.rend(); ++it) (*it)->pinta();
 	for (list<cItem*>::const_iterator it = _items.begin(); it != _items.end(); ++it) (*it)->pinta();
 	
 	// pintar la nave

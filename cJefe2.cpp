@@ -97,6 +97,10 @@ cJefe2::cJefe2(cSistema* sis) : cEnemigo(sis) {
 	_subState = JEFE2_IDLE;
 	
 	_esJefe = true;
+
+	_gusanos.resize(2, NULL);
+	_ultimaSalidaGusano.resize(2, -1000);
+	_tiempoGusano.resize(2, 0);
 }
 
 cJefe2::~cJefe2() {
@@ -110,6 +114,9 @@ void cJefe2::muerete() {
 	_state = ENEMIGO_EXPLO;
 	_delay = JEFE2_MUEVE_DELAY;
 	_seqExplo = 0;
+
+	if (_gusanos[0] != NULL) _gusanos[0]->explota();
+	if (_gusanos[1] != NULL) _gusanos[1]->explota();
 }
 
 void cJefe2::offset(int x, int y) {
@@ -222,7 +229,7 @@ void cJefe2::logica() {
 		}
 
 		// actualizar estado
-		if (_tiempoVida == 816) {
+		if (_tiempoVida == 640) {
 			_subState = JEFE2_VULVA_CERRADA;
 			_seq = 0;
 			_ultimaSalida = _tiempoVida;
@@ -240,6 +247,43 @@ void cJefe2::logica() {
 				_subState=JEFE2_VULVA_CERRADA;
 				_delay = JEFE2_MUEVE_DELAY;
 				_ultimaSalida = _tiempoVida;
+			}
+		}
+
+		// tirar o matar los gusanos
+		if (_subState > JEFE2_IDLE) {
+			if (_gusanos[0] == NULL) {
+				long long intervaloGusano1 = _tiempoVida - _ultimaSalidaGusano[0];
+				if (intervaloGusano1 >= JEFE2_INTERVALO_GUSANO1) {
+					_ultimaSalidaGusano[0] = _tiempoVida;
+					_tiempoGusano[0] = JEFE2_TIEMPO_GUSANO1;
+					cEnemigo3* enemigo3 = new cEnemigo3(_sis, 4288, _y+4, 6, 62.0f, 0.2f, 0.02f, false);
+					_gusanos[0] = enemigo3;
+					nivel->pushEnemigo(enemigo3);
+				}
+			} else {
+				if (_tiempoGusano[0]) --_tiempoGusano[0];
+				else if (_gusanos[0] != NULL) {
+					_gusanos[0]->muerete();
+					_gusanos[0] = NULL;
+				}
+			}
+			// gusano 2
+			if (_gusanos[1] == NULL) {
+				long long intervaloGusano2 = _tiempoVida - _ultimaSalidaGusano[1];
+				if (intervaloGusano2 >= JEFE2_INTERVALO_GUSANO2) {
+					_ultimaSalidaGusano[1] = _tiempoVida;
+					_tiempoGusano[1] = JEFE2_TIEMPO_GUSANO2;
+					cEnemigo3* enemigo3 = new cEnemigo3(_sis, 4288-2, _y+2, 8, 144.0f, 2.3f, 0.02f, true);
+					_gusanos[1] = enemigo3;
+					nivel->pushEnemigo(enemigo3);
+				}
+			} else {
+				if (_tiempoGusano[1]) --_tiempoGusano[1];
+				else if (_gusanos[1] != NULL) {
+					_gusanos[1]->muerete();
+					_gusanos[1] = NULL;
+				}
 			}
 		}
 
