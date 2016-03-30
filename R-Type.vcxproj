@@ -104,6 +104,7 @@
     <ClCompile Include="cItem.cpp" />
     <ClCompile Include="cJefe1.cpp" />
     <ClCompile Include="cJefe2.cpp" />
+    <ClCompile Include="cMenu.cpp" />
     <ClCompile Include="cNivel.cpp" />
     <ClCompile Include="cGame.cpp" />
     <ClCompile Include="cNaveEspacial.cpp" />
@@ -119,6 +120,7 @@
     <ClInclude Include="cData.h" />
     <ClInclude Include="cEscudo.h" />
     <ClInclude Include="cHud.h" />
+    <ClInclude Include="cMenu.h" />
     <ClInclude Include="cNivel.h" />
     <ClInclude Include="cDisparo.h" />
     <ClInclude Include="cEnemigo.h" />

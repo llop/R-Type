@@ -114,6 +114,7 @@ void cJefe2::muerete() {
 	_state = ENEMIGO_EXPLO;
 	_delay = JEFE2_MUEVE_DELAY;
 	_seqExplo = 0;
+	_tiempoMuerto = 0;
 
 	if (_gusanos[0] != NULL) _gusanos[0]->explota();
 	if (_gusanos[1] != NULL) _gusanos[1]->explota();
@@ -302,6 +303,12 @@ void cJefe2::logica() {
 			}
 		}
 	} else if (_state == ENEMIGO_EXPLO) {
+
+		++_tiempoMuerto;
+		if (_tiempoMuerto == JEFE2_TIEMPO_MUERTO) {
+			((cNivel*)_sis->nivel())->termina();
+		}
+
 		if (_delay) --_delay;
 		else {
 			_seq = min(7, _seq+1);

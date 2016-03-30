@@ -50,7 +50,9 @@ cNivel::cNivel(cSistema* sis, cNaveEspacial* naveEspacial,
 				const char* ficheroFondo) : cSprite(sis) {
 
 	_naveEspacial = naveEspacial;
-	
+	vector<cEscudo*> escudos = _naveEspacial->escudos();
+	for (unsigned int i=0; i<escudos.size(); ++i) pushEscudo(escudos[i]);
+
 	_tilesAncho = tilesAncho;
 	_tilesAlto = tilesAlto;
 
@@ -83,6 +85,11 @@ cNivel::cNivel(cSistema* sis, cNaveEspacial* naveEspacial,
 
 	// crear el hud
 	_hud = new cHud(_sis, 0, HUD_HPIX);
+
+	_state = NIVEL_NACE;
+	_seq = 0;
+
+	_puntos = 0;
 }
 
 cNivel::~cNivel() {
@@ -107,6 +114,14 @@ cNivel::~cNivel() {
 		delete _hud;
 		_hud = NULL;
 	}
+}
+
+
+void cNivel::sumaPuntos(long long puntos) {
+	_puntos += puntos;
+}
+long long cNivel::puntos() const {
+	return _puntos;
 }
 
 
@@ -163,7 +178,7 @@ void cNivel::aplicaScroll() {
 		//for (list<cItem*>::iterator it=_items.begin(); it!=_items.end(); ++it) (*it)->offset(avanza, 0);
 		//for (list<cDisparo*>::iterator it=_disparos.begin(); it!=_disparos.end(); ++it) (*it)->offset(avanza, 0);
 		for (list<cEnemigo*>::iterator it=_enemigos.begin(); it!=_enemigos.end(); ++it) (*it)->offset(avanza, 0);
-		for (list<cEscudo*>::iterator it=_escudos.begin(); it!=_escudos.end(); ++it) (*it)->offset(avanza, 0);
+		//for (list<cEscudo*>::iterator it=_escudos.begin(); it!=_escudos.end(); ++it) (*it)->offset(avanza, 0);
 		// la nave y el hud
 		_naveEspacial->offset(avanza, 0);
 		_hud->offset(avanza, 0);
@@ -405,6 +420,20 @@ void cNivel::logica() {
 	generaEnemigos();
 	aplicaLogicas();
 	aplicaMuertes();
+
+	if (_state == NIVEL_NACE) {
+		// fade in
+		++_seq;
+		if (_seq == NIVEL_FADE) _state = NIVEL_VIVE;
+	} else if (_state == NIVEL_MUERE) {
+		// fade out	
+		--_seq;
+		if (!_seq) _sis->avanzaNivel();
+	}
+}
+
+void cNivel::termina() {
+	_state = NIVEL_MUERE;
 }
 
 void cNivel::pinta() const {
@@ -439,7 +468,7 @@ void cNivel::pinta() const {
 	for (list<cItem*>::const_iterator it = _items.begin(); it != _items.end(); ++it) (*it)->pinta();
 	
 	// pintar la nave
-	_naveEspacial->pinta();
+	if (_state == NIVEL_VIVE) _naveEspacial->pinta();
 
 	// pintar el fondo
 	int px, py;
@@ -479,22 +508,28 @@ void cNivel::pinta() const {
 	glDisable(GL_TEXTURE_2D);
 
 	// dejar los tiros por encima
-	for (list<cEscudo*>::const_iterator it = _escudos.begin(); it != _escudos.end(); ++it) (*it)->pinta();
+	if (_state == NIVEL_VIVE) for (list<cEscudo*>::const_iterator it = _escudos.begin(); it != _escudos.end(); ++it) (*it)->pinta();
 	for (list<cDisparo*>::const_iterator it = _disparos.begin(); it != _disparos.end(); ++it) (*it)->pinta();
 	
 	_hud->pinta();
 
-	/*
-	//  fade in/out
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glBegin(GL_QUADS);
-	glColor4f(1, 1, 1, 0.5f); 
-	glVertex2i(_posicion, 0);
-	glVertex2i(_posicion+GAME_WIDTH, 0);
-	glVertex2i(_posicion+GAME_WIDTH, GAME_HEIGHT);
-	glVertex2i(_posicion, GAME_HEIGHT);
-	glEnd();
-	glDisable(GL_BLEND);
-	*/
+	if (_state == NIVEL_NACE || _state == NIVEL_MUERE) {
+		float alpha = (NIVEL_FADE-_seq)/float(NIVEL_FADE);
+		//  fade in/out
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		glBegin(GL_QUADS);
+		glColor4f(0, 0, 0, alpha); 
+		glVertex2i(_posicion, 0);
+		glVertex2i(_posicion+GAME_WIDTH, 0);
+		glVertex2i(_posicion+GAME_WIDTH, GAME_HEIGHT);
+		glVertex2i(_posicion, GAME_HEIGHT);
+		glEnd();
+		glDisable(GL_BLEND);
+		glColor3f(1, 1, 1);
+
+		_naveEspacial->pinta();
+		for (list<cEscudo*>::const_iterator it = _escudos.begin(); it != _escudos.end(); ++it) (*it)->pinta();
+	}
+	
 }

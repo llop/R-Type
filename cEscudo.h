@@ -49,6 +49,7 @@ public:
 	void muerete();
 	void colision(cRect &rect, int &colMask) const;
 	void caja(cRect &rect) const;
+	void offset(int x, int y);
 
 	// solo necesita procesar las teclas
 	void procesaTeclas(unsigned char* keys);

@@ -135,6 +135,7 @@ void cJefe1::muerete() {
 	_bolaExplo = 0;
 	_seqExplo = 0;
 	_delayExploCola = JEFE1_COLA_EXPLO_DELAY;
+	_tiempoMuerto = 0;
 }
 
 void cJefe1::offset(int x, int y) {
@@ -405,6 +406,12 @@ void cJefe1::logica() {
 			}
 		}
 	} else if (_state == ENEMIGO_EXPLO) {
+
+		++_tiempoMuerto;
+		if (_tiempoMuerto == JEFE2_TIEMPO_MUERTO) {
+			((cNivel*)_sis->nivel())->termina();
+		}
+
 		// animacion explosiones cuerpo
 		for (list<cExplo>::iterator it=_exploCuerpo.begin(); it!=_exploCuerpo.end();) {
 			cExplo &explo = *it;

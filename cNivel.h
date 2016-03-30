@@ -15,6 +15,13 @@
 using namespace std;
 
 
+#define NIVEL_NACE 0
+#define NIVEL_VIVE 1
+#define NIVEL_MUERE 2
+
+#define NIVEL_FADE 500
+
+
 class cNivel : public cSprite {
 protected:
 
@@ -27,7 +34,8 @@ protected:
 	list<cDisparo*> _disparos;				// disparos
 	list<cEscudo*> _escudos;				// escudos
 	cHud* _hud;
-	
+
+	long long _puntos;
 
 	int _tilesAncho, _tilesAlto;			// dimensiones del mapa en tiles
 	
@@ -60,6 +68,8 @@ public:
 	//void setDimensionesMapa(int tilesAncho, int tilesAlto);
 	void getDimensionesMapa(int &tilesAncho, int &tilesAlto) const;
 	
+	long long puntos() const;
+	void sumaPuntos(long long puntos);
 
 	// consultar
 	const list<cItem*> items() const;
@@ -95,6 +105,8 @@ public:
 
 	void logica();
 	void pinta() const;
+
+	void termina();
 
 };
 

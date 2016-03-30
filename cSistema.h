@@ -20,6 +20,11 @@
 #define MENU 0
 #define NIVEL 1
 
+#define DIFICULTAD_NORMAL 0
+#define DIFICULTAD_DIFICIL 1
+#define NUM_DIFICULTADES 2
+
+
 
 struct cRect {
 	int x, y, w, h;
@@ -32,12 +37,18 @@ private:
 
 	cSprite* _naveEspacial;
 	cSprite* _nivel;
+	cSprite* _menu;
 
 	cData* _data;
 
 	int _estado;
 	int _numNivel;
+
+	int _dificultad;
 	
+	void delNaveEspacial();
+	void delNivel();
+
 	void logicaMenu();
 	void logicaNivel();
 	
@@ -49,18 +60,21 @@ public:
 	cSistema();
 	~cSistema();
 
-	
+	// acceso
 	cSprite* naveEspacial() const;
-	void setNaveEspacial(cSprite* naveEspacial);
-	void delNaveEspacial();
-
 	cSprite* nivel() const;
-	void setNivel(cSprite* nivel);
-	void delNivel();
 
+	// texturas
 	void cargaTextura(int id, const char* ficheroTextura);
 	int idTextura(int id) const;
 	void tamanoTextura(int id, int &width, int &height) const;
+
+	// arranca partida y pasa de nivel
+	void arrancaPartida();
+	void continuePartida();
+	void avanzaNivel();
+	void cargaNivel();
+	void gameOver();
 
 	// esto para el game loop
 	void procesaTeclas(unsigned char *keys);

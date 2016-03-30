@@ -51,6 +51,13 @@ cEscudo::~cEscudo() {
 
 }
 
+void cEscudo::offset(int x, int y) {
+	_xF += float(x);
+	_yF += float(y);
+	_x = int(_xF);
+	_y = int(_yF);
+}
+
 void cEscudo::dispara() {
 	cNivel* nivel = (cNivel*)_sis->nivel();
 	int xTiro = _x;
@@ -178,17 +185,19 @@ void cEscudo::logica() {
 	_x = int(_xF);
 	_y = int(_yF);
 
-	// placa algun disparo malo?
-	cRect rect;
-	caja(rect);
 	cNivel* nivel = (cNivel*)_sis->nivel();
-	list<cDisparo*> disparos = nivel->disparos();
-	for (list<cDisparo*>::iterator it = disparos.begin(); it != disparos.end(); ++it) {
-		cDisparo* disparo = *it;
-		if (disparo->malo() && disparo->dano()<ESCUDO_DANO) {
-			int colMask;
-  			disparo->colision(rect, colMask);
-			if (colMask) disparo->muerete();
+	if (nivel != NULL) {
+		// placa algun disparo malo?
+		cRect rect;
+		caja(rect);
+		list<cDisparo*> disparos = nivel->disparos();
+		for (list<cDisparo*>::iterator it = disparos.begin(); it != disparos.end(); ++it) {
+			cDisparo* disparo = *it;
+			if (disparo->malo() && disparo->dano()<ESCUDO_DANO) {
+				int colMask;
+  				disparo->colision(rect, colMask);
+				if (colMask) disparo->muerete();
+			}
 		}
 	}
 

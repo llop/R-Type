@@ -2,6 +2,7 @@
 #include "Globals.h"
 #include "cSistema.h"
 #include "cNaveEspacial.h"
+#include "cMenu.h"
 #include "cNivel.h"
 
 
@@ -9,20 +10,24 @@
 cSistema::cSistema() {
 	_naveEspacial = NULL;
 	_nivel = NULL;
+	_numNivel = 1;
+	_menu = NULL;
 	_data = new cData();
 	_estado = MENU;
 }
 
 cSistema::~cSistema() {
-	delete _data;
-	_data = NULL;
-	if (_naveEspacial != NULL) {
-		delete _naveEspacial;
-		_naveEspacial = NULL;
+	if (_data != NULL) {
+		delete _data;
+		_data = NULL;
 	}
-	if (_nivel != NULL) {
-		delete _nivel;
-		_nivel = NULL;
+
+	delNaveEspacial();
+	delNivel();
+	
+	if (_menu != NULL) {
+		delete _menu;
+		_menu = NULL;
 	}
 }
 
@@ -50,29 +55,28 @@ cSprite* cSistema::nivel() const {
 }
 
 
-// establecer
-void cSistema::setNaveEspacial(cSprite* naveEspacial) {
-	_naveEspacial = naveEspacial;
-}
-
-void cSistema::setNivel(cSprite* nivel) {
-	_nivel = nivel;
-}
-
 // eliminar
 void cSistema::delNaveEspacial() {
-	_naveEspacial = NULL;
+	if (_naveEspacial != NULL) {
+		delete _naveEspacial;
+		_naveEspacial = NULL;
+	}
 }
 
 void cSistema::delNivel() {
-	_nivel = NULL;
+	if (_nivel != NULL) {
+		delete _nivel;
+		_nivel = NULL;
+	}
 }
 
 
 // esto para el game loop
 void cSistema::procesaTeclas(unsigned char *keys) {
-	if (_naveEspacial != NULL) {
-		((cNaveEspacial*)_naveEspacial)->procesaTeclas(keys);
+	if (_estado == MENU) {
+		if (_menu != NULL) ((cMenu*)_menu)->procesaTeclas(keys);
+	} else if (_estado == NIVEL) {
+		if (_naveEspacial != NULL) ((cNaveEspacial*)_naveEspacial)->procesaTeclas(keys);
 	}
 }
 
@@ -82,39 +86,72 @@ void cSistema::procesaTeclas(unsigned char *keys) {
 //   2 - items y disparos
 //   3 - nave y enemigos
 void cSistema::logicaNivel() {
-	((cNivel*)_nivel)->logica();
+	_nivel->logica();
 }
 
 void cSistema::logicaMenu() {
+	if (_menu == NULL) _menu = new cMenu(this);
+	_menu->logica();
+}
 
-	_estado = NIVEL;
-	_numNivel = 1;
+void cSistema::avanzaNivel() {
+	_estado = MENU;
+	cMenu* menu = (cMenu*)_menu;
+	menu->setPantalla(PANTALLA_SCORE);
+	if (_nivel != NULL) {
+		cNivel* nivel = (cNivel*)_nivel;
+		menu->setScore(_numNivel, nivel->puntos());
+		int posicionNivel = nivel->getPosicion();
+		_naveEspacial->offset(-posicionNivel, 0);
+	}
+	++_numNivel;
+}
 
-	// carga nivel 1
+void cSistema::arrancaPartida() {
+	// crear una nave y nivel frescos
+	delNaveEspacial();
 	_naveEspacial = new cNaveEspacial(this);
-	//_nivel = new cNivel1(this, (cNaveEspacial*)_naveEspacial, 
-	//						328, 28, "maps\\level-01.csv", 
-	//						TEX_NIVEL1, TEX_FONDO1, 
-	//						"maps\\stage1-01.png", 
-	//						"img\\Outer-Space-Wallpaper.png");
 
-	_nivel = new cNivel2(this, (cNaveEspacial*)_naveEspacial, 
+	_numNivel = 1;
+	cargaNivel();
+
+	// posicionar la nave
+	int x, y;
+	((cNivel*)_nivel)->posicionRespawn(x, y);
+	((cNaveEspacial*)_naveEspacial)->renace(x, y);
+}
+
+// freir el nivel que habia y poner el que hay ahora
+void cSistema::cargaNivel() {
+	_estado = NIVEL;
+	delNivel();
+	if (_numNivel == 1) {
+		_nivel = new cNivel1(this, (cNaveEspacial*)_naveEspacial, 
+							328, 28, "maps\\level-01.csv", 
+							TEX_NIVEL1, TEX_FONDO1, 
+							"maps\\stage1-01.png", 
+							"img\\Outer-Space-Wallpaper.png");
+	} else if (_numNivel == 2) {
+		_nivel = new cNivel2(this, (cNaveEspacial*)_naveEspacial, 
 							288, 28, "maps\\level-02.csv", 
 							TEX_NIVEL2, TEX_FONDO2, 
 							"maps\\textura-nivel2.png", 
 							"img\\level2-back.png");
+	} else if (_numNivel == 3) {
+		_nivel = new cNivel3(this, (cNaveEspacial*)_naveEspacial, // funcionaaa yuhuuu!!!!
+							328, 28, "maps\\level-03.csv", 
+							TEX_NIVEL3, TEX_FONDO3, 
+							"maps\\stage3-03.png", 
+							"img\\Outer-Space-Wallpaper.png");
+	}
+}
 
-	//_nivel = new cNivel3(this, (cNaveEspacial*)_naveEspacial, // funcionaaa yuhuuu!!!!
-	//						328, 28, "maps\\level-03.csv", 
-	//						TEX_NIVEL3, TEX_FONDO3, 
-	//						"maps\\stage3-03.png", 
-	//						"img\\Outer-Space-Wallpaper.png");
+void cSistema::continuePartida() {
+	// crear una nave y nivel frescos
+	delNaveEspacial();
+	_naveEspacial = new cNaveEspacial(this);
 
-	int x, y;
-	((cNivel*)_nivel)->posicionRespawn(x, y);
-	((cNaveEspacial*)_naveEspacial)->renace(x, y);
-
-
+	cargaNivel();
 }
 
 void cSistema::logica() {
@@ -124,11 +161,11 @@ void cSistema::logica() {
 
 
 void cSistema::pintaMenu() {
-
+	if (_menu != NULL) _menu->pinta();
 }
 
 void cSistema::pintaNivel() {
-	_nivel->pinta();
+	if (_nivel != NULL) _nivel->pinta();
 }
 
 void cSistema::pinta() {

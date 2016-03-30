@@ -86,6 +86,9 @@
     <ClCompile Include="cDisparoEnemigo3.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="cMenu.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cData.h">
@@ -125,6 +128,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="cHud.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cMenu.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

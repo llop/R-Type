@@ -13,7 +13,7 @@ cNivel2::cNivel2(cSistema* sis, cNaveEspacial* naveEspacial,
 														idTextura, idFondo, 
 														ficheroTextura,
 														ficheroFondo) {
-	_posicion = 3392;
+	//_posicion = 3392;
 }
 
 

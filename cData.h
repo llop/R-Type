@@ -8,7 +8,7 @@
 // texture array size
 //----------------------------------------------------------
 
-#define NUM_IMG	19
+#define NUM_IMG 21
 
 
 //----------------------------------------------------------
@@ -23,26 +23,28 @@
 #define TEX_FONDO2 4
 #define TEX_FONDO3 5
 #define TEX_HUD 6
+#define TEX_MENU 7
 
 // nave y demás
-#define TEX_NAVE1 7
-#define TEX_NAVE2 8
-#define TEX_ESCUDO 9
+#define TEX_NAVE1 8
+#define TEX_NAVE2 9
+#define TEX_ESCUDO 10
 
 // items
-#define TEX_ITEMS 10
+#define TEX_ITEMS 11
 
 // explosiones
-#define TEX_EXPLO1 11
-#define TEX_EXPLO2 12
+#define TEX_EXPLO1 12
+#define TEX_EXPLO2 13
 
 // enemigos
-#define TEX_ENE1 13
-#define TEX_ENE2 14
-#define TEX_ENE3 15
-#define TEX_ENE_ITEM 16
-#define TEX_JEFE1 17
-#define TEX_JEFE2 18
+#define TEX_ENE1 14
+#define TEX_ENE2 15
+#define TEX_ENE3 16
+#define TEX_ENE_ITEM 17
+#define TEX_JEFE1 18
+#define TEX_JEFE2 19
+#define TEX_JEFE3 20
 
 
 

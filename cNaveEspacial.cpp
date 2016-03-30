@@ -67,6 +67,7 @@ cNaveEspacial::~cNaveEspacial() {
 
 void cNaveEspacial::sumaPuntos(long long puntos) {
 	_puntos+=puntos;
+	((cNivel*)_sis->nivel())->sumaPuntos(puntos);
 }
 long long cNaveEspacial::puntos() const {
 	return _puntos;
@@ -280,6 +281,9 @@ void cNaveEspacial::procesaTeclas(unsigned char *keys) {
 	}
 }
 
+vector<cEscudo*>& cNaveEspacial::escudos() {
+	return _escudos;
+}
 
 void cNaveEspacial::muerete() {
 	--_vidas;
@@ -303,115 +307,118 @@ void cNaveEspacial::logica() {
 		// subir el tiempo que lleva con vida
 		++_tiempoVida;
 
-		// sacar la hit box
-		cRect rect;
-		caja(rect);
-
-		// buscar colisiones con el escenario
+		
 		cNivel* nivel = (cNivel*)_sis->nivel();
-		int colisionMask, x, y, objeto;
-		nivel->colisionNivel(rect, colisionMask, x, y, objeto);
+		if (nivel != NULL) {
+			// sacar la hit box
+			cRect rect;
+			caja(rect);
 
-		// tratamiento especial para las colisiones cuando la nave sea invencible
-		bool invencible = _tiempoVida<NAVE_TIEMPO_INVENCIBLE;
-		if (invencible) {
-			if (colisionMask && objeto&COLISION_TILE) {
-				// si es invencible y ha chocado con un tile, corregirle la posicion
-				if (colisionMask&COLISION_IZQ && colisionMask&COLISION_DER && colisionMask&COLISION_ARRIBA && colisionMask&COLISION_ABAJO) {
-					_x = _lastX;
-					_y = _lastY;
-				} else {
-					if (colisionMask&COLISION_ARRIBA && !(colisionMask&COLISION_ABAJO)) _y += y - rect.y;
-					else if (colisionMask&COLISION_ABAJO && !(colisionMask&COLISION_ARRIBA)) _y += y - (rect.y+rect.h);
-					if (colisionMask&COLISION_IZQ && !(colisionMask&COLISION_DER)) _x += x - rect.x;
-					else if (colisionMask&COLISION_DER && !(colisionMask&COLISION_IZQ)) _x += x - (rect.x+rect.w);
+			// buscar colisiones con el escenario
+			int colisionMask, x, y, objeto;
+			nivel->colisionNivel(rect, colisionMask, x, y, objeto);
+
+			// tratamiento especial para las colisiones cuando la nave sea invencible
+			bool invencible = _tiempoVida<NAVE_TIEMPO_INVENCIBLE;
+			if (invencible) {
+				if (colisionMask && objeto&COLISION_TILE) {
+					// si es invencible y ha chocado con un tile, corregirle la posicion
+					if (colisionMask&COLISION_IZQ && colisionMask&COLISION_DER && colisionMask&COLISION_ARRIBA && colisionMask&COLISION_ABAJO) {
+						_x = _lastX;
+						_y = _lastY;
+					} else {
+						if (colisionMask&COLISION_ARRIBA && !(colisionMask&COLISION_ABAJO)) _y += y - rect.y;
+						else if (colisionMask&COLISION_ABAJO && !(colisionMask&COLISION_ARRIBA)) _y += y - (rect.y+rect.h);
+						if (colisionMask&COLISION_IZQ && !(colisionMask&COLISION_DER)) _x += x - rect.x;
+						else if (colisionMask&COLISION_DER && !(colisionMask&COLISION_IZQ)) _x += x - (rect.x+rect.w);
+					}
+
+					// ok, ahora es posible que se salga de los limites de la pantalla
+					// si es así, empujar la nave para dentro
+					caja(rect);
+					nivel->colisionNivel(rect, colisionMask, x, y, objeto);
 				}
+				if (colisionMask && objeto&COLISION_PANTALLA) {
+					if (colisionMask & COLISION_ARRIBA) _y += y - rect.y;
+					else if (colisionMask & COLISION_ABAJO) _y += y - (rect.y+rect.h);
+					if (colisionMask & COLISION_IZQ) _x += x - rect.x;
+					else if (colisionMask & COLISION_DER) _x += x - (rect.x+rect.w);
+				}
+			} else {
+				// se sale de la pantalla?
+				if (colisionMask && objeto&COLISION_PANTALLA) {
+					if (colisionMask & COLISION_ARRIBA) _y += y - rect.y;
+					else if (colisionMask & COLISION_ABAJO) _y += y - (rect.y+rect.h);
+					if (colisionMask & COLISION_IZQ) _x += x - rect.x;
+					else if (colisionMask & COLISION_DER) _x += x - (rect.x+rect.w);
+					// puede que al empujar la nave, esta choque contra un tile
+					caja(rect);
+					nivel->colisionNivel(rect, colisionMask, x, y, objeto);
+				}
+				// choca contra un tile? que reviente!
+				if (colisionMask && objeto&COLISION_TILE) {
+					_vida = 0;
+				}
+			}
 
-				// ok, ahora es posible que se salga de los limites de la pantalla
-				// si es así, empujar la nave para dentro
-				caja(rect);
-				nivel->colisionNivel(rect, colisionMask, x, y, objeto);
+			// ha chocado con algun disparo malo?
+			list<cDisparo*> disparos = nivel->disparos();
+			for (list<cDisparo*>::iterator it=disparos.begin(); it!=disparos.end(); ++it) {
+				cDisparo* disparo = *it;
+				if (disparo->malo()) {
+					int colMask;
+					disparo->colision(rect, colMask);
+					if (colMask) {
+						// hace pupa!!!
+						if (!invencible) _vida -= disparo->dano();
+						// el disparo muere
+						disparo->muerete();
+					}
+				}
 			}
-			if (colisionMask && objeto&COLISION_PANTALLA) {
-				if (colisionMask & COLISION_ARRIBA) _y += y - rect.y;
-				else if (colisionMask & COLISION_ABAJO) _y += y - (rect.y+rect.h);
-				if (colisionMask & COLISION_IZQ) _x += x - rect.x;
-				else if (colisionMask & COLISION_DER) _x += x - (rect.x+rect.w);
-			}
-		} else {
-			// se sale de la pantalla?
-			if (colisionMask && objeto&COLISION_PANTALLA) {
-				if (colisionMask & COLISION_ARRIBA) _y += y - rect.y;
-				else if (colisionMask & COLISION_ABAJO) _y += y - (rect.y+rect.h);
-				if (colisionMask & COLISION_IZQ) _x += x - rect.x;
-				else if (colisionMask & COLISION_DER) _x += x - (rect.x+rect.w);
-				// puede que al empujar la nave, esta choque contra un tile
-				caja(rect);
-				nivel->colisionNivel(rect, colisionMask, x, y, objeto);
-			}
-			// choca contra un tile? que reviente!
-			if (colisionMask && objeto&COLISION_TILE) {
-				_vida = 0;
-			}
-		}
 
-		// ha chocado con algun disparo malo?
-		list<cDisparo*> disparos = nivel->disparos();
-		for (list<cDisparo*>::iterator it=disparos.begin(); it!=disparos.end(); ++it) {
-			cDisparo* disparo = *it;
-			if (disparo->malo()) {
+			// ha chocado con algun enemigo?
+			list<cEnemigo*> enemigos = nivel->enemigos();
+			for (list<cEnemigo*>::iterator it = enemigos.begin(); it != enemigos.end(); ++it) {
+				cEnemigo* enemigo = *it;
 				int colMask;
-				disparo->colision(rect, colMask);
+				enemigo->colision(rect, colMask);
 				if (colMask) {
-					// hace pupa!!!
-					if (!invencible) _vida -= disparo->dano();
-					// el disparo muere
-					disparo->muerete();
+					// el enemigo tambien
+					enemigo->restaVida(_vida);
+					if (!invencible) _vida = 0;
+					else if (enemigo->jefe()) {
+						_x = _lastX;
+						_y = _lastY;
+					}
 				}
 			}
-		}
 
-		// ha chocado con algun enemigo?
-		list<cEnemigo*> enemigos = nivel->enemigos();
-		for (list<cEnemigo*>::iterator it = enemigos.begin(); it != enemigos.end(); ++it) {
-			cEnemigo* enemigo = *it;
-			int colMask;
-			enemigo->colision(rect, colMask);
-			if (colMask) {
-				// el enemigo tambien
-				enemigo->restaVida(_vida);
-				if (!invencible) _vida = 0;
-				else if (enemigo->jefe()) {
-					_x = _lastX;
-					_y = _lastY;
-				}
+			if (_vida <= 0) {
+				muerete();
+				return;
 			}
-		}
 
-		if (_vida <= 0) {
-			muerete();
-			return;
-		}
-
-		// ha pillado algun item?
-		list<cItem*> items = nivel->items();
-		for (list<cItem*>::iterator it = items.begin(); it != items.end(); ++it) {
-			cItem* item = *it;
-			cRect myRect = rect;
-			myRect.x -= 2;
-			myRect.y -= 2;
-			myRect.w += 4;
-			myRect.h += 4;
-			int colMask;
-			item->colision(myRect, colMask);
-			if (colMask) {
-				int tipo = item->tipo();
-				if (tipo == ITEM_ESCUDO) anadeEscudo();
-				else if (tipo == ITEM_DISPARO_RB) {
-					_tipoTiro = DISPARO_NAVE_CIRCULAR;
-					_tiroDelay = NAVE_TIRO_CIR_DELAY;
+			// ha pillado algun item?
+			list<cItem*> items = nivel->items();
+			for (list<cItem*>::iterator it = items.begin(); it != items.end(); ++it) {
+				cItem* item = *it;
+				cRect myRect = rect;
+				myRect.x -= 2;
+				myRect.y -= 2;
+				myRect.w += 4;
+				myRect.h += 4;
+				int colMask;
+				item->colision(myRect, colMask);
+				if (colMask) {
+					int tipo = item->tipo();
+					if (tipo == ITEM_ESCUDO) anadeEscudo();
+					else if (tipo == ITEM_DISPARO_RB) {
+						_tipoTiro = DISPARO_NAVE_CIRCULAR;
+						_tiroDelay = NAVE_TIRO_CIR_DELAY;
+					}
+					item->muerete();
 				}
-				item->muerete();
 			}
 		}
 
@@ -435,6 +442,14 @@ void cNaveEspacial::logica() {
 	}
 }
 
+
+void cNaveEspacial::offset(int x, int y) {
+	_x += x;
+	_y += y;
+	for (unsigned int i=0; i<_escudos.size(); ++i) {
+		_escudos[i]->offset(x, y);
+	}
+}
 
 void cNaveEspacial::pinta() const {
 	if (_state == NAVE_MUERE) return;

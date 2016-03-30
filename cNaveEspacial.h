@@ -96,9 +96,12 @@ public:
 	int vidas() const;
 	int cargaDisparo() const;
 
+	vector<cEscudo*>& escudos();
+
 	void renace(int x, int y);
 	void muerete();
 	void caja(cRect &rect) const;
+	void offset(int x, int y);
 
 	// solo necesita procesar las teclas
 	void procesaTeclas(unsigned char* keys);
