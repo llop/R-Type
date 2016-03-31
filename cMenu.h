@@ -45,6 +45,7 @@ using namespace std;
 #define MENU_AVANCE_NAVE 2
 
 #define MENU_COMPLETE_RESPONSIVE 500
+#define MENU_SET_HI_SCORE_RESPONSIVE 500
 
 #define MENU_NUM_HI_SCORES 3
 #define MENU_HI_SCORE_NAME_LEN 8
@@ -58,6 +59,7 @@ protected:
 	long long _ultimoInput;
 	long long _tiempoScore;
 	long long _tiempoComplete;
+	long long _tiempoSetHiScore;
 
 	int _dificultad;
 	int _seleccionado;

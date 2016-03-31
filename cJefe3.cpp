@@ -184,6 +184,10 @@ void cJefe3::logica() {
 
 	else if (_state == ENEMIGO_EXPLO) {
 		++_tiempoMuerto;
+		if (_tiempoMuerto == JEFE3_TIEMPO_MUERTO) {
+			((cNivel*)_sis->nivel())->termina();
+		}
+
 		for (list<cExplo>::iterator it = _exploCuerpo.begin(); it != _exploCuerpo.end();) {
 			cExplo &explo = *it;
 			bool borra = false;

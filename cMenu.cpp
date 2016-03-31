@@ -50,6 +50,7 @@ cMenu::cMenu(cSistema* sis) : cSprite(sis) {
 	
 	_tiempoScore = 0;
 	_tiempoComplete = 0;
+	_tiempoSetHiScore = 0;
 }
 
 bool cmpHiScore(const pair<string, long long> &a, const pair<string, long long> &b) {
@@ -116,7 +117,10 @@ void cMenu::setPantalla(int pantalla) {
 
 	if (_state == PANTALLA_SCORE) _tiempoScore = 0;
 	else if (_state == PANTALLA_COMPLETE) _tiempoComplete = 0;
-	else if (_state == PANTALLA_SET_HI_SCORE) _hiScoreNameTmp=MENU_HI_SCORE_DEF_NAME;
+	else if (_state == PANTALLA_SET_HI_SCORE) {
+		_tiempoSetHiScore = 0;
+		_hiScoreNameTmp=MENU_HI_SCORE_DEF_NAME;
+	}
 }
 
 void cMenu::setScore(int nivel, long long puntos) {
@@ -189,7 +193,7 @@ void cMenu::procesaTeclas(unsigned char* keys) {
 			_ultimoInput = _tiempoVida;
 		}
 	} else if (_state == PANTALLA_SET_HI_SCORE) {
-		if (enterPress) {
+		if (enterPress && _tiempoSetHiScore>=MENU_SET_HI_SCORE_RESPONSIVE) {
 			// establecer el record y guardarlo
 			guardaHiScore();
 
@@ -255,10 +259,12 @@ void cMenu::logica() {
 	} else if (_state == PANTALLA_HI_SCORE) {
 
 	} else if (_state == PANTALLA_SET_HI_SCORE) {
+		++_tiempoSetHiScore;
+
 		if (_tiempoVida%2) {
 			// llevar la nave a un lado
-			int xMid = int(GAME_WIDTH*0.25);
-			int yMid = int(GAME_HEIGHT*0.6);
+			int xMid = 160;
+			int yMid = 320;
 			int xNave, yNave;
 			_sis->naveEspacial()->getPosicion(xNave, yNave);
 			if (xMid!=xNave || yMid!=yNave) {
@@ -633,16 +639,19 @@ void cMenu::pinta() const {
 		int yCredits = 100;
 		int incCredits = 16;
 		
-		pintaString(xCredits, yCredits, boldCaracteres, "enter your name!");
+		pintaString(xCredits, yCredits, boldCaracteres, "congratulations, you made a hi-score!");
+		pintaString(xCredits, yCredits+=incCredits, caracteres, "please enter your name.");
 		yCredits+=2*incCredits;
 
 		pintaHiScoreString(xCredits, yCredits+=incCredits, boldCaracteres, _hiScoreNameTmp);
 		pintaNumero(xCredits+xCreditsOffset, yCredits, caracteres, _puntos*FACTOR_PUNTOS);
 
 		// save
-		int xBack = 100;
-		int yBack = 400;
-		pintaString(xBack, yBack, boldCaracteres, "save your score!");
+		if (_tiempoSetHiScore>=MENU_SET_HI_SCORE_RESPONSIVE) {
+			int xBack = 100;
+			int yBack = 400;
+			pintaString(xBack, yBack, boldCaracteres, "save your score!");
+		}
 
 		glEnd();
 		glDisable(GL_TEXTURE_2D);

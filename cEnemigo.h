@@ -183,6 +183,8 @@ struct cExplo {
 
 #define JEFE1_FLASH_IMPACTO 24
 
+#define JEFE1_TIEMPO_MUERTO 1000
+
 
 class cJefe1 : public cEnemigo {
 protected:
@@ -190,6 +192,7 @@ protected:
 	long long _tiempoVida;
 	long long _ultimoTiro;
 	long long _ultimoImpacto;
+	int _tiempoMuerto;
 	
 	int _subState;
 
@@ -293,6 +296,9 @@ public:
 #define JEFE2_INTERVALO_GUSANO2 500
 #define JEFE2_TIEMPO_GUSANO2 320
 
+#define JEFE2_TIEMPO_MUERTO 800
+
+
 class cJefe2 : public cEnemigo {
 protected:
 
@@ -300,6 +306,7 @@ protected:
 	long long _ultimaSalida;
 	long long _ultimoAtaque;
 	long long _ultimoImpacto;
+	int _tiempoMuerto;
 	
 	vector<cEnemigo3*> _gusanos;
 	vector<long long> _ultimaSalidaGusano;
@@ -358,6 +365,9 @@ public:
 
 #define JEFE3_NUM_MINIS 30
 #define JEFE3_INTERVALO_MINIS_ATTACK 200
+
+#define JEFE3_TIEMPO_MUERTO 800
+
 class cMiniJefe3 : public cEnemigo {
 protected:
 	long long _tiempoVida;

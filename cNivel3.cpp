@@ -13,7 +13,7 @@ cNivel3::cNivel3(cSistema* sis, cNaveEspacial* naveEspacial,
 		idTextura, idFondo,
 		ficheroTextura,
 		ficheroFondo) {
-	//_posicion = 3200;
+	//_posicion = 5084-GAME_WIDTH;
 }
 
 
@@ -62,10 +62,10 @@ void cNivel3::generaEnemigos() {
 	}
 
 	// generar el jefe
-	//if (_posicion == 4200 && !_delay) {
-	//	cJefe1* jefe = new cJefe1(_sis);
-	//	pushEnemigo(jefe);
-	//}
+	if (_posicion == 5084-GAME_WIDTH && !_delay) {
+		cJefe3* jefe = new cJefe3(_sis);
+		pushEnemigo(jefe);
+	}
 }
 
 void cNivel3::posicionRespawn(int &x, int &y) {
