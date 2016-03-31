@@ -159,7 +159,7 @@ struct cExplo {
 //----------------------------------------------------------------------
 
 #define JEFE1_MUEVE_DELAY 10
-#define JEFE1_VIDA_INICIAL 200
+#define JEFE1_VIDA_INICIAL 500
 #define JEFE1_PUNTOS 35
 
 #define JEFE1_NUM_FRAMES 24
@@ -183,8 +183,6 @@ struct cExplo {
 
 #define JEFE1_FLASH_IMPACTO 24
 
-#define JEFE1_TIEMPO_MUERTO 1000
-
 
 class cJefe1 : public cEnemigo {
 protected:
@@ -192,7 +190,6 @@ protected:
 	long long _tiempoVida;
 	long long _ultimoTiro;
 	long long _ultimoImpacto;
-	int _tiempoMuerto;
 	
 	int _subState;
 
@@ -296,8 +293,6 @@ public:
 #define JEFE2_INTERVALO_GUSANO2 500
 #define JEFE2_TIEMPO_GUSANO2 320
 
-#define JEFE2_TIEMPO_MUERTO 800
-
 class cJefe2 : public cEnemigo {
 protected:
 
@@ -305,7 +300,6 @@ protected:
 	long long _ultimaSalida;
 	long long _ultimoAtaque;
 	long long _ultimoImpacto;
-	int _tiempoMuerto;
 	
 	vector<cEnemigo3*> _gusanos;
 	vector<long long> _ultimaSalidaGusano;
@@ -334,4 +328,95 @@ public:
 
 };
 
+//----------------------------------------------------------------------
+// jefe nivel 3
+//----------------------------------------------------------------------
+#define JEFE3_MUEVE_DELAY 10
+#define JEFE3_VIDA_INICIAL 1000
+#define JEFE3_PUNTOS 80
+
+#define JEFE3_MINI_MUEVE_DELAY 10
+#define JEFE3_MINI_VIDA_INICIAL 100
+#define JEFE3_MINI_PUNTOS 20
+#define JEFE3_INC_MOV 1
+
+#define JEFE3_FLASH_IMPACTO 24
+#define JEFE3_MINI_FLASH_IMPACTO 24
+
+#define JEFE3_IDLE 0
+#define JEFE3_MOVE_UP 1
+#define JEFE3_MOVE_DOWN 2
+#define JEFE3_MOVE_RIGHT 3
+#define JEFE3_MOVE_LEFT 4
+
+#define JEFE3_MUERE_DELAY 10
+#define JEFE3_MINI_MUERE_DELAY 10
+#define JEFE3_EXPLO_DELAY 4
+#define JEFE3_EXPLO_NUM_FRAMES 5
+#define JEFE3_MINI_EXPLO_NUM_FRAMES 6
+#define JEFE3_MAX_NUM_EXPLO 5
+
+#define JEFE3_NUM_MINIS 30
+#define JEFE3_INTERVALO_MINIS_ATTACK 200
+class cMiniJefe3 : public cEnemigo {
+protected:
+	long long _tiempoVida;
+	long long _ultimoImpacto;
+	int _tiempoMuerto;
+	int _subState;
+
+public:	
+	cMiniJefe3(cSistema* sis, int x, int y);
+	~cMiniJefe3();
+
+	void muerete();
+	void offset(int x, int y);
+	void caja(cRect &rect) const;
+	void restaVida(int vida);
+	void colision(cRect &caja, int &colMask) const;
+	void move(int statePadre);
+	bool isDead();
+
+	void logica();
+	void pinta() const;
+};
+
+
+class cJefe3 : public cEnemigo {
+protected:
+
+	long long _tiempoVida;
+	long long _ultimoImpacto;
+	int _tiempoMuerto;
+
+	list<cMiniJefe3> _minis;
+	//vector<long long> _ultimoAtaqueMini;
+	//vector<long long> _tiempoMini;
+
+	int _subState;
+	int _seqExplo;
+	list<cExplo> _exploCuerpo;
+
+	void pintaVivo() const;
+	void pintaExplo() const;
+	
+	void mueveMinis();
+	void mataMinis();
+	void eliminaMinisLista();
+
+public:
+	cJefe3(cSistema* sis);
+	~cJefe3();
+	void creaMinis();
+	void restaVida(int vida);
+	void muerete();
+	void caja(cRect &rect) const;
+	void offset(int x, int y);
+
+	void colision(cRect &caja, int &colMask) const;
+
+	void logica();
+	void pinta() const;
+
+};
 
