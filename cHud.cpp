@@ -149,7 +149,7 @@ void cHud::pintaPuntos() const {
 	glBegin(GL_QUADS);
 
 	cNaveEspacial* nave = (cNaveEspacial*)_sis->naveEspacial();
-	long long puntos = nave->puntos()*100;
+	long long puntos = nave->puntos()*FACTOR_PUNTOS;
 	vector<int> nums;
 	if (puntos) {
 		while (puntos) {

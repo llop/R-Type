@@ -88,6 +88,7 @@ cNivel::cNivel(cSistema* sis, cNaveEspacial* naveEspacial,
 
 	_state = NIVEL_NACE;
 	_seq = 0;
+	_maxFade = NIVEL_FADE;
 
 	_puntos = 0;
 }
@@ -429,12 +430,29 @@ void cNivel::logica() {
 		// fade out	
 		--_seq;
 		if (!_seq) _sis->avanzaNivel();
+	} else if (_state == NIVEL_ABORT) {
+		--_seq;
+		if (!_seq) _sis->gameOver();
 	}
 }
 
 void cNivel::termina() {
-	_state = NIVEL_MUERE;
+	if (_state != NIVEL_ABORT) {
+		_state = NIVEL_MUERE;
+		_maxFade = NIVEL_FADE;
+	}
 }
+
+void cNivel::gameOver() {
+	if (_state != NIVEL_MUERE) {
+		_seq = NIVEL_GAME_OVER_FADE;
+		_maxFade = NIVEL_GAME_OVER_FADE;
+	}
+	_state = NIVEL_ABORT;
+	
+}
+
+
 
 void cNivel::pinta() const {
 	/*
@@ -513,8 +531,8 @@ void cNivel::pinta() const {
 	
 	_hud->pinta();
 
-	if (_state == NIVEL_NACE || _state == NIVEL_MUERE) {
-		float alpha = (NIVEL_FADE-_seq)/float(NIVEL_FADE);
+	if (_state == NIVEL_NACE || _state == NIVEL_MUERE || _state == NIVEL_ABORT) {
+		float alpha = (_maxFade-_seq)/float(_maxFade);
 		//  fade in/out
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);

@@ -159,7 +159,7 @@ struct cExplo {
 //----------------------------------------------------------------------
 
 #define JEFE1_MUEVE_DELAY 10
-#define JEFE1_VIDA_INICIAL 500
+#define JEFE1_VIDA_INICIAL 200
 #define JEFE1_PUNTOS 35
 
 #define JEFE1_NUM_FRAMES 24

@@ -18,8 +18,10 @@ using namespace std;
 #define NIVEL_NACE 0
 #define NIVEL_VIVE 1
 #define NIVEL_MUERE 2
+#define NIVEL_ABORT 3
 
 #define NIVEL_FADE 500
+#define NIVEL_GAME_OVER_FADE 300
 
 
 class cNivel : public cSprite {
@@ -44,6 +46,7 @@ protected:
 
 	vector<int> _mapa;						// el mapa de tiles
 
+	int _maxFade;
 
 	bool cargaMapa(const char* ficheroMapa);
 
@@ -106,6 +109,7 @@ public:
 	void logica();
 	void pinta() const;
 
+	void gameOver();
 	void termina();
 
 };

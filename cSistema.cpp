@@ -90,20 +90,24 @@ void cSistema::logicaNivel() {
 }
 
 void cSistema::logicaMenu() {
-	if (_menu == NULL) _menu = new cMenu(this);
+	if (_menu == NULL) {
+		_naveEspacial = new cNaveEspacial(this);
+		_menu = new cMenu(this);
+	}
 	_menu->logica();
 }
 
 void cSistema::avanzaNivel() {
 	_estado = MENU;
 	cMenu* menu = (cMenu*)_menu;
-	menu->setPantalla(PANTALLA_SCORE);
 	if (_nivel != NULL) {
 		cNivel* nivel = (cNivel*)_nivel;
 		menu->setScore(_numNivel, nivel->puntos());
 		int posicionNivel = nivel->getPosicion();
 		_naveEspacial->offset(-posicionNivel, 0);
+		delNivel();
 	}
+	menu->setPantalla(PANTALLA_SCORE);
 	++_numNivel;
 }
 
@@ -120,6 +124,13 @@ void cSistema::arrancaPartida() {
 	((cNivel*)_nivel)->posicionRespawn(x, y);
 	((cNaveEspacial*)_naveEspacial)->renace(x, y);
 }
+
+void cSistema::gameOver() {
+	_estado = MENU;
+	cMenu* menu = (cMenu*)_menu;
+	menu->setPantalla(PANTALLA_GAME_OVER);
+}
+
 
 // freir el nivel que habia y poner el que hay ahora
 void cSistema::cargaNivel() {
@@ -143,6 +154,22 @@ void cSistema::cargaNivel() {
 							TEX_NIVEL3, TEX_FONDO3, 
 							"maps\\stage3-03.png", 
 							"img\\Outer-Space-Wallpaper.png");
+	} else if (_numNivel == 4) {
+
+		// partida completada
+		cMenu* menu = (cMenu*)_menu;
+		cNaveEspacial* nave = (cNaveEspacial*)_naveEspacial;
+		
+		_estado = MENU;
+
+		// hi-score?
+		long long puntos = nave->puntos();
+		if (menu->esHiScore(puntos)) {
+			menu->setHiScore(puntos);
+			menu->setPantalla(PANTALLA_SET_HI_SCORE);
+		} else {
+			menu->setPantalla(PANTALLA_COMPLETE);
+		}
 	}
 }
 
@@ -152,6 +179,11 @@ void cSistema::continuePartida() {
 	_naveEspacial = new cNaveEspacial(this);
 
 	cargaNivel();
+
+	// posicionar la nave
+	int x, y;
+	((cNivel*)_nivel)->posicionRespawn(x, y);
+	((cNaveEspacial*)_naveEspacial)->renace(x, y);
 }
 
 void cSistema::logica() {

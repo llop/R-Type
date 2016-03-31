@@ -16,6 +16,7 @@
 #define HUD_HEIGHT 2
 #define HUD_HPIX 32
 
+#define FACTOR_PUNTOS 100
 
 #define MENU 0
 #define NIVEL 1

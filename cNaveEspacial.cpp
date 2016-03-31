@@ -150,6 +150,11 @@ void cNaveEspacial::no_dispara() {
 	// disparar cuando el jugador suelta la tecla
 	if (_tiroPulsado) {
 		_tiroPulsado = false;
+		
+		if (_sis->nivel() == NULL) {
+			_cargaTiro = 0;
+			return;
+		}
 
 		// los escudos tambien le meten duro!
 		long long intervaloEscudo = _tiempoVida - _ultimoTiroEscudo;
@@ -157,6 +162,7 @@ void cNaveEspacial::no_dispara() {
 			_ultimoTiroEscudo = _tiempoVida;
 			for (unsigned int i=0; i<_escudos.size(); ++i) _escudos[i]->dispara();
 		}
+
 		// no permitir disparar muy rapido
 		long long intervalo = _tiempoVida - _ultimoTiro;
 		if (intervalo < _tiroDelay) return;
@@ -253,13 +259,11 @@ void cNaveEspacial::anadeEscudo() {
 void cNaveEspacial::procesaTeclas(unsigned char *keys) {
 	if (_state == NAVE_VIVE) {
 		// movimiento
-		bool mueveArriba = keys['w']||keys['W'];
-		bool mueveAbajo = keys['s']||keys['S'];
-		if (mueveArriba) arriba();
-		if (mueveAbajo) abajo();
-		if (keys['a']||keys['A']) atras();
-		if (keys['d']||keys['D']) adelante();
-		if (!mueveArriba && !mueveAbajo) quieto();
+		if (keys[GLUT_KEY_UP]) arriba();
+		if (keys[GLUT_KEY_DOWN]) abajo();
+		if (keys[GLUT_KEY_LEFT]) atras();
+		if (keys[GLUT_KEY_RIGHT]) adelante();
+		if (!keys[GLUT_KEY_UP] && !keys[GLUT_KEY_DOWN]) quieto();
 		// disparo
 		if (keys[' ']) dispara();
 		else no_dispara();
@@ -437,6 +441,7 @@ void cNaveEspacial::logica() {
 			else {
 				_state = NAVE_MUERE;
 				_muerto = true;
+				((cNivel*)_sis->nivel())->gameOver();
 			}
 		}
 	}
@@ -452,7 +457,7 @@ void cNaveEspacial::offset(int x, int y) {
 }
 
 void cNaveEspacial::pinta() const {
-	if (_state == NAVE_MUERE) return;
+ 	if (_state == NAVE_MUERE) return;
 
 	// el parpadeo indica que la nave es invencible
 	bool invencible = _state==NAVE_VIVE && _tiempoVida<NAVE_TIEMPO_INVENCIBLE;
@@ -509,7 +514,7 @@ void cNaveEspacial::pinta() const {
 			if (_nivelEscudos >= NAVE_ESCUDO1 && _escudos[0]->anclado()) {
 				cRect rectEscudo;
 				_escudos[0]->caja(rectEscudo);
-				xTiro += rectEscudo.w - 4;
+				xTiro += rectEscudo.w - 6;
 			}
 			int yTiro = _y;
 			int seqTiro = (_cargaTiro / NAVE_TIRO_DELAY) % 8;
