@@ -36,7 +36,7 @@ cJefe3::cJefe3(cSistema* sis) : cEnemigo(sis) {
 	_tiempoVida = 0;
 	_ultimoImpacto = -JEFE3_FLASH_IMPACTO;
 
-	_x = 5084;
+	_x = 5075;
 	_y = 200;
 
 	_subState = JEFE3_IDLE;
@@ -50,12 +50,14 @@ cJefe3::~cJefe3() {
 }
 
 void cJefe3::creaMinis() {
-	cMiniJefe3* e1 = new cMiniJefe3(_sis,5000,300);
-	cMiniJefe3* e2 = new cMiniJefe3(_sis,5000,150);
-	_minis.insert(_minis.end(), e1);
-	((cNivel*)_sis->nivel())->pushEnemigo(e1);
-	_minis.insert(_minis.end(), e2);
-	((cNivel*)_sis->nivel())->pushEnemigo(e2);
+	int i, j;
+	for (i = 0; i < 5; i++) { //x 5000->5150
+		for (j = 0; j < 5; j++) { // y 150->250
+			cMiniJefe3* e1 = new cMiniJefe3(_sis, (5000+30*i), (150+20*j));
+			_minis.insert(_minis.end(), e1);
+			((cNivel*)_sis->nivel())->pushEnemigo(e1);
+		}
+	}
 }
 
 void cJefe3::muerete() {
@@ -83,8 +85,8 @@ void cJefe3::colision(cRect &rect, int &colMask) const {
 	if (_state == ENEMIGO_VIVE) {
 		int wPixSolido = jefe3Mov[_seq][2];
 		int hPixSolido = jefe3Mov[_seq][3];
-		int xPixSolido = _x - (wPixSolido>>1);
-		int yPixSolido = _y - (hPixSolido>>1);
+		int xPixSolido = _x - (wPixSolido >> 1);
+		int yPixSolido = _y - (hPixSolido >> 1);
 		if (xPixSolido < rect.x + rect.w && xPixSolido + wPixSolido > rect.x &&
 			yPixSolido < rect.y + rect.h && yPixSolido + hPixSolido > rect.y) {
 			colMask = 1;
@@ -98,91 +100,95 @@ void cJefe3::logica() {
 
 		++_tiempoVida;
 		eliminaMinisLista();
-		
+
 		//mover el jefe
 		int x = 0;
 		int y = 0;
 		if (_subState == JEFE3_MOVE_UP) {
-			_y -= JEFE3_INC_MOV;
+			if (_minis.size() > 0) _y -= JEFE3_INC_MOV;
+			else _y -= 2 * JEFE3_INC_MOV;
 			y = -JEFE3_INC_MOV;
 			if (_y <= 150) _subState = JEFE3_MOVE_RIGHT; //limite arriba
 		}
 		else if (_subState == JEFE3_MOVE_RIGHT) {
-			_x += JEFE3_INC_MOV;
+			if (_minis.size() > 0) _x += JEFE3_INC_MOV;
+			else _x += 2 * JEFE3_INC_MOV;
 			x = JEFE3_INC_MOV;
 			if (_x >= 5150) _subState = JEFE3_MOVE_DOWN; //limite derecha
 		}
 		else if (_subState == JEFE3_MOVE_DOWN) {
-			_y += JEFE3_INC_MOV;
+			if (_minis.size() > 0) _y += JEFE3_INC_MOV;
+			else _y += 2 * JEFE3_INC_MOV;
 			y = JEFE3_INC_MOV;
 			if (_y >= 300) _subState = JEFE3_MOVE_LEFT; //limite abajo
 		}
 		else if (_subState == JEFE3_MOVE_LEFT) {
-			_x -= JEFE3_INC_MOV;
+			if (_minis.size() > 0) _x -= JEFE3_INC_MOV;
+			else _x -= 2 * JEFE3_INC_MOV;
 			x = -JEFE3_INC_MOV;
 			if (_x <= 5000) _subState = JEFE3_MOVE_UP; //limite izquierda
 		}
 
 		for (list<cMiniJefe3*>::iterator it = _minis.begin(); it != _minis.end();) {
 			cMiniJefe3* single = *it;
-			single->moveIt(x,y);
+			single->moveIt(x, y);
 			++it;
 		}
-		
+
 		cNivel* nivel = (cNivel*)_sis->nivel();
 		cNaveEspacial* nave = (cNaveEspacial*)_sis->naveEspacial();
-
-		// chequear impactos
-		cRect rect;
-		rect.w = jefe3Mov[_seq][2];
-		rect.h = jefe3Mov[_seq][3];
-		rect.x = _x - (rect.w>>1);
-		rect.y = _y - (rect.h>>1);
-		list<cDisparo*> disparos = nivel->disparos();
-		for (list<cDisparo*>::iterator it = disparos.begin(); it != disparos.end(); ++it) {
-			cDisparo* disparo = *it;
-			if (!disparo->malo() && disparo->vive()) {
-				int colMask;
-				disparo->colision(rect, colMask);
-				if (colMask) {
-					_delay = JEFE3_MUEVE_DELAY;
-					disparo->explota();
-					// aplicar efecto del disparo
-					_vida -= disparo->dano();
-					_ultimoImpacto = _tiempoVida;
-				}
-				else {
-					cRect rectDisp;
-					disparo->caja(rectDisp);
-					colision(rectDisp, colMask);
+		
+		if (_minis.size() <= 0) {
+			// chequear impactos solo si esta solo
+			cRect rect;
+			rect.w = jefe3Mov[_seq][2];
+			rect.h = jefe3Mov[_seq][3];
+			rect.x = _x - (rect.w >> 1);
+			rect.y = _y - (rect.h >> 1);
+			list<cDisparo*> disparos = nivel->disparos();
+			for (list<cDisparo*>::iterator it = disparos.begin(); it != disparos.end(); ++it) {
+				cDisparo* disparo = *it;
+				if (!disparo->malo() && disparo->vive()) {
+					int colMask;
+					disparo->colision(rect, colMask);
 					if (colMask) {
+						_delay = JEFE3_MUEVE_DELAY;
 						disparo->explota();
+						// aplicar efecto del disparo
+						if (_minis.size() <= 0)	_vida -= disparo->dano();
+						_ultimoImpacto = _tiempoVida;
+					}
+					else {
+						cRect rectDisp;
+						disparo->caja(rectDisp);
+						colision(rectDisp, colMask);
+						if (colMask) {
+							disparo->explota();
+						}
 					}
 				}
 			}
-		}
-
-		list<cEscudo*> escudos = nivel->escudos();
-		for (list<cEscudo*>::iterator it = escudos.begin(); it != escudos.end(); ++it) {
-			cEscudo* escudo = *it;
-			int colMask;
-			escudo->colision(rect, colMask);
-			if (colMask) {
-				escudo->choca();
-				long long tiempoFlash = _tiempoVida - _ultimoImpacto;
-				if (tiempoFlash >= JEFE3_FLASH_IMPACTO) {
-					_vida -= escudo->dano();
-					_ultimoImpacto = _tiempoVida;
+			list<cEscudo*> escudos = nivel->escudos();
+			for (list<cEscudo*>::iterator it = escudos.begin(); it != escudos.end(); ++it) {
+				cEscudo* escudo = *it;
+				int colMask;
+				escudo->colision(rect, colMask);
+				if (colMask) {
+					escudo->choca();
+					long long tiempoFlash = _tiempoVida - _ultimoImpacto;
+					if (tiempoFlash >= JEFE3_FLASH_IMPACTO) {
+						_vida -= escudo->dano();
+						_ultimoImpacto = _tiempoVida;
+					}
+				}
+				else {
+					cRect rectDisp;
+					escudo->caja(rectDisp);
+					colision(rectDisp, colMask);
+					if (colMask) escudo->choca();
 				}
 			}
-			else {
-				cRect rectDisp;
-				escudo->caja(rectDisp);
-				colision(rectDisp, colMask);
-				if (colMask) escudo->choca();
-			}
 		}
-
 		if (_vida <= 0) {
 			nave->sumaPuntos(_puntos);
 			mataMinis();
@@ -192,10 +198,29 @@ void cJefe3::logica() {
 
 		if (_minis.size()>0) {
 		//ataque minijefes
+			int auxRandom = rand() % JEFE3_INTERVALO_MINIS_ATTACK;
+			if (auxRandom == 1) {
+				list<cMiniJefe3*>::iterator it = _minis.begin();
+				cMiniJefe3* single = *it;
+				//single attack
+				single->attack();
+				it = _minis.erase(it);
+			}
 		}
 
 		else {
 		// ataque frenetico si jefe esta solo
+			int auxRandom = rand() % 100;
+			if (auxRandom == 1) {
+				int xTiro = _x;
+				int yTiro = _y;
+				int xNave, yNave;
+				_sis->naveEspacial()->getPosicion(xNave, yNave);
+				float xVec = float(xNave - xTiro);
+				float yVec = float(yNave - yTiro);
+				cDisparoJefe1* tiro = new cDisparoJefe1(_sis, xTiro, yTiro, xVec, yVec);
+				nivel->pushDisparo(tiro);
+			}
 		}
 
 
@@ -399,9 +424,10 @@ cMiniJefe3::cMiniJefe3(cSistema* sis, int x, int y) : cEnemigo(sis, x, y) {
 
 	_x = x;
 	_y = y;
-
+	_attacking = false;
 	_subState = JEFE3_IDLE;
-
+	_pixelsAvanzaX = 0;
+	_pixelsAvanzaY = 0;
 	_esJefe = true;
 }
 
@@ -455,6 +481,10 @@ bool cMiniJefe3::isDead() {
 	return res;
 }
 
+void cMiniJefe3::attack() {
+	_subState = JEFE3_MINI_ATTACK;
+}
+
 void cMiniJefe3::logica() {
 	if (_state == ENEMIGO_VIVE) {
 
@@ -462,6 +492,27 @@ void cMiniJefe3::logica() {
 
 		cNivel* nivel = (cNivel*)_sis->nivel();
 		cNaveEspacial* nave = (cNaveEspacial*)_sis->naveEspacial();
+
+		if (_subState == JEFE3_MINI_ATTACK) {
+			if (_attacking) {
+				//seguir su trayectoria
+				_x += int(_pixelsAvanzaX*VELOCIDAD_JEFE3_MINI);
+				_y += int(_pixelsAvanzaY*VELOCIDAD_JEFE3_MINI);
+			}
+			else {
+				// fijar objetivo
+				int nX, nY;
+				nave->getPosicion(nX, nY);
+				float vectX = float(nX - _x);
+				float vectY = float(nY - _y);
+				float len = sqrt(vectX*vectX + vectY*vectY);
+				vectX /= len;
+				vectY /= len;
+				_pixelsAvanzaX = vectX;
+				_pixelsAvanzaY = vectY;
+				_attacking = true;
+			}
+		}
 
 		// chequear impactos
 		cRect rect;

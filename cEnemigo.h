@@ -355,6 +355,7 @@ public:
 #define JEFE3_MOVE_DOWN 2
 #define JEFE3_MOVE_RIGHT 3
 #define JEFE3_MOVE_LEFT 4
+#define JEFE3_MINI_ATTACK 5
 
 #define JEFE3_MUERE_DELAY 10
 #define JEFE3_MINI_MUERE_DELAY 10
@@ -366,8 +367,9 @@ public:
 
 #define JEFE3_NUM_MINIS 30
 #define JEFE3_INTERVALO_MINIS_ATTACK 200
+#define VELOCIDAD_JEFE3_MINI 5
 
-#define JEFE3_TIEMPO_MUERTO 800
+#define JEFE3_TIEMPO_MUERTO 400
 
 class cMiniJefe3 : public cEnemigo {
 protected:
@@ -375,6 +377,9 @@ protected:
 	long long _ultimoImpacto;
 	int _tiempoMuerto;
 	int _subState;
+	bool _attacking;
+	float _pixelsAvanzaX;
+	float _pixelsAvanzaY;
 
 public:	
 	cMiniJefe3(cSistema* sis, int x, int y);
@@ -387,6 +392,7 @@ public:
 	void offset(int x, int y);
 	void moveIt(int x, int y);
 	bool isDead();
+	void attack();
 
 	void logica();
 	void pinta() const;
