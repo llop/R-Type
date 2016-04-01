@@ -50,8 +50,12 @@ cJefe3::~cJefe3() {
 }
 
 void cJefe3::creaMinis() {
-	cMiniJefe3* e = new cMiniJefe3(_sis,5084,200);
-	//_minis.insert(e);
+	cMiniJefe3* e1 = new cMiniJefe3(_sis,5000,300);
+	cMiniJefe3* e2 = new cMiniJefe3(_sis,5000,150);
+	_minis.insert(_minis.end(), e1);
+	((cNivel*)_sis->nivel())->pushEnemigo(e1);
+	_minis.insert(_minis.end(), e2);
+	((cNivel*)_sis->nivel())->pushEnemigo(e2);
 }
 
 void cJefe3::muerete() {
@@ -94,25 +98,36 @@ void cJefe3::logica() {
 
 		++_tiempoVida;
 		eliminaMinisLista();
+		
 		//mover el jefe
-		mueveMinis();
+		int x = 0;
+		int y = 0;
 		if (_subState == JEFE3_MOVE_UP) {
 			_y -= JEFE3_INC_MOV;
+			y = -JEFE3_INC_MOV;
 			if (_y <= 150) _subState = JEFE3_MOVE_RIGHT; //limite arriba
 		}
 		else if (_subState == JEFE3_MOVE_RIGHT) {
 			_x += JEFE3_INC_MOV;
+			x = JEFE3_INC_MOV;
 			if (_x >= 5150) _subState = JEFE3_MOVE_DOWN; //limite derecha
 		}
 		else if (_subState == JEFE3_MOVE_DOWN) {
 			_y += JEFE3_INC_MOV;
+			y = JEFE3_INC_MOV;
 			if (_y >= 300) _subState = JEFE3_MOVE_LEFT; //limite abajo
 		}
 		else if (_subState == JEFE3_MOVE_LEFT) {
 			_x -= JEFE3_INC_MOV;
+			x = -JEFE3_INC_MOV;
 			if (_x <= 5000) _subState = JEFE3_MOVE_UP; //limite izquierda
 		}
-		
+
+		for (list<cMiniJefe3*>::iterator it = _minis.begin(); it != _minis.end();) {
+			cMiniJefe3* single = *it;
+			single->moveIt(x,y);
+			++it;
+		}
 		
 		cNivel* nivel = (cNivel*)_sis->nivel();
 		cNaveEspacial* nave = (cNaveEspacial*)_sis->naveEspacial();
@@ -175,8 +190,17 @@ void cJefe3::logica() {
 			return;
 		}
 
+		if (_minis.size()>0) {
+		//ataque minijefes
+		}
+
+		else {
+		// ataque frenetico si jefe esta solo
+		}
+
+
 		// actualizar estado
-		if (_tiempoVida == 640) {
+		if (_tiempoVida == 400) {
 			_subState = JEFE3_MOVE_UP;
 		}
 
@@ -212,18 +236,10 @@ void cJefe3::logica() {
 	}
 }
 
-void cJefe3::mueveMinis() {
-	for (list<cMiniJefe3>::iterator it = _minis.begin(); it != _minis.end();) {
-		cMiniJefe3 &single = *it;
-		single.move(_subState);
-		++it;
-	}
-}
-
 void cJefe3::eliminaMinisLista() {
-	for (list<cMiniJefe3>::iterator it = _minis.begin(); it != _minis.end();) {
-		cMiniJefe3 &single = *it;
-		if (single.isDead()) {
+	for (list<cMiniJefe3*>::iterator it = _minis.begin(); it != _minis.end();) {
+		cMiniJefe3* single = *it;
+		if (single->isDead()) {
 			it = _minis.erase(it);
 		}
 		else ++it;
@@ -231,9 +247,9 @@ void cJefe3::eliminaMinisLista() {
 }
 
 void cJefe3::mataMinis() {
-	for (list<cMiniJefe3>::iterator it = _minis.begin(); it != _minis.end();) {
-		cMiniJefe3 &single = *it;
-		single.muerete();
+	for (list<cMiniJefe3*>::iterator it = _minis.begin(); it != _minis.end();) {
+		cMiniJefe3* single = *it;
+		single->muerete();
 		++it;
 	}
 	eliminaMinisLista();
@@ -401,10 +417,6 @@ void cMiniJefe3::muerete() {
 	_tiempoMuerto = 0;
 }
 
-void cMiniJefe3::offset(int x, int y) {
-	// el nivel no lo mueve
-}
-
 void cMiniJefe3::caja(cRect &rect) const {
 	// estes no es necesario para un jefe
 }
@@ -428,20 +440,13 @@ void cMiniJefe3::colision(cRect &rect, int &colMask) const {
 	}
 }
 
-void cMiniJefe3::move(int statePadre) {
-	_subState = statePadre;
-	if (_subState == JEFE3_MOVE_UP) {
-		_y -= JEFE3_INC_MOV;
-	}
-	else if (_subState == JEFE3_MOVE_RIGHT) {
-		_x += JEFE3_INC_MOV;
-	}
-	else if (_subState == JEFE3_MOVE_DOWN) {
-		_y += JEFE3_INC_MOV;
-	}
-	else if (_subState == JEFE3_MOVE_LEFT) {
-		_x -= JEFE3_INC_MOV;
-	}
+void cMiniJefe3::offset(int x, int y) {
+
+}
+
+void cMiniJefe3::moveIt(int x, int y) {
+	_x += x;
+	_y += y;
 }
 
 bool cMiniJefe3::isDead() {
@@ -509,13 +514,18 @@ void cMiniJefe3::logica() {
 			}
 		}
 
+		// animacion
+		if (_delay) --_delay;
+		else {
+			_seq = (_seq + 1) % JEFE3_MINI_NUM_FRAMES;
+			_delay = JEFE3_MINI_MUEVE_DELAY;
+		}
+
 		if (_vida <= 0) {
 			nave->sumaPuntos(_puntos);
 			muerete();
 			return;
 		}
-
-		// jefe 3 actualiza el substate de los minis
 
 	}
 
@@ -556,7 +566,7 @@ void cMiniJefe3::pinta() const {
 		wPixEne = mini3Mov[_seq][2];
 		hPixEne = mini3Mov[_seq][3];
 		xPixEne = _x - (wPixEne >> 1);
-		yPixOffset = mini3MovMid[_seq / 8] - mini3Mov[_seq][1];
+		yPixOffset = (hPixEne >> 1);// mini3MovMid[_seq / 8] - mini3Mov[_seq][1];
 		yPixEne = GAME_HEIGHT - (_y - yPixOffset + hPixEne);
 	}
 	else if (_state == ENEMIGO_EXPLO) {

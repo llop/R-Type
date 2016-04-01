@@ -360,6 +360,7 @@ public:
 #define JEFE3_MINI_MUERE_DELAY 10
 #define JEFE3_EXPLO_DELAY 4
 #define JEFE3_EXPLO_NUM_FRAMES 5
+#define JEFE3_MINI_NUM_FRAMES 4
 #define JEFE3_MINI_EXPLO_NUM_FRAMES 6
 #define JEFE3_MAX_NUM_EXPLO 5
 
@@ -380,11 +381,11 @@ public:
 	~cMiniJefe3();
 
 	void muerete();
-	void offset(int x, int y);
 	void caja(cRect &rect) const;
 	void restaVida(int vida);
 	void colision(cRect &caja, int &colMask) const;
-	void move(int statePadre);
+	void offset(int x, int y);
+	void moveIt(int x, int y);
 	bool isDead();
 
 	void logica();
@@ -399,7 +400,7 @@ protected:
 	long long _ultimoImpacto;
 	int _tiempoMuerto;
 
-	list<cMiniJefe3> _minis;
+	list<cMiniJefe3*> _minis;
 	//vector<long long> _ultimoAtaqueMini;
 	//vector<long long> _tiempoMini;
 
@@ -410,7 +411,6 @@ protected:
 	void pintaVivo() const;
 	void pintaExplo() const;
 	
-	void mueveMinis();
 	void mataMinis();
 	void eliminaMinisLista();
 
