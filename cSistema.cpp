@@ -10,7 +10,7 @@
 cSistema::cSistema() {
 	_naveEspacial = NULL;
 	_nivel = NULL;
-	_numNivel = 1;
+	_numNivel = NIVEL1;
 	_menu = NULL;
 	_data = new cData();
 	_estado = MENU;
@@ -116,7 +116,7 @@ void cSistema::arrancaPartida() {
 	delNaveEspacial();
 	_naveEspacial = new cNaveEspacial(this);
 
-	_numNivel = 1;
+	_numNivel = NIVEL1;
 	cargaNivel();
 }
 
@@ -132,25 +132,25 @@ void cSistema::cargaNivel() {
 	_estado = NIVEL;
 	delNivel();
 	cNaveEspacial* nave = (cNaveEspacial*)_naveEspacial;
-	if (_numNivel == 1) {
+	if (_numNivel == NIVEL1) {
 		_nivel = new cNivel1(this, nave, 
 							328, 28, "maps\\level-01.csv", 
 							TEX_NIVEL1, TEX_FONDO1, 
 							"maps\\stage1-01.png", 
 							"img\\Outer-Space-Wallpaper.png");
-	} else if (_numNivel == 2) {
+	} else if (_numNivel == NIVEL2) {
 		_nivel = new cNivel2(this, nave, 
 							288, 28, "maps\\level-02.csv", 
 							TEX_NIVEL2, TEX_FONDO2, 
 							"maps\\textura-nivel2.png", 
 							"img\\level2-back.png");
-	} else if (_numNivel == 3) {
+	} else if (_numNivel == NIVEL3) {
 		_nivel = new cNivel3(this, nave, // funcionaaa yuhuuu!!!!
 							328, 28, "maps\\level-03.csv", 
 							TEX_NIVEL3, TEX_FONDO3, 
 							"maps\\stage3-03.png", 
 							"img\\Outer-Space-Wallpaper.png");
-	} else if (_numNivel == 4) {
+	} else if (_numNivel == NUM_NIVELES) {
 
 		// partida completada
 		cMenu* menu = (cMenu*)_menu;

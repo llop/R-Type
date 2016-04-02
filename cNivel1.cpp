@@ -18,6 +18,11 @@ cNivel1::cNivel1(cSistema* sis, cNaveEspacial* naveEspacial,
 }
 
 
+float cNivel1::factorDificultad() const {
+	float factor = _posicion / float(_posicionFinal);
+	return (factor / NUM_NIVELES) + 1;
+};
+
 int cNivel1::avanzaPosicion() {
 	// avanzar si toca
 	int avanza = 0;

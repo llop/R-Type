@@ -16,6 +16,11 @@ cNivel3::cNivel3(cSistema* sis, cNaveEspacial* naveEspacial,
 	//_posicion = 5084-GAME_WIDTH;
 }
 
+float cNivel3::factorDificultad() const {
+	float factor = _posicion / float(_posicionFinal);
+	return 3 * (factor / NUM_NIVELES) + 1;
+};
+
 
 int cNivel3::avanzaPosicion() {
 	// avanzar si toca

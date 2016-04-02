@@ -39,7 +39,6 @@ protected:
 	list<cItem*> _items;					// items
 	list<cEnemigo*> _enemigos;				// enemigos
 	list<cDisparo*> _disparos;				// disparos
-	//list<cEscudo*> _escudos;				// escudos
 	cHud* _hud;
 
 	long long _puntos;
@@ -88,13 +87,11 @@ public:
 	const list<cItem*> items() const;
 	const list<cEnemigo*> enemigos() const;
 	const list<cDisparo*> disparos() const;
-	//const list<cEscudo*> escudos() const;
 	
 	// establecer
 	void pushItem(cItem* item);
 	void pushEnemigo(cEnemigo* enemigo);
 	void pushDisparo(cDisparo* disparo);
-	//void pushEscudo(cEscudo* escudo);
 
 	virtual void posicionRespawn(int &x, int &y) {}
 
@@ -110,7 +107,6 @@ public:
 	// objeto: si hubo colision, el tipo de objeto contra el que ha chocado el rectangulo
 	//         es una mascara de bits -puede ser un tile (COLISION_TILE) y/o los limites de la pantalla (COLISION_PANTALLA)
 	void colisionNivel(const cRect &rect, int &colisionMask, int &x, int &y, int &objeto);
-
 	void colision(cRect &caja, int &colMask) const;
 
 	// determina si un rectangulo queda fuera de la pantalla
@@ -124,6 +120,8 @@ public:
 	void termina();
 
 	void tiraMagia();
+
+	virtual float factorDificultad() const { return 1.0f; };
 
 };
 
@@ -148,6 +146,7 @@ public:
 			const char* ficheroFondo);
 
 	void posicionRespawn(int &x, int &y);
+	float factorDificultad() const;
 };
 
 
@@ -170,6 +169,7 @@ public:
 			const char* ficheroFondo);
 
 	void posicionRespawn(int &x, int &y);
+	float factorDificultad() const;
 };
 
 class cNivel3 : public cNivel {
@@ -188,4 +188,5 @@ public:
 		const char* ficheroFondo);
 
 	void posicionRespawn(int &x, int &y);
+	float factorDificultad() const;
 };

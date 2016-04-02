@@ -28,6 +28,11 @@ int cNivel2::avanzaPosicion() {
 	return avanza;
 }
 
+float cNivel2::factorDificultad() const {
+	float factor = _posicion / float(_posicionFinal);
+	return 2 * (factor / NUM_NIVELES) + 1;
+};
+
 void cNivel2::generaEnemigos() {
 	cRect rect;
 	caja(rect);

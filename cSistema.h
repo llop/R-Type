@@ -25,6 +25,11 @@
 #define DIFICULTAD_DIFICIL 1
 #define NUM_DIFICULTADES 2
 
+#define NIVEL1 0
+#define NIVEL2 1
+#define NIVEL3 2
+#define NUM_NIVELES 3
+
 
 struct cRect {
 	int x, y, w, h;
