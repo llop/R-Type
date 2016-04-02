@@ -68,9 +68,25 @@ void cNivel1::generaEnemigos() {
 		cEnemigo2* enemigo = new cEnemigo2(_sis, rect.x + rect.w + 10, 120);
 		pushEnemigo(enemigo);
 	}
-
+	
 	if (_posicion == 60 * TILE_WIDTH - GAME_WIDTH && !_delay) {
 		cEnemigoItem* enemigo = new cEnemigoItem(_sis, rect.x + rect.w + 8, 300, -5.0f, 0.0f, ITEM_ESCUDO);
+		pushEnemigo(enemigo);
+	}
+
+	if (_posicion == 68 * TILE_WIDTH - GAME_WIDTH + 64 && !_delay) {
+		int y = -16;
+		cEnemigo4* enemigo = new cEnemigo4(_sis, rect.x + rect.w + 10 - 64, y, ENEMIGO4_ANDA_IZQ);
+		pushEnemigo(enemigo);
+	}
+	if (_posicion == 68 * TILE_WIDTH - GAME_WIDTH + 72 && !_delay) {
+		int y = -16;
+		cEnemigo4* enemigo = new cEnemigo4(_sis, rect.x + rect.w + 10 - 72, y, ENEMIGO4_ANDA_DER);
+		pushEnemigo(enemigo);
+	}
+	if (_posicion == 92 * TILE_WIDTH - 100 && !_delay) {
+		int y = -16;
+		cEnemigo4* enemigo = new cEnemigo4(_sis, rect.x + 100, y, ENEMIGO4_ANDA_DER);
 		pushEnemigo(enemigo);
 	}
 
@@ -81,6 +97,14 @@ void cNivel1::generaEnemigos() {
 			pushEnemigo(enemigo);
 		}
 	}
+
+	if (_posicion == 138 * TILE_WIDTH - GAME_WIDTH + 64 && !_delay) {
+		int y = -16;
+		cEnemigo4* enemigo = new cEnemigo4(_sis, rect.x + rect.w + 10 - 64, y, ENEMIGO4_ANDA_IZQ);
+		pushEnemigo(enemigo);
+	}
+
+
 
 	// enemigo 3 (251, 14) -> (4016, 224), radio (14-5) -> 144, spawnPos = (4016-144-15-640) = 3217
 	if (_posicion==3218 && !_delay) {

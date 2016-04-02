@@ -8,7 +8,7 @@
 // texture array size
 //----------------------------------------------------------
 
-#define NUM_IMG	22
+#define NUM_IMG	23
 
 
 //----------------------------------------------------------
@@ -46,6 +46,7 @@
 #define TEX_JEFE2 19
 #define TEX_JEFE3 20
 #define TEX_MINIJEFE3 21
+#define TEX_ENE4 22
 
 
 

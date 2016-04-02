@@ -278,6 +278,7 @@ void cNivel::aplicaMuertes() {
 //         puede ser un tile (COLISION_TILE) o los limites de la pantalla (COLISION_PANTALLA)
 void cNivel::colisionNivel(const cRect &rect, int &colisionMask, int &x, int &y, int &objeto) {
 	colisionMask = 0;
+	objeto = 0;
 
 	int tileArriba = rect.y / TILE_HEIGHT;
 	int tileAbajo = (rect.y+rect.h) / TILE_HEIGHT;

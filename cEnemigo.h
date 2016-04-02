@@ -439,3 +439,46 @@ public:
 
 };
 
+
+
+
+#define ENEMIGO4_CAIDA_INC 6
+#define ENEMIGO4_ANDA_INC 2
+
+#define ENEMIGO4_MOV_FRAMES 4
+#define ENEMIGO4_EXPLO_FRAMES 9
+
+#define ENEMIGO4_CAE 0
+#define ENEMIGO4_ANDA 1
+#define ENEMIGO4_ANDA_IZQ 0
+#define ENEMIGO4_ANDA_DER 1
+
+#define ENEMIGO4_MUEVE_DELAY 12
+#define ENEMIGO4_MUERE_DELAY 4
+#define ENEMIGO4_VIDA_INICIAL 60
+#define ENEMIGO4_PUNTOS 3
+
+class cEnemigo4 : public cEnemigo {
+protected:
+
+	int _subState;		// anda o cae?
+	int _direccion;		// anda para la izquierda o la derecha?
+
+public:
+	//cEnemigo1(cSistema* sis);
+	cEnemigo4(cSistema* sis, int x, int y, int direccion);
+	~cEnemigo4();
+
+	void muerete();
+	void offset(int x, int y);
+	void caja(cRect &rect) const;
+
+	void colision(cRect &caja, int &colMask) const;
+
+	void logica();
+	void pinta() const;
+
+};
+
+
+

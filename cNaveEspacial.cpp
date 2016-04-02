@@ -315,6 +315,7 @@ void cNaveEspacial::muerete() {
 	_delay = NAVE_EXPLO_DELAY;
 
 	delEscudos();
+	_cargaTiro = 0;
 }
 
 void cNaveEspacial::caja(cRect &rect) const {

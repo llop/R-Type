@@ -70,5 +70,5 @@ void cNivel3::generaEnemigos() {
 
 void cNivel3::posicionRespawn(int &x, int &y) {
 	x = _posicion + 100;
-	y = 255;
+	y = 244;
 }

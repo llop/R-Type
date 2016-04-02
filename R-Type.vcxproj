@@ -102,6 +102,7 @@
     <ClCompile Include="cEnemigo1.cpp" />
     <ClCompile Include="cEnemigo2.cpp" />
     <ClCompile Include="cEnemigo3.cpp" />
+    <ClCompile Include="cEnemigo4.cpp" />
     <ClCompile Include="cEnemigoItem.cpp" />
     <ClCompile Include="cEscudo.cpp" />
     <ClCompile Include="cHud.cpp" />
