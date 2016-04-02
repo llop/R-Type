@@ -96,18 +96,17 @@ cEnemigo3::cEnemigo3(cSistema* sis, int x, int y, int numPiezas, float radio, fl
 	//     36         ?
 	// ----------- = ----
 	//  perimetro     PI
-	_diffAngle = (acos(-1.0f)*36.0f)/(2*acos(-1.0f)*_radio);
+	_diffAngle = (_PI*36.0f)/(_2PI*_radio);
 
 	_puntos = ENEMIGO3_PUNTOS;
+
+	_esJefe = true;
 }
 
 cEnemigo3::~cEnemigo3() {
 
 }
 
-void cEnemigo3::restaVida(int vida) {
-	// no hacer nada
-}
 void cEnemigo3::explota() {
 	_state = ENEMIGO_EXPLO;
 	for (int i=0; i<_numPiezas; ++i) {
@@ -133,16 +132,30 @@ void cEnemigo3::caja(cRect &rect) const {
 }
 
 
+void cEnemigo3::restaVida(int vida) {
+	// magias afectan a las pelotillas individualmente
+	for (int i = 0; i < _numPiezas; ++i) {
+		if (_piezas[i][0] > 0) {
+			_piezas[i][0] -= vida;
+			if (_piezas[i][0] <= 0) ((cNaveEspacial*)_sis->naveEspacial())->sumaPuntos(_puntos);
+		}
+	}
+}
+
+
 // pre: inc <= 2 PI
-float corrAng(float ang, float inc) {
+float _E3_2PI = float(2 * acos(-1.0f));
+inline float corrAng(float ang, float inc) {
 	ang += inc;
-	while (ang<0) ang += 2*acos(-1.0f);
-	while (ang>=2*acos(-1.0f)) ang -= 2*acos(-1.0f);
+	while (ang<0) ang += _E3_2PI;
+	while (ang>= _E3_2PI) ang -= _E3_2PI;
 	return ang;
 }
 
 void cEnemigo3::colision(cRect &rect,int &colMask) const {
 	colMask = 0;
+	if (_state != ENEMIGO_VIVE) return;
+
 	float angle = _angle;
 	// las pelotillas
 	if (_antihorario) angle = corrAng(angle, -2*_diffAngle);
@@ -166,6 +179,7 @@ void cEnemigo3::colision(cRect &rect,int &colMask) const {
 		else angle = corrAng(angle, _diffAngle);
 	}
 	// la cabeza o el cuello
+	float seqFac = 16/_2PI;
 	for (int i=0; i<4; ++i) {
 		int* bola = NULL;
 		if (i<2) {
@@ -173,11 +187,11 @@ void cEnemigo3::colision(cRect &rect,int &colMask) const {
 			else angle = corrAng(_angle, i*_diffAngle);
 			if (i%2) {
 				// ? / 16 = ang / 2 PI
-				int seqColl = int((16.0f*angle)/(2*acos(-1.0f)));
+				int seqColl = int(seqFac*angle);
 				seqColl = (seqColl+4) % 16;
 				bola = ene3Coll[seqColl];
 			} else {
-				int seqCap = int((16.0f*angle)/(2*acos(-1.0f)));
+				int seqCap = int(seqFac*angle);
 				seqCap = (seqCap+4) % 16;
 				bola = ene3Cap[seqCap];
 			}
@@ -185,11 +199,11 @@ void cEnemigo3::colision(cRect &rect,int &colMask) const {
 			if (_antihorario) angle = corrAng(_angle, -(i+_numPiezas)*_diffAngle);
 			else angle = corrAng(_angle, (i+_numPiezas)*_diffAngle);
 			if (i%2) {
-				int seqCap = int((16.0f*angle)/(2*acos(-1.0f)));
+				int seqCap = int(seqFac*angle);
 				seqCap = (seqCap+4) % 16;
 				bola = ene3Cap[seqCap];
 			} else {
-				int seqColl = int((16.0f*angle)/(2*acos(-1.0f)));
+				int seqColl = int(seqFac*angle);
 				seqColl = (seqColl+4) % 16;
 				bola = ene3Coll[seqColl];
 			}
@@ -262,9 +276,9 @@ void cEnemigo3::logica() { // cambiar logica quan es vegi
 			}
 
 			// se come algun escudo?
-			list<cEscudo*> escudos = nivel->escudos();
-			for (list<cEscudo*>::iterator it = escudos.begin(); it != escudos.end(); ++it) {
-				cEscudo* escudo = *it;
+			vector<cEscudo*> escudos = nave->escudos();
+			for (unsigned int j = 0; j < escudos.size(); ++j) {
+				cEscudo* escudo = escudos[j];
 				cRect rectEsc;
 				escudo->caja(rectEsc);
 				if (xPixBola<rectEsc.x+rectEsc.w && xPixBola+wPixBola>rectEsc.x &&
@@ -279,7 +293,7 @@ void cEnemigo3::logica() { // cambiar logica quan es vegi
 
 			// intentar disparar
 			if (_piezas[i][0]>0 && !(rand()%10000)) {
-				float incAngle = (2*acos(-1.0f))/8;
+				float incAngle = (_2PI)/8;
 				float angTiro = 0.0f;
 				for (int i=0; i<8; ++i) {
 					float xVecTiro = cos(angTiro);
@@ -294,17 +308,18 @@ void cEnemigo3::logica() { // cambiar logica quan es vegi
 			else angle = corrAng(angle, _diffAngle);
 		}
 		// la cabeza o el cuello
+		float seqFac = 16 / _2PI;
 		for (int i=0; i<4; ++i) {
 			int* bola = NULL;
 			if (i<2) {
 				if (_antihorario) angle = corrAng(_angle, -i*_diffAngle);
 				else angle = corrAng(_angle, i*_diffAngle);
 				if (i%2) {
-					int seqColl = int((16.0f*angle)/(2*acos(-1.0f)));
+					int seqColl = int(seqFac*angle);
 					seqColl = (seqColl+4) % 16;
 					bola = ene3Coll[seqColl];
 				} else {
-					int seqCap = int((16.0f*angle)/(2*acos(-1.0f)));
+					int seqCap = int(seqFac*angle);
 					seqCap = (seqCap+4) % 16;
 					bola = ene3Cap[seqCap];
 				}
@@ -312,11 +327,11 @@ void cEnemigo3::logica() { // cambiar logica quan es vegi
 				if (_antihorario) angle = corrAng(_angle, -(i+_numPiezas)*_diffAngle);
 				else angle = corrAng(_angle, (i+_numPiezas)*_diffAngle);
 				if (i%2) {
-					int seqCap = int((16.0f*angle)/(2*acos(-1.0f)));
+					int seqCap = int(seqFac*angle);
 					seqCap = (seqCap+4) % 16;
 					bola = ene3Cap[seqCap];
 				} else {
-					int seqColl = int((16.0f*angle)/(2*acos(-1.0f)));
+					int seqColl = int(seqFac*angle);
 					seqColl = (seqColl+4) % 16;
 					bola = ene3Coll[seqColl];
 				}
@@ -343,9 +358,9 @@ void cEnemigo3::logica() { // cambiar logica quan es vegi
 			}
 
 			// se come algun escudo?
-			list<cEscudo*> escudos = nivel->escudos();
-			for (list<cEscudo*>::iterator it = escudos.begin(); it != escudos.end(); ++it) {
-				cEscudo* escudo = *it;
+			vector<cEscudo*> escudos = nave->escudos();
+			for (unsigned int j = 0; j < escudos.size(); ++j) {
+				cEscudo* escudo = escudos[j];
 				cRect rectEsc;
 				escudo->caja(rectEsc);
 				if (xPixBola<rectEsc.x+rectEsc.w && xPixBola+wPixBola>rectEsc.x &&
@@ -417,11 +432,11 @@ void cEnemigo3::logica() { // cambiar logica quan es vegi
 					if (_antihorario) angle = corrAng(_angle, -i*_diffAngle);
 					else angle = corrAng(_angle, i*_diffAngle);
 					if (i%2) {
-						int seqColl = int((16.0f*angle)/(2*acos(-1.0f)));
+						int seqColl = int((16.0f*angle)/(_2PI));
 						seqColl = (seqColl+4) % 16;
 						bola = ene3Coll[seqColl];
 					} else {
-						int seqCap = int((16.0f*angle)/(2*acos(-1.0f)));
+						int seqCap = int((16.0f*angle)/(_2PI));
 						seqCap = (seqCap+4) % 16;
 						bola = ene3Cap[seqCap];
 					}
@@ -429,11 +444,11 @@ void cEnemigo3::logica() { // cambiar logica quan es vegi
 					if (_antihorario) angle = corrAng(_angle, -(i+_numPiezas)*_diffAngle);
 					else angle = corrAng(_angle, (i+_numPiezas)*_diffAngle);
 					if (i%2) {
-						int seqCap = int((16.0f*angle)/(2*acos(-1.0f)));
+						int seqCap = int((16.0f*angle)/(_2PI));
 						seqCap = (seqCap+4) % 16;
 						bola = ene3Cap[seqCap];
 					} else {
-						int seqColl = int((16.0f*angle)/(2*acos(-1.0f)));
+						int seqColl = int((16.0f*angle)/(_2PI));
 						seqColl = (seqColl+4) % 16;
 						bola = ene3Coll[seqColl];
 					}
@@ -487,17 +502,18 @@ void cEnemigo3::pintaVivo() const {
 		else angle = corrAng(angle, _diffAngle);
 	}
 	// la cabeza o el cuello
+	float seqFac = 16 / _2PI;
 	for (int i=0; i<4; ++i) {
 		int* bola = NULL;
 		if (i<2) {
 			if (_antihorario) angle = corrAng(_angle, -i*_diffAngle);
 			else angle = corrAng(_angle, i*_diffAngle);
 			if (i%2) {
-				int seqColl = int((16.0f*angle)/(2*acos(-1.0f)));
+				int seqColl = int(seqFac*angle);
 				seqColl = (seqColl+4) % 16;
 				bola = ene3Coll[seqColl];
 			} else {
-				int seqCap = int((16.0f*angle)/(2*acos(-1.0f)));
+				int seqCap = int(seqFac*angle);
 				seqCap = (seqCap+4) % 16;
 				bola = ene3Cap[seqCap];
 			}
@@ -505,11 +521,11 @@ void cEnemigo3::pintaVivo() const {
 			if (_antihorario) angle = corrAng(_angle, -(i+_numPiezas)*_diffAngle);
 			else angle = corrAng(_angle, (i+_numPiezas)*_diffAngle);
 			if (i%2) {
-				int seqCap = int((16.0f*angle)/(2*acos(-1.0f)));
+				int seqCap = int(seqFac*angle);
 				seqCap = (seqCap+4) % 16;
 				bola = ene3Cap[seqCap];
 			} else {
-				int seqColl = int((16.0f*angle)/(2*acos(-1.0f)));
+				int seqColl = int(seqFac*angle);
 				seqColl = (seqColl+4) % 16;
 				bola = ene3Coll[seqColl];
 			}
@@ -608,17 +624,18 @@ void cEnemigo3::pintaExplo() const {
 		else angle = corrAng(angle, _diffAngle);
 	}
 	// la cabeza o el cuello
+	float seqFac = 16 / _2PI;
 	for (int i=0; i<4; ++i) {
 		int* bola = NULL;
 		if (i<2) {
 			if (_antihorario) angle = corrAng(_angle, -i*_diffAngle);
 			else angle = corrAng(_angle, i*_diffAngle);
 			if (i%2) {
-				int seqColl = int((16.0f*angle)/(2*acos(-1.0f)));
+				int seqColl = int(seqFac*angle);
 				seqColl = (seqColl+4) % 16;
 				bola = ene3Coll[seqColl];
 			} else {
-				int seqCap = int((16.0f*angle)/(2*acos(-1.0f)));
+				int seqCap = int(seqFac*angle);
 				seqCap = (seqCap+4) % 16;
 				bola = ene3Cap[seqCap];
 			}
@@ -626,11 +643,11 @@ void cEnemigo3::pintaExplo() const {
 			if (_antihorario) angle = corrAng(_angle, -(i+_numPiezas)*_diffAngle);
 			else angle = corrAng(_angle, (i+_numPiezas)*_diffAngle);
 			if (i%2) {
-				int seqCap = int((16.0f*angle)/(2*acos(-1.0f)));
+				int seqCap = int(seqFac*angle);
 				seqCap = (seqCap+4) % 16;
 				bola = ene3Cap[seqCap];
 			} else {
-				int seqColl = int((16.0f*angle)/(2*acos(-1.0f)));
+				int seqColl = int(seqFac*angle);
 				seqColl = (seqColl+4) % 16;
 				bola = ene3Coll[seqColl];
 			}

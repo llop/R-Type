@@ -20,16 +20,16 @@ using namespace std;
 
 #define NAVE_EXPLO_FRAMES 8
 
-#define NAVE_MUEVE_DELAY 10
-#define NAVE_EXPLO_DELAY 10
+#define NAVE_MUEVE_DELAY 6
+#define NAVE_EXPLO_DELAY 6
 
-#define NAVE_PIXELS_MUEVE 2
+#define NAVE_PIXELS_MUEVE 3
 
-#define NAVE_TIRO_ESCUDO_DELAY 6
-#define NAVE_TIRO_DELAY 6
+#define NAVE_TIRO_ESCUDO_DELAY 4
+#define NAVE_TIRO_DELAY 4
 #define NAVE_TIRO_CIR_DELAY 16
 #define NAVE_TIRO_FACTOR 1
-#define NAVE_FLASH_DELAY 5
+#define NAVE_FLASH_DELAY 4
 #define NAVE_FACTOR_CARGA_TIRO 4 
 #define NAVE_MAX_CARGA_TIRO 5
 
@@ -45,8 +45,10 @@ using namespace std;
 #define NAVE_ESCUDO_SEC_X_OFFSET 8
 #define NAVE_ESCUDO_SEC_Y_OFFSET 32
 
-#define NAVE_TIEMPO_INVENCIBLE 400
-#define NAVE_TIEMPO_PARPADEO 5
+#define NAVE_TIEMPO_INVENCIBLE 240
+#define NAVE_TIEMPO_PARPADEO 3
+
+#define NAVE_MAGIA_DELAY 240
 
 
 class cNaveEspacial : public cSprite {
@@ -62,6 +64,7 @@ private:
 	bool _tiroPulsado;		
 	long long _ultimoTiro;		// cuando disparo por ultima vez
 	long long _ultimoTiroEscudo;
+	long long _ultimaMagia;
 	int _cargaTiro;
 
 	long long _puntos;			// la puntuacion
@@ -86,6 +89,7 @@ private:
 
 	void anadeEscudo();
 	void lanzaEscudo();
+	void delEscudos();
 
 public:
 	cNaveEspacial(cSistema* sis);
@@ -94,6 +98,8 @@ public:
 	void sumaPuntos(long long puntos);
 	long long puntos() const;
 	int vidas() const;
+	int magias() const;
+	bool puedeTirarMagia() const;
 	int cargaDisparo() const;
 
 	vector<cEscudo*>& escudos();

@@ -6,6 +6,10 @@ using namespace std;
 
 
 int vidaHud[4] = { 5, 4, 6, 7 };
+int magiaHud[2][4] = {
+	{ 98, 5, 6, 7 },
+	{ 106, 5, 6, 7 }
+};
 int barHud[4] = { 16, 4, 78, 8 };
 int blueHud[4] = { 23, 13, 64, 6 };
 int redHud[4] = { 90, 13, 64, 6 };
@@ -27,6 +31,10 @@ cHud::cHud(cSistema* sis, int x, int y) : cSprite(sis, x, y) {
 	_sis->cargaTextura(TEX_HUD, "img\\hud.png");
 }
 
+void cHud::logica() {
+	++_tiempoVida;
+}
+
 void cHud::pintaFondo() const {
 	// pintar un fondo negro
 	glBegin(GL_QUADS);
@@ -43,6 +51,7 @@ void cHud::pintaVidas() const {
 	// pintar las vidas
 	cNaveEspacial* nave = (cNaveEspacial*)_sis->naveEspacial();
 	int vidasNave = nave->vidas();
+	if (!vidasNave) return;
 
 	int wTex, hTex;
 	_sis->tamanoTextura(TEX_HUD, wTex, hTex);
@@ -50,20 +59,53 @@ void cHud::pintaVidas() const {
 	int hPixVida = vidaHud[3];
 	int xPixVida = _x + 30;
 	int yPixVida = _y - (8 + hPixVida);
-	float xTexVida = vidaHud[0]/float(wTex);
-	float yTexVida = vidaHud[1]/float(hTex);
-	float wTexVida = vidaHud[2]/float(wTex);
-	float hTexVida = vidaHud[3]/float(hTex);
+	float xTexVida = vidaHud[0] / float(wTex);
+	float yTexVida = vidaHud[1] / float(hTex);
+	float wTexVida = vidaHud[2] / float(wTex);
+	float hTexVida = vidaHud[3] / float(hTex);
 
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, _sis->idTextura(TEX_HUD));
 	glBegin(GL_QUADS);
-	for (int i=0; i<vidasNave; ++i) {
+	for (int i = 0; i<vidasNave; ++i) {
 		glTexCoord2f(xTexVida, yTexVida + hTexVida);			glVertex2i(xPixVida, yPixVida);
 		glTexCoord2f(xTexVida + wTexVida, yTexVida + hTexVida);	glVertex2i(xPixVida + wPixVida, yPixVida);
 		glTexCoord2f(xTexVida + wTexVida, yTexVida);			glVertex2i(xPixVida + wPixVida, yPixVida + hPixVida);
 		glTexCoord2f(xTexVida, yTexVida);						glVertex2i(xPixVida, yPixVida + hPixVida);
-		xPixVida += vidaHud[2]+3;
+		xPixVida += vidaHud[2] + 3;
+	}
+	glEnd();
+	glDisable(GL_TEXTURE_2D);
+}
+
+
+void cHud::pintaMagias() const {
+	// pintar las vidas
+	cNaveEspacial* nave = (cNaveEspacial*)_sis->naveEspacial();
+	int magiasNave = nave->magias();
+	if (!magiasNave) return;
+
+	int seqMagia = !nave->puedeTirarMagia() && (_tiempoVida/24)%2 ? 1 : 0;
+	int wTex, hTex;
+	_sis->tamanoTextura(TEX_HUD, wTex, hTex);
+	int wPixMagia = magiaHud[seqMagia][2];
+	int hPixMagia = magiaHud[seqMagia][3];
+	int xPixMagia = _x + 30;
+	int yPixMagia = _y - (20 + hPixMagia);
+	float xTexMagia = magiaHud[seqMagia][0] / float(wTex);
+	float yTexMagia = magiaHud[seqMagia][1] / float(hTex);
+	float wTexMagia = magiaHud[seqMagia][2] / float(wTex);
+	float hTexMagia = magiaHud[seqMagia][3] / float(hTex);
+
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, _sis->idTextura(TEX_HUD));
+	glBegin(GL_QUADS);
+	for (int i = 0; i<magiasNave; ++i) {
+		glTexCoord2f(xTexMagia, yTexMagia + hTexMagia);				glVertex2i(xPixMagia, yPixMagia);
+		glTexCoord2f(xTexMagia + wTexMagia, yTexMagia + hTexMagia);	glVertex2i(xPixMagia + wPixMagia, yPixMagia);
+		glTexCoord2f(xTexMagia + wTexMagia, yTexMagia);				glVertex2i(xPixMagia + wPixMagia, yPixMagia + hPixMagia);
+		glTexCoord2f(xTexMagia, yTexMagia);							glVertex2i(xPixMagia, yPixMagia + hPixMagia);
+		xPixMagia += magiaHud[seqMagia][2] + 3;
 	}
 	glEnd();
 	glDisable(GL_TEXTURE_2D);
@@ -183,6 +225,7 @@ void cHud::pintaPuntos() const {
 void cHud::pinta() const {
 	pintaFondo();
 	pintaVidas();
+	pintaMagias();
 	pintaBarra();
 	pintaPuntos();
 }

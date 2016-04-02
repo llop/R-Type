@@ -77,7 +77,10 @@ void cJefe3::caja(cRect &rect) const {
 }
 
 void cJefe3::restaVida(int vida) {
-	// impactos fisicos de la nave no le quitan vida
+	if (_minis.size() <= 0) {
+		// las magias le afectan solo cuando no quedan minis
+		cEnemigo::restaVida(vida);
+	}
 };
 
 void cJefe3::colision(cRect &rect, int &colMask) const {
@@ -168,9 +171,9 @@ void cJefe3::logica() {
 					}
 				}
 			}
-			list<cEscudo*> escudos = nivel->escudos();
-			for (list<cEscudo*>::iterator it = escudos.begin(); it != escudos.end(); ++it) {
-				cEscudo* escudo = *it;
+			vector<cEscudo*> escudos = nave->escudos();
+			for (unsigned int i = 0; i < escudos.size(); ++i) {
+				cEscudo* escudo = escudos[i];
 				int colMask;
 				escudo->colision(rect, colMask);
 				if (colMask) {
@@ -448,7 +451,8 @@ void cMiniJefe3::caja(cRect &rect) const {
 }
 
 void cMiniJefe3::restaVida(int vida) {
-	// impactos fisicos de la nave no le quitan vida
+	// impactos fisicos de la nave o magias le quitan muy poca vida
+	cEnemigo::restaVida(vida / 10);
 };
 
 void cMiniJefe3::colision(cRect &rect, int &colMask) const {
@@ -544,9 +548,9 @@ void cMiniJefe3::logica() {
 			}
 		}
 
-		list<cEscudo*> escudos = nivel->escudos();
-		for (list<cEscudo*>::iterator it = escudos.begin(); it != escudos.end(); ++it) {
-			cEscudo* escudo = *it;
+		vector<cEscudo*> escudos = nave->escudos();
+		for (unsigned int i = 0; i < escudos.size(); ++i) {
+			cEscudo* escudo = escudos[i];
 			int colMask;
 			escudo->colision(rect, colMask);
 			if (colMask) {

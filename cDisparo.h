@@ -30,9 +30,9 @@ public:
 };
 
 
-#define DISPARO_NAVE_DELAY 10
+#define DISPARO_NAVE_DELAY 6
 #define DISPARO_NAVE_CIR_DELAY 2
-#define DISPARO_EXPLO_DELAY 10
+#define DISPARO_EXPLO_DELAY 6
 
 #define DISPARO_NAVE_NORMAL 0
 #define DISPARO_NAVE_CIRCULAR 1
@@ -59,11 +59,11 @@ public:
 	void pinta() const;
 };
 
-#define DISPARO_ENEMIGO_DELAY 6
+#define DISPARO_ENEMIGO_DELAY 4
 #define DISPARO_ENEMIGO_VIVE_FRAMES 4
 #define DISPARO_ENEMIGO_EXPLO_FRAMES 5
 #define DANO_DISPARO_ENEMIGO 100
-#define VELOCIDAD_DISPARO_ENEMIGO 2
+#define VELOCIDAD_DISPARO_ENEMIGO 3
 
 // disparo enemigo
 class cDisparoEnemigo : public cDisparo {
@@ -121,7 +121,7 @@ public:
 #define DISPARO_ESCUDO2_ARRIBA 3
 #define DISPARO_ESCUDO2_ABAJO 4
 
-#define DISPARO_ESCUDO_AVANCE 12
+#define DISPARO_ESCUDO_AVANCE 15
 #define DISPARO_ESCUDO_DANO 20
 
 class cDisparoEscudo : public cDisparo {
@@ -147,8 +147,8 @@ public:
 
 // disparo jefe1
 
-#define VELOCIDAD_DISPARO_JEFE1 8
-#define DISPARO_JEFE1_DELAY 10
+#define VELOCIDAD_DISPARO_JEFE1 12
+#define DISPARO_JEFE1_DELAY 6
 #define DANO_DISPARO_JEFE1 500
 
 class cDisparoJefe1 : public cDisparo {

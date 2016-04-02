@@ -23,6 +23,11 @@ using namespace std;
 #define NIVEL_FADE 500
 #define NIVEL_GAME_OVER_FADE 300
 
+#define NIVEL_INTERVALO_PAUSA 16
+
+#define NIVEL_DANO_MAGIA 500
+#define NIVEL_DELAY_MAGIA 60
+
 
 class cNivel : public cSprite {
 protected:
@@ -34,7 +39,7 @@ protected:
 	list<cItem*> _items;					// items
 	list<cEnemigo*> _enemigos;				// enemigos
 	list<cDisparo*> _disparos;				// disparos
-	list<cEscudo*> _escudos;				// escudos
+	//list<cEscudo*> _escudos;				// escudos
 	cHud* _hud;
 
 	long long _puntos;
@@ -47,6 +52,11 @@ protected:
 	vector<int> _mapa;						// el mapa de tiles
 
 	int _maxFade;
+
+	bool _enPausa;
+	long long _tiempoPausa;
+
+	long long _tiempoMagia;
 
 	bool cargaMapa(const char* ficheroMapa);
 
@@ -69,7 +79,7 @@ public:
 
 	int getPosicion() const;
 	//void setDimensionesMapa(int tilesAncho, int tilesAlto);
-	void getDimensionesMapa(int &tilesAncho, int &tilesAlto) const;
+	//void getDimensionesMapa(int &tilesAncho, int &tilesAlto) const;
 	
 	long long puntos() const;
 	void sumaPuntos(long long puntos);
@@ -78,13 +88,13 @@ public:
 	const list<cItem*> items() const;
 	const list<cEnemigo*> enemigos() const;
 	const list<cDisparo*> disparos() const;
-	const list<cEscudo*> escudos() const;
+	//const list<cEscudo*> escudos() const;
 	
 	// establecer
 	void pushItem(cItem* item);
 	void pushEnemigo(cEnemigo* enemigo);
 	void pushDisparo(cDisparo* disparo);
-	void pushEscudo(cEscudo* escudo);
+	//void pushEscudo(cEscudo* escudo);
 
 	virtual void posicionRespawn(int &x, int &y) {}
 
@@ -106,17 +116,20 @@ public:
 	// determina si un rectangulo queda fuera de la pantalla
 	bool fueraLimites(cRect &caja) const;
 
+	void procesaTeclas(unsigned char* keys);
 	void logica();
 	void pinta() const;
 
 	void gameOver();
 	void termina();
 
+	void tiraMagia();
+
 };
 
 
 
-#define NIVEL_AVANCE 1
+#define NIVEL_AVANCE 2
 #define NIVEL_DELAY 1
 
 class cNivel1 : public cNivel {

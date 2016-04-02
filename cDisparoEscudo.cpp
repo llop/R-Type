@@ -31,7 +31,6 @@ cDisparoEscudo::cDisparoEscudo(cSistema* sis, int x, int y, int tipo) : cDisparo
 
 	_tipo = tipo;
 	_dano = DISPARO_ESCUDO_DANO;
-
 	_malo = false;
 
 	_state = DISPARO_VIVE;

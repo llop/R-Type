@@ -128,10 +128,6 @@ void cJefe2::caja(cRect &rect) const {
 	// estes no es necesario para un jefe
 }
 
-void cJefe2::restaVida(int vida) {
-	// impactos fisicos de la nave no le quitan vida
-};
-
 
 void cJefe2::colision(cRect &rect, int &colMask) const {
 	colMask=0;
@@ -161,6 +157,16 @@ void cJefe2::colision(cRect &rect, int &colMask) const {
 	}
 }
 
+
+void cJefe2::restaVida(int vida) {
+	if (_subState == JEFE2_VULVA_ABIERTA) {
+		// cerrar la vulva y hacer dano
+		_subState = JEFE2_VULVA_CERRADA;
+		_delay = JEFE2_MUEVE_DELAY;
+		cEnemigo::restaVida(vida);
+		_ultimoImpacto = _tiempoVida;
+	}
+}
 
 void cJefe2::logica() {
 	if (_state == ENEMIGO_VIVE) {
@@ -202,9 +208,9 @@ void cJefe2::logica() {
 			}
 		}
 
-		list<cEscudo*> escudos = nivel->escudos();
-		for (list<cEscudo*>::iterator it = escudos.begin(); it != escudos.end(); ++it) {
-			cEscudo* escudo = *it;
+		vector<cEscudo*> escudos = nave->escudos();
+		for (unsigned int i = 0; i < escudos.size(); ++i) {
+			cEscudo* escudo = escudos[i];
 			int colMask;
 			escudo->colision(rect, colMask);
 			if (colMask && _subState==JEFE2_VULVA_ABIERTA) {
@@ -258,7 +264,7 @@ void cJefe2::logica() {
 				if (intervaloGusano1 >= JEFE2_INTERVALO_GUSANO1) {
 					_ultimaSalidaGusano[0] = _tiempoVida;
 					_tiempoGusano[0] = JEFE2_TIEMPO_GUSANO1;
-					cEnemigo3* enemigo3 = new cEnemigo3(_sis, 4288, _y+4, 6, 62.0f, 0.2f, 0.02f, false);
+					cEnemigo3* enemigo3 = new cEnemigo3(_sis, 4288, _y+4, 6, 62.0f, 0.2f, 0.03333f, false);
 					_gusanos[0] = enemigo3;
 					nivel->pushEnemigo(enemigo3);
 				}
@@ -275,7 +281,7 @@ void cJefe2::logica() {
 				if (intervaloGusano2 >= JEFE2_INTERVALO_GUSANO2) {
 					_ultimaSalidaGusano[1] = _tiempoVida;
 					_tiempoGusano[1] = JEFE2_TIEMPO_GUSANO2;
-					cEnemigo3* enemigo3 = new cEnemigo3(_sis, 4288-2, _y+2, 8, 144.0f, 2.3f, 0.02f, true);
+					cEnemigo3* enemigo3 = new cEnemigo3(_sis, 4288-2, _y+2, 8, 144.0f, 2.3f, 0.03333f, true);
 					_gusanos[1] = enemigo3;
 					nivel->pushEnemigo(enemigo3);
 				}

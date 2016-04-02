@@ -63,7 +63,6 @@ cDisparoNave::cDisparoNave(cSistema* sis, int x, int y, int tipo, int tamano) : 
 
 	_tamano = tamano;
 	_dano = 20 + _tamano*100;
-
 	_malo = false;
 
 	_tipo = tipo;

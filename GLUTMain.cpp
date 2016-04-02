@@ -7,7 +7,7 @@
 #pragma comment(linker, "/subsystem:\"windows\" /entry:\"mainCRTStartup\"")
 
 
-#define FPS 100;
+#define FPS 60
 
 
 cGame Game;

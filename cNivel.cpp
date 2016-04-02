@@ -6,6 +6,8 @@
 using namespace std;
 
 
+int pausaMov[4] = { 360, 377, 114, 18 };
+
 bool cNivel::cargaMapa(const char* ficheroMapa) {
 	FILE *fd;
 	errno_t err = fopen_s(&fd, ficheroMapa, "r");
@@ -49,9 +51,11 @@ cNivel::cNivel(cSistema* sis, cNaveEspacial* naveEspacial,
 				const char* ficheroTextura,
 				const char* ficheroFondo) : cSprite(sis) {
 
+	_sis->cargaTextura(TEX_MENU, "img\\menu.png");
+
 	_naveEspacial = naveEspacial;
-	vector<cEscudo*> escudos = _naveEspacial->escudos();
-	for (unsigned int i=0; i<escudos.size(); ++i) pushEscudo(escudos[i]);
+	//vector<cEscudo*> escudos = _naveEspacial->escudos();
+	//for (unsigned int i=0; i<escudos.size(); ++i) pushEscudo(escudos[i]);
 
 	_tilesAncho = tilesAncho;
 	_tilesAlto = tilesAlto;
@@ -91,6 +95,11 @@ cNivel::cNivel(cSistema* sis, cNaveEspacial* naveEspacial,
 	_maxFade = NIVEL_FADE;
 
 	_puntos = 0;
+
+	_enPausa = false;
+	_tiempoPausa = NIVEL_INTERVALO_PAUSA;
+
+	_tiempoMagia = NIVEL_DELAY_MAGIA;
 }
 
 cNivel::~cNivel() {
@@ -115,6 +124,19 @@ cNivel::~cNivel() {
 		delete _hud;
 		_hud = NULL;
 	}
+}
+
+void cNivel::tiraMagia() {
+	for (list<cDisparo*>::iterator it = _disparos.begin(); it != _disparos.end(); ++it) {
+		cDisparo* disparo = *it;
+		if (disparo->malo() && disparo->vive()) disparo->explota();
+	}
+	for (list<cEnemigo*>::iterator it = _enemigos.begin(); it != _enemigos.end(); ++it) {
+		cEnemigo* enemigo = *it;
+		enemigo->restaVida(NIVEL_DANO_MAGIA);
+	}
+
+	_tiempoMagia = 0;
 }
 
 
@@ -142,9 +164,9 @@ const list<cDisparo*> cNivel::disparos() const {
 	return _disparos;
 }
 
-const list<cEscudo*> cNivel::escudos() const {
-	return _escudos;
-}
+//const list<cEscudo*> cNivel::escudos() const {
+//	return _escudos;
+//}
 
 void cNivel::pushItem(cItem* item) {
 	_items.insert(_items.end(), item);
@@ -158,8 +180,20 @@ void cNivel::pushDisparo(cDisparo* disparo) {
 	_disparos.insert(_disparos.end(), disparo);
 }
 
-void cNivel::pushEscudo(cEscudo* escudo) {
-	_escudos.insert(_escudos.end(), escudo);
+//void cNivel::pushEscudo(cEscudo* escudo) {
+//	_escudos.insert(_escudos.end(), escudo);
+//}
+
+
+
+void cNivel::procesaTeclas(unsigned char* keys) {
+
+	if ((keys['p'] || keys['P']) && _tiempoPausa >= NIVEL_INTERVALO_PAUSA) {
+		_enPausa = !_enPausa;
+		_tiempoPausa = 0;
+	}
+	if (!_enPausa) _naveEspacial->procesaTeclas(keys);
+
 }
 
 
@@ -188,15 +222,16 @@ void cNivel::aplicaScroll() {
 
 void cNivel::aplicaLogicas() {
 	// aplicar logicas
-	for (list<cItem*>::iterator it=_items.begin(); it!=_items.end(); ++it) (*it)->logica();
-  	for (list<cDisparo*>::iterator it=_disparos.begin(); it!=_disparos.end(); ++it) (*it)->logica();
-	
+	for (list<cItem*>::iterator it = _items.begin(); it != _items.end(); ++it) (*it)->logica();
+	for (list<cDisparo*>::iterator it = _disparos.begin(); it != _disparos.end(); ++it) (*it)->logica();
+
 	// jugador y enemigos (IA)
 	_naveEspacial->logica();
-  	for (list<cEscudo*>::iterator it=_escudos.begin(); it!=_escudos.end(); ++it) (*it)->logica();
+	//for (list<cEscudo*>::iterator it = _escudos.begin(); it != _escudos.end(); ++it) (*it)->logica();
 
-	for (list<cEnemigo*>::iterator it=_enemigos.begin(); it!=_enemigos.end(); ++it) (*it)->logica();
-	
+	for (list<cEnemigo*>::iterator it = _enemigos.begin(); it != _enemigos.end(); ++it) (*it)->logica();
+
+	_hud->logica();
 }
 
 void cNivel::aplicaMuertes() {
@@ -223,13 +258,13 @@ void cNivel::aplicaMuertes() {
 			delete enemigo;
 		} else ++it;
 	}
-	for (list<cEscudo*>::iterator it=_escudos.begin(); it!=_escudos.end();) {
-		cEscudo* escudo = *it;
-		if (escudo->muerto()) {
-			it = _escudos.erase(it);
-			delete escudo;
-		} else ++it;
-	}
+	//for (list<cEscudo*>::iterator it=_escudos.begin(); it!=_escudos.end();) {
+	//	cEscudo* escudo = *it;
+	//	if (escudo->muerto()) {
+	//		it = _escudos.erase(it);
+	//		delete escudo;
+	//	} else ++it;
+	//}
 }
 
 
@@ -417,6 +452,11 @@ bool cNivel::fueraLimites(cRect &rect) const {
 //   disparos
 //   decorado
 void cNivel::logica() {
+	++_tiempoPausa;
+	if (_enPausa) return;
+
+	++_tiempoMagia;
+
 	aplicaScroll();
 	generaEnemigos();
 	aplicaLogicas();
@@ -471,15 +511,25 @@ void cNivel::pinta() const {
 	glTranslatef(xTranslate, 0, 0);
 
 	// pintar el fondo del escenario
-	glEnable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D, _sis->idTextura(_idFondo));
-	glBegin(GL_QUADS);
-	glTexCoord2f(0, 1);		glVertex2i(_posicion, HUD_HPIX);
-	glTexCoord2f(1, 1);		glVertex2i(_posicion+GAME_WIDTH, HUD_HPIX);
-	glTexCoord2f(1, 0);		glVertex2i(_posicion+GAME_WIDTH, GAME_HEIGHT);
-	glTexCoord2f(0, 0);		glVertex2i(_posicion, GAME_HEIGHT);
-	glEnd();
-	glDisable(GL_TEXTURE_2D);
+	if (_tiempoMagia < NIVEL_DELAY_MAGIA && !(_tiempoMagia%4)) {
+		glBegin(GL_QUADS);
+		glColor3f(1, 1, 1);
+		glVertex2i(_posicion, HUD_HPIX);
+		glVertex2i(_posicion + GAME_WIDTH, HUD_HPIX);
+		glVertex2i(_posicion + GAME_WIDTH, GAME_HEIGHT);
+		glVertex2i(_posicion, GAME_HEIGHT);
+		glEnd();
+	} else {
+		glEnable(GL_TEXTURE_2D);
+		glBindTexture(GL_TEXTURE_2D, _sis->idTextura(_idFondo));
+		glBegin(GL_QUADS);
+		glTexCoord2f(0, 1);		glVertex2i(_posicion, HUD_HPIX);
+		glTexCoord2f(1, 1);		glVertex2i(_posicion + GAME_WIDTH, HUD_HPIX);
+		glTexCoord2f(1, 0);		glVertex2i(_posicion + GAME_WIDTH, GAME_HEIGHT);
+		glTexCoord2f(0, 0);		glVertex2i(_posicion, GAME_HEIGHT);
+		glEnd();
+		glDisable(GL_TEXTURE_2D);
+	}
 
 	// pintar mierdas
 	for (list<cEnemigo*>::const_reverse_iterator it = _enemigos.rbegin(); it != _enemigos.rend(); ++it) (*it)->pinta();
@@ -526,7 +576,7 @@ void cNivel::pinta() const {
 	glDisable(GL_TEXTURE_2D);
 
 	// dejar los tiros por encima
-	if (_state == NIVEL_VIVE) for (list<cEscudo*>::const_iterator it = _escudos.begin(); it != _escudos.end(); ++it) (*it)->pinta();
+	//if (_state == NIVEL_VIVE) for (list<cEscudo*>::const_iterator it = _escudos.begin(); it != _escudos.end(); ++it) (*it)->pinta();
 	for (list<cDisparo*>::const_iterator it = _disparos.begin(); it != _disparos.end(); ++it) (*it)->pinta();
 	
 	_hud->pinta();
@@ -542,12 +592,38 @@ void cNivel::pinta() const {
 		glVertex2i(_posicion+GAME_WIDTH, 0);
 		glVertex2i(_posicion+GAME_WIDTH, GAME_HEIGHT);
 		glVertex2i(_posicion, GAME_HEIGHT);
+		glColor3f(1, 1, 1);
 		glEnd();
 		glDisable(GL_BLEND);
-		glColor3f(1, 1, 1);
-
+		
 		_naveEspacial->pinta();
-		for (list<cEscudo*>::const_iterator it = _escudos.begin(); it != _escudos.end(); ++it) (*it)->pinta();
+		//for (list<cEscudo*>::const_iterator it = _escudos.begin(); it != _escudos.end(); ++it) (*it)->pinta();
+	}
+
+	if (_enPausa) {
+		int texPausa = _sis->idTextura(TEX_MENU);
+		glEnable(GL_TEXTURE_2D);
+		glBindTexture(GL_TEXTURE_2D, texPausa);
+		glBegin(GL_QUADS);
+
+		int yTit = (GAME_HEIGHT- pausaMov[3])>>1;
+		int wTex, hTex;
+		_sis->tamanoTextura(TEX_MENU, wTex, hTex);
+		int wPixTit = pausaMov[2];
+		int hPixTit = pausaMov[3];
+		int xPixTit = (GAME_WIDTH >> 1) - (wPixTit >> 1);
+		int yPixTit = GAME_HEIGHT - (yTit + hPixTit);
+		float wTexTit = wPixTit / (float)wTex;
+		float hTexTit = hPixTit / (float)hTex;
+		float xTexTit = pausaMov[0] / (float)wTex;
+		float yTexTit = pausaMov[1] / (float)hTex;
+		glTexCoord2f(xTexTit, yTexTit + hTexTit);			glVertex2i(_posicion+xPixTit, yPixTit);
+		glTexCoord2f(xTexTit + wTexTit, yTexTit + hTexTit);	glVertex2i(_posicion + xPixTit + wPixTit, yPixTit);
+		glTexCoord2f(xTexTit + wTexTit, yTexTit);			glVertex2i(_posicion + xPixTit + wPixTit, yPixTit + hPixTit);
+		glTexCoord2f(xTexTit, yTexTit);						glVertex2i(_posicion + xPixTit, yPixTit + hPixTit);
+
+		glEnd();
+		glDisable(GL_TEXTURE_2D);
 	}
 	
 }

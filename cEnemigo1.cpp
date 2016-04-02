@@ -38,6 +38,8 @@ cEnemigo1::cEnemigo1(cSistema* sis, int x, int y) : cEnemigo(sis, x, y) {
 	
 	_vida = ENEMIGO1_VIDA_INICIAL;
 	_puntos = ENEMIGO1_PUNTOS;
+
+	_esJefe = false;
 }
 
 cEnemigo1::~cEnemigo1(){
@@ -111,9 +113,9 @@ void cEnemigo1::logica() {
 		}
 
 		// se come algun escudo?
-		list<cEscudo*> escudos = nivel->escudos();
-		for (list<cEscudo*>::iterator it = escudos.begin(); it != escudos.end(); ++it) {
-			cEscudo* escudo = *it;
+		vector<cEscudo*> escudos = nave->escudos();
+		for (unsigned int i = 0; i < escudos.size(); ++i) {
+			cEscudo* escudo = escudos[i];
 			int colMask;
   			escudo->colision(rect, colMask);
 			if (colMask) {

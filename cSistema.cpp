@@ -76,7 +76,7 @@ void cSistema::procesaTeclas(unsigned char *keys) {
 	if (_estado == MENU) {
 		if (_menu != NULL) ((cMenu*)_menu)->procesaTeclas(keys);
 	} else if (_estado == NIVEL) {
-		if (_naveEspacial != NULL) ((cNaveEspacial*)_naveEspacial)->procesaTeclas(keys);
+		if (_nivel != NULL) ((cNivel*)_nivel)->procesaTeclas(keys);
 	}
 }
 
@@ -118,11 +118,6 @@ void cSistema::arrancaPartida() {
 
 	_numNivel = 1;
 	cargaNivel();
-
-	// posicionar la nave
-	int x, y;
-	((cNivel*)_nivel)->posicionRespawn(x, y);
-	((cNaveEspacial*)_naveEspacial)->renace(x, y);
 }
 
 void cSistema::gameOver() {
@@ -136,20 +131,21 @@ void cSistema::gameOver() {
 void cSistema::cargaNivel() {
 	_estado = NIVEL;
 	delNivel();
+	cNaveEspacial* nave = (cNaveEspacial*)_naveEspacial;
 	if (_numNivel == 1) {
-		_nivel = new cNivel1(this, (cNaveEspacial*)_naveEspacial, 
+		_nivel = new cNivel1(this, nave, 
 							328, 28, "maps\\level-01.csv", 
 							TEX_NIVEL1, TEX_FONDO1, 
 							"maps\\stage1-01.png", 
 							"img\\Outer-Space-Wallpaper.png");
 	} else if (_numNivel == 2) {
-		_nivel = new cNivel2(this, (cNaveEspacial*)_naveEspacial, 
+		_nivel = new cNivel2(this, nave, 
 							288, 28, "maps\\level-02.csv", 
 							TEX_NIVEL2, TEX_FONDO2, 
 							"maps\\textura-nivel2.png", 
 							"img\\level2-back.png");
 	} else if (_numNivel == 3) {
-		_nivel = new cNivel3(this, (cNaveEspacial*)_naveEspacial, // funcionaaa yuhuuu!!!!
+		_nivel = new cNivel3(this, nave, // funcionaaa yuhuuu!!!!
 							328, 28, "maps\\level-03.csv", 
 							TEX_NIVEL3, TEX_FONDO3, 
 							"maps\\stage3-03.png", 
@@ -158,7 +154,6 @@ void cSistema::cargaNivel() {
 
 		// partida completada
 		cMenu* menu = (cMenu*)_menu;
-		cNaveEspacial* nave = (cNaveEspacial*)_naveEspacial;
 		
 		_estado = MENU;
 
@@ -170,6 +165,12 @@ void cSistema::cargaNivel() {
 		} else {
 			menu->setPantalla(PANTALLA_COMPLETE);
 		}
+	}
+
+	if (_nivel != NULL) {
+		int x, y;
+		nave->getPosicion(x, y);
+		nave->renace(x, y);
 	}
 }
 

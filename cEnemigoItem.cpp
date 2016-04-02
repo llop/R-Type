@@ -50,6 +50,8 @@ cEnemigoItem::cEnemigoItem(cSistema* sis, int x, int y,
 	_ava = -ENEMIGO_ITEM_AVANCE;
 
 	_item = item;
+
+	_esJefe = false;
 }
 
 cEnemigoItem::~cEnemigoItem() {
@@ -141,9 +143,9 @@ void cEnemigoItem::logica() {
 		}
 
 		// se come algun escudo?
-		list<cEscudo*> escudos = nivel->escudos();
-		for (list<cEscudo*>::iterator it = escudos.begin(); it != escudos.end(); ++it) {
-			cEscudo* escudo = *it;
+		vector<cEscudo*> escudos = nave->escudos();
+		for (unsigned int i = 0; i < escudos.size(); ++i) {
+			cEscudo* escudo = escudos[i];
 			int colMask;
   			escudo->colision(rect, colMask);
 			if (colMask) {

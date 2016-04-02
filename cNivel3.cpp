@@ -13,7 +13,7 @@ cNivel3::cNivel3(cSistema* sis, cNaveEspacial* naveEspacial,
 		idTextura, idFondo,
 		ficheroTextura,
 		ficheroFondo) {
-	_posicion = 5084-GAME_WIDTH;
+	//_posicion = 5084-GAME_WIDTH;
 }
 
 

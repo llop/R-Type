@@ -5,12 +5,12 @@
 #include "cSistema.h"
 
 
-#define ESCUDO_MUEVE_DELAY 10
+#define ESCUDO_MUEVE_DELAY 6
 #define ESCUDO_NUM_FRAMES 4
 #define ESCUDO_SEC_NUM_FRAMES 12
 
 #define ESCUDO_TIRO_SPEED 16.0f
-#define ESCUDO_VUELTA_SPEED 2
+#define ESCUDO_VUELTA_SPEED 4
 
 #define ESCUDO_TIRO 0
 #define ESCUDO_VUELTA 1

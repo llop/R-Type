@@ -26,7 +26,6 @@
 #define NUM_DIFICULTADES 2
 
 
-
 struct cRect {
 	int x, y, w, h;
 };
@@ -100,6 +99,9 @@ public:
  */
 class cSprite {
 protected:
+
+	float _PI = float(acos(-1.0f));
+	float _2PI = float(2 * acos(-1.0f));
 
 	int _x, _y;			// coordenadas
 	cSistema* _sis;		// sistema donde vive

@@ -34,6 +34,7 @@ cDisparoEnemigo::cDisparoEnemigo(cSistema* sis, int x, int y, float xu, float yu
 	_sis->cargaTextura(TEX_EXPLO1, "img\\r-typesheet43.png");
 
 	_dano = DANO_DISPARO_ENEMIGO;
+	_malo = true;
 	
 	_xF = float(_x);
 	_yF = float(_y);

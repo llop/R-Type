@@ -147,8 +147,12 @@ void cJefe1::caja(cRect &rect) const {
 }
 
 void cJefe1::restaVida(int vida) {
-	// impactos fisicos de la nave no le quitan vida
-};
+	if (_subState >= JEFE1_ALIEN_FUERA) {
+		// la magia solo le afecta cuando ha salido el alien
+		cEnemigo::restaVida(vida);
+		_ultimoImpacto = _tiempoVida;
+	}
+}
 
 void cJefe1::colision(cRect &rect, int &colMask) const {
 	colMask=0;
@@ -290,9 +294,9 @@ void cJefe1::logica() {
 			}
 		}
 
-		list<cEscudo*> escudos = nivel->escudos();
-		for (list<cEscudo*>::iterator it = escudos.begin(); it != escudos.end(); ++it) {
-			cEscudo* escudo = *it;
+		vector<cEscudo*> escudos = nave->escudos();
+		for (unsigned int i = 0; i < escudos.size(); ++i) {
+			cEscudo* escudo = escudos[i];
 			int colMask;
 			escudo->colision(rect, colMask);
 			if (colMask && _subState>=JEFE1_ALIEN_SALIENDO) {
@@ -317,7 +321,7 @@ void cJefe1::logica() {
 		}
 
 		// actualizar estado
-		if (_tiempoVida == 816) {
+		if (_tiempoVida == JEFE1_IDLE_DELAY) {
 			_subState = JEFE1_ALIEN_SALIENDO;
 			_seq = 3;
 		} else if (_subState==JEFE1_ALIEN_SALIENDO && _seq>=JEFE1_NUM_FRAMES-3) {
@@ -341,16 +345,18 @@ void cJefe1::logica() {
 				float yVec = float(yNave - yTiro);
 				cDisparoJefe1* tiro = new cDisparoJefe1(_sis, xTiro, yTiro, xVec, yVec);
 				nivel->pushDisparo(tiro);
+
+				_tirosLleva = 1;
 			}
 		} else if (_subState == JEFE1_ALIEN_VOMITA) {
 			long long intervalo = _tiempoVida - _ultimoTiro;
-			if (intervalo >= 90) {
+			if (_tirosLleva >= JEFE1_NUM_TIROS) {
 				_ultimoTiro = _tiempoVida;
 				_subState = JEFE1_ALIEN_FUERA;
 				_seq = 15;
 				_delay = JEFE1_MUEVE_DELAY;
 			} else {
-				if (!(intervalo%4)) {
+				if (!(intervalo%2)) {
 					// vomita!
 					int xTiro = _x + 81;
 					int yTiro = _y + 114;
@@ -360,6 +366,7 @@ void cJefe1::logica() {
 					float yVec = float(yNave - yTiro);
 					cDisparoJefe1* tiro = new cDisparoJefe1(_sis, xTiro, yTiro, xVec, yVec);
 					nivel->pushDisparo(tiro);
+					++_tirosLleva;
 				}
 			}
 		}

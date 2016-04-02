@@ -50,20 +50,26 @@ int flashMid = 91;
 cNaveEspacial::cNaveEspacial(cSistema* sis) : cSprite(sis) {
 	_sis->cargaTextura(TEX_NAVE1, "img\\r-typesheet1.png");
 
-	_x=100;
-	_y=100;
+	_x=GAME_WIDTH>>1;
+	_y=(GAME_HEIGHT-HUD_HPIX)>>1;
 
 	_vidas = NAVE_VIDAS_INICIO;
+	_magias = NAVE_MAGIAS_INICIAL;
 	_puntos = 0;
 
 	reset();
-
 }
 
 cNaveEspacial::~cNaveEspacial() {
-
+	delEscudos();
 }
 
+void cNaveEspacial::delEscudos() {
+	for (unsigned int i = 0; i < _escudos.size(); ++i) {
+		delete _escudos[i];
+	}
+	_escudos.clear();
+}
 
 void cNaveEspacial::sumaPuntos(long long puntos) {
 	_puntos+=puntos;
@@ -74,6 +80,12 @@ long long cNaveEspacial::puntos() const {
 }
 int cNaveEspacial::vidas() const {
 	return _vidas;
+}
+int cNaveEspacial::magias() const {
+	return _magias;
+}
+bool cNaveEspacial::puedeTirarMagia() const {
+	return _tiempoVida - _ultimaMagia >= NAVE_MAGIA_DELAY;
 }
 int cNaveEspacial::cargaDisparo() const {
 	return _cargaTiro;
@@ -182,7 +194,12 @@ void cNaveEspacial::no_dispara() {
 }
 
 void cNaveEspacial::tira_magia() {
+	long long intervalo = _tiempoVida - _ultimaMagia;
+	if (intervalo < NAVE_MAGIA_DELAY) return;
 
+	_ultimaMagia = _tiempoVida;
+	--_magias;
+	((cNivel*)_sis->nivel())->tiraMagia();
 }
 
 void cNaveEspacial::lanzaEscudo() {
@@ -196,8 +213,8 @@ void cNaveEspacial::reset() {
 	_tiempoVida = 0;
 	_ultimoTiro = -NAVE_TIRO_DELAY;
 	_ultimoTiroEscudo = -NAVE_TIRO_ESCUDO_DELAY;
+	_ultimaMagia = -NAVE_MAGIA_DELAY;
 	_vida = NAVE_VIDA_INICIAL;
-	_magias = NAVE_MAGIAS_INICIAL;
 	_tiroPulsado = false;
 
 	_state = NAVE_VIVE;
@@ -205,8 +222,7 @@ void cNaveEspacial::reset() {
 	_delay = 0;
 
 	_nivelEscudos = NAVE_SIN_ESCUDO;
-	for (unsigned int i=0; i<_escudos.size(); ++i) _escudos[i]->muerete();
-	_escudos.clear();
+	delEscudos();
 
 	_tipoTiro = DISPARO_NAVE_NORMAL;
 	_tiroDelay = NAVE_TIRO_DELAY;
@@ -223,6 +239,11 @@ void cNaveEspacial::reset() {
 
 void cNaveEspacial::renace(int x, int y) {
 	_tiempoVida = 0;
+	_ultimaMagia = -NAVE_MAGIA_DELAY;
+	_ultimoTiro = -NAVE_TIRO_DELAY;
+	_ultimoTiroEscudo = -NAVE_TIRO_ESCUDO_DELAY;
+	_tiroPulsado = false;
+
 	_x = x;
 	_y = y;
 }
@@ -235,14 +256,14 @@ void cNaveEspacial::anadeEscudo() {
 		int xEscudo = rectNivel.x-16;
 		int yEscudo = _y;
 		cEscudo* escudo = new cEscudo(_sis, xEscudo, yEscudo, ESCUDO_FRENTE);
-		nivel->pushEscudo(escudo);
+		//nivel->pushEscudo(escudo);
 		_nivelEscudos = NAVE_ESCUDO1;
 		_escudos.push_back(escudo);
 	} else if (_nivelEscudos == NAVE_ESCUDO1) {
 		int xEscudo = _x - NAVE_ESCUDO_SEC_X_OFFSET;
 		int yEscudo = _y - NAVE_ESCUDO_SEC_Y_OFFSET;
 		cEscudo* escudo = new cEscudo(_sis, xEscudo, yEscudo, ESCUDO_ARRIBA);
-		((cNivel*)_sis->nivel())->pushEscudo(escudo);
+		//((cNivel*)_sis->nivel())->pushEscudo(escudo);
 		_nivelEscudos = NAVE_ESCUDO2;
 		_escudos.push_back(escudo);
 		
@@ -250,7 +271,7 @@ void cNaveEspacial::anadeEscudo() {
 		int xEscudo = _x - NAVE_ESCUDO_SEC_X_OFFSET;
 		int yEscudo = _y + NAVE_ESCUDO_SEC_Y_OFFSET;
 		cEscudo* escudo = new cEscudo(_sis, xEscudo, yEscudo, ESCUDO_ABAJO);
-		((cNivel*)_sis->nivel())->pushEscudo(escudo);
+		//((cNivel*)_sis->nivel())->pushEscudo(escudo);
 		_nivelEscudos = NAVE_ESCUDO3;
 		_escudos.push_back(escudo);
 	}
@@ -281,7 +302,6 @@ void cNaveEspacial::procesaTeclas(unsigned char *keys) {
 			_tipoTiro = DISPARO_NAVE_CIRCULAR;
 			_tiroDelay = NAVE_TIRO_CIR_DELAY;
 		}
-	
 	}
 }
 
@@ -295,8 +315,7 @@ void cNaveEspacial::muerete() {
 	_seq = 0;
 	_delay = NAVE_EXPLO_DELAY;
 
-	for (unsigned int i=0; i<_escudos.size(); ++i) _escudos[i]->muerete();
-	_escudos.clear();
+	delEscudos();
 }
 
 void cNaveEspacial::caja(cRect &rect) const {
@@ -308,9 +327,9 @@ void cNaveEspacial::caja(cRect &rect) const {
 
 void cNaveEspacial::logica() {
 	if (_state == NAVE_VIVE) {
+
 		// subir el tiempo que lleva con vida
 		++_tiempoVida;
-
 		
 		cNivel* nivel = (cNivel*)_sis->nivel();
 		if (nivel != NULL) {
@@ -388,12 +407,14 @@ void cNaveEspacial::logica() {
 				int colMask;
 				enemigo->colision(rect, colMask);
 				if (colMask) {
-					// el enemigo tambien
-					enemigo->restaVida(_vida);
 					if (!invencible) _vida = 0;
-					else if (enemigo->jefe()) {
+					else {
 						_x = _lastX;
 						_y = _lastY;
+					} 
+					if (!enemigo->jefe()) {
+						// el enemigo tambien
+						enemigo->restaVida(_vida);
 					}
 				}
 			}
@@ -444,6 +465,9 @@ void cNaveEspacial::logica() {
 				((cNivel*)_sis->nivel())->gameOver();
 			}
 		}
+	}
+	for (unsigned int i = 0; i<_escudos.size(); ++i) {
+		_escudos[i]->logica();
 	}
 }
 
@@ -562,4 +586,8 @@ void cNaveEspacial::pinta() const {
 
 	glEnd();
 	glDisable(GL_TEXTURE_2D);
+
+	for (unsigned int i = 0; i < _escudos.size(); ++i) {
+		_escudos[i]->pinta();
+	}
 }

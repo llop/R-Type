@@ -39,11 +39,11 @@ public:
 };
 
 #define ENEMIGO1_ALT_MOV 50
-#define ENEMIGO1_SPEED_LEFT 2
-#define ENEMIGO1_INC_ANGLE 0.04f
+#define ENEMIGO1_SPEED_LEFT 3
+#define ENEMIGO1_INC_ANGLE 0.06f
 #define ENEMIGO1_NUM_FRAMES 8
-#define ENEMIGO1_MUEVE_DELAY 10
-#define ENEMIGO1_MUERE_DELAY 10
+#define ENEMIGO1_MUEVE_DELAY 6
+#define ENEMIGO1_MUERE_DELAY 6
 #define ENEMIGO1_VIDA_INICIAL 20
 #define ENEMIGO1_EXPLO_FRAMES 6
 #define ENEMIGO1_PUNTOS 1
@@ -71,11 +71,11 @@ public:
 
 
 #define ENEMIGO2_ALT_MOV 50
-#define ENEMIGO2_SPEED_LEFT 2
-#define ENEMIGO2_INC_ANGLE 0.04f
+#define ENEMIGO2_SPEED_LEFT 3
+#define ENEMIGO2_INC_ANGLE 0.06f
 #define ENEMIGO2_NUM_FRAMES 16
-#define ENEMIGO2_MUEVE_DELAY 10
-#define ENEMIGO2_MUERE_DELAY 10
+#define ENEMIGO2_MUEVE_DELAY 6
+#define ENEMIGO2_MUERE_DELAY 6
 #define ENEMIGO2_VIDA_INICIAL 20
 #define ENEMIGO2_EXPLO_FRAMES 6
 #define ENEMIGO2_PUNTOS 1
@@ -109,13 +109,13 @@ public:
 #define ENEMIGO_ITEM_VUELA 0
 #define ENEMIGO_ITEM_ANDA 1
 
-#define ENEMIGO_ITEM_AVANCE 1
+#define ENEMIGO_ITEM_AVANCE 2
 
 #define ENEMIGO_ITEM_VIDA_INICIAL 20
 #define ENEMIGO_ITEM_PUNTOS 2
 
-#define ENEMIGO_ITEM_MUEVE_DELAY 10
-#define ENEMIGO_ITEM_MUERE_DELAY 10
+#define ENEMIGO_ITEM_MUEVE_DELAY 6
+#define ENEMIGO_ITEM_MUERE_DELAY 6
 
 #define ENEMIGO_ITEM_VUELA_NUM_FRAMES 2
 #define ENEMIGO_ITEM_ANDA_NUM_FRAMES 4
@@ -158,7 +158,8 @@ struct cExplo {
 // jefe nivel 1
 //----------------------------------------------------------------------
 
-#define JEFE1_MUEVE_DELAY 10
+#define JEFE1_MUEVE_DELAY 6
+#define JEFE1_IDLE_DELAY 480
 #define JEFE1_VIDA_INICIAL 500
 #define JEFE1_PUNTOS 35
 
@@ -169,21 +170,22 @@ struct cExplo {
 #define JEFE1_ALIEN_FUERA 2
 #define JEFE1_ALIEN_VOMITA 3
 
-#define JEFE1_TIRO_DELAY 400
+#define JEFE1_TIRO_DELAY 240
 
 #define JEFE1_INC_ANG_COLA 0.02f
-#define JEFE1_INC_MOV 1
+#define JEFE1_INC_MOV 2
 
-#define JEFE1_MUERE_DELAY 10
-#define JEFE1_COLA_EXPLO_DELAY 6
-#define JEFE1_EXPLO_DELAY 4
+#define JEFE1_MUERE_DELAY 6
+#define JEFE1_COLA_EXPLO_DELAY 4
+#define JEFE1_EXPLO_DELAY 3
 #define JEFE1_COLA_EXPLO_NUM_FRAMES 6
 #define JEFE1_EXPLO_NUM_FRAMES 9
 #define JEFE1_MAX_NUM_EXPLO 5
+#define JEFE1_NUM_TIROS 10
 
 #define JEFE1_FLASH_IMPACTO 24
 
-#define JEFE1_TIEMPO_MUERTO 1000
+#define JEFE1_TIEMPO_MUERTO 600
 
 
 class cJefe1 : public cEnemigo {
@@ -193,6 +195,7 @@ protected:
 	long long _ultimoTiro;
 	long long _ultimoImpacto;
 	int _tiempoMuerto;
+	int _tirosLleva;
 	
 	int _subState;
 
@@ -213,10 +216,10 @@ public:
 	cJefe1(cSistema* sis);
 	~cJefe1();
 
-	void restaVida(int vida);
 	void muerete();
 	void caja(cRect &rect) const;
 	void offset(int x, int y);
+	void restaVida(int vida);
 	
 	void colision(cRect &caja, int &colMask) const;
 
@@ -229,9 +232,9 @@ public:
 
 
 
-#define ENEMIGO3_INC_ANGLE 0.04f
-#define ENEMIGO3_MUEVE_DELAY 10
-#define ENEMIGO3_MUERE_DELAY 10
+#define ENEMIGO3_INC_ANGLE 0.06f
+#define ENEMIGO3_MUEVE_DELAY 6
+#define ENEMIGO3_MUERE_DELAY 6
 #define ENEMIGO3_VIDA_INICIAL 40
 #define ENEMIGO3_EXPLO_FRAMES 6
 #define ENEMIGO3_PUNTOS 2
@@ -258,8 +261,8 @@ public:
 	
 	void explota();
 	void muerete();
-	void restaVida(int vida);
 	void caja(cRect &rect) const;
+	void restaVida(int vida);
 
 	void offset(int x, int y);
 	void colision(cRect &caja, int &colMask) const;
@@ -274,7 +277,7 @@ public:
 // jefe nivel 2
 //----------------------------------------------------------------------
 
-#define JEFE2_MUEVE_DELAY 10
+#define JEFE2_MUEVE_DELAY 6
 #define JEFE2_VIDA_INICIAL 2000
 #define JEFE2_PUNTOS 65
 
@@ -284,19 +287,19 @@ public:
 #define JEFE2_VULVA_CERRADA 1
 #define JEFE2_VULVA_ABIERTA 2
 
-#define JEFE2_MUERE_DELAY 10
+#define JEFE2_MUERE_DELAY 6
 
-#define JEFE2_INTERVALO_ATAQUE1 500
-#define JEFE2_INTERVALO_ATAQUE2 800
-#define JEFE2_INTERVALO_SALIDA 200
-#define JEFE2_INTERVALO_ENTRADA 600
+#define JEFE2_INTERVALO_ATAQUE1 300
+#define JEFE2_INTERVALO_ATAQUE2 480
+#define JEFE2_INTERVALO_SALIDA 120
+#define JEFE2_INTERVALO_ENTRADA 360
 
-#define JEFE2_INTERVALO_GUSANO1 800
-#define JEFE2_TIEMPO_GUSANO1 320
-#define JEFE2_INTERVALO_GUSANO2 500
-#define JEFE2_TIEMPO_GUSANO2 320
+#define JEFE2_INTERVALO_GUSANO1 480
+#define JEFE2_TIEMPO_GUSANO1 192
+#define JEFE2_INTERVALO_GUSANO2 300
+#define JEFE2_TIEMPO_GUSANO2 192
 
-#define JEFE2_TIEMPO_MUERTO 800
+#define JEFE2_TIEMPO_MUERTO 480
 
 
 class cJefe2 : public cEnemigo {
@@ -323,8 +326,8 @@ public:
 	cJefe2(cSistema* sis);
 	~cJefe2();
 
-	void restaVida(int vida);
 	void muerete();
+	void restaVida(int vida);
 	void caja(cRect &rect) const;
 	void offset(int x, int y);
 	
@@ -338,14 +341,14 @@ public:
 //----------------------------------------------------------------------
 // jefe nivel 3
 //----------------------------------------------------------------------
-#define JEFE3_MUEVE_DELAY 10
+#define JEFE3_MUEVE_DELAY 6
 #define JEFE3_VIDA_INICIAL 1000
 #define JEFE3_PUNTOS 80
 
-#define JEFE3_MINI_MUEVE_DELAY 10
+#define JEFE3_MINI_MUEVE_DELAY 6
 #define JEFE3_MINI_VIDA_INICIAL 100
 #define JEFE3_MINI_PUNTOS 20
-#define JEFE3_INC_MOV 1
+#define JEFE3_INC_MOV 2
 
 #define JEFE3_FLASH_IMPACTO 24
 #define JEFE3_MINI_FLASH_IMPACTO 24
@@ -357,9 +360,9 @@ public:
 #define JEFE3_MOVE_LEFT 4
 #define JEFE3_MINI_ATTACK 5
 
-#define JEFE3_MUERE_DELAY 10
-#define JEFE3_MINI_MUERE_DELAY 10
-#define JEFE3_EXPLO_DELAY 4
+#define JEFE3_MUERE_DELAY 6
+#define JEFE3_MINI_MUERE_DELAY 6
+#define JEFE3_EXPLO_DELAY 3
 #define JEFE3_EXPLO_NUM_FRAMES 5
 #define JEFE3_MINI_NUM_FRAMES 4
 #define JEFE3_MINI_EXPLO_NUM_FRAMES 6
@@ -369,7 +372,7 @@ public:
 #define JEFE3_INTERVALO_MINIS_ATTACK 200
 #define VELOCIDAD_JEFE3_MINI 5
 
-#define JEFE3_TIEMPO_MUERTO 400
+#define JEFE3_TIEMPO_MUERTO 240
 
 class cMiniJefe3 : public cEnemigo {
 protected:
@@ -386,8 +389,8 @@ public:
 	~cMiniJefe3();
 
 	void muerete();
-	void caja(cRect &rect) const;
 	void restaVida(int vida);
+	void caja(cRect &rect) const;
 	void colision(cRect &caja, int &colMask) const;
 	void offset(int x, int y);
 	void moveIt(int x, int y);
@@ -424,10 +427,10 @@ public:
 	cJefe3(cSistema* sis);
 	~cJefe3();
 	void creaMinis();
-	void restaVida(int vida);
 	void muerete();
 	void caja(cRect &rect) const;
 	void offset(int x, int y);
+	void restaVida(int vida);
 
 	void colision(cRect &caja, int &colMask) const;
 
