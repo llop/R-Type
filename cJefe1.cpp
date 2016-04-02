@@ -104,7 +104,7 @@ cJefe1::cJefe1(cSistema* sis) : cEnemigo(sis) {
 	_seq = 0;
 	_delay = JEFE1_MUEVE_DELAY;
 	
-	_vida = JEFE1_VIDA_INICIAL;
+	_vida = _sis->dificultad() == DIFICULTAD_NORMAL ? JEFE1_VIDA_INICIAL : JEFE1_VIDA_INICIAL_HARD;
 	_puntos = JEFE1_PUNTOS;
 
 	_tiempoVida = 0;
@@ -116,7 +116,7 @@ cJefe1::cJefe1(cSistema* sis) : cEnemigo(sis) {
 	_subState = JEFE1_ALIEN_DENTRO;
 
 	_anguloCrece = true;
-	_anguloCola = acos(-1.0f);
+	_anguloCola = _PI;
 
 	_sube = false;
 
@@ -350,7 +350,7 @@ void cJefe1::logica() {
 			}
 		} else if (_subState == JEFE1_ALIEN_VOMITA) {
 			long long intervalo = _tiempoVida - _ultimoTiro;
-			if (_tirosLleva >= JEFE1_NUM_TIROS) {
+			if (_tirosLleva >= (_sis->dificultad()==DIFICULTAD_NORMAL ? JEFE1_NUM_TIROS : JEFE1_NUM_TIROS_HARD)) {
 				_ultimoTiro = _tiempoVida;
 				_subState = JEFE1_ALIEN_FUERA;
 				_seq = 15;
@@ -372,15 +372,16 @@ void cJefe1::logica() {
 		}
 
 		// mover la cola
-		if (_anguloCrece) _anguloCola += JEFE1_INC_ANG_COLA;
-		else _anguloCola -= JEFE1_INC_ANG_COLA;
+		float incAnguloCola = _sis->dificultad()==DIFICULTAD_NORMAL ? JEFE1_INC_ANG_COLA : JEFE1_INC_ANG_COLA_HARD;
+		if (_anguloCrece) _anguloCola += incAnguloCola;
+		else _anguloCola -= incAnguloCola;
 
-		if (_anguloCola > 1.3*acos(-1.0f)) {
+		if (_anguloCola > 1.3*_PI) {
 			_anguloCrece = false;
-			_anguloCola -= 2*JEFE1_INC_ANG_COLA;
-		} else if (_anguloCola < acos(-1.0f)) {
+			_anguloCola -= 2*incAnguloCola;
+		} else if (_anguloCola < _PI) {
 			_anguloCrece = true;
-			_anguloCola += 2*JEFE1_INC_ANG_COLA;
+			_anguloCola += 2*incAnguloCola;
 		}
 
 		// animacion
@@ -465,12 +466,12 @@ void cJefe1::pintaVivo() const {
 	glBegin(GL_QUADS);
 
 	// para este, sus coordenadas (_x, _y) corresponden con su esquina superior izquierda
+	int wPixEne = jefe1Mov[_seq][2];
+	int hPixEne = jefe1Mov[_seq][3];
 	float xTexEne = jefe1Mov[_seq][0] / (float)wTex;
 	float yTexEne = jefe1Mov[_seq][1] / (float)hTex;
-	float wTexEne = jefe1Mov[_seq][2] / (float)wTex;
-	float hTexEne = jefe1Mov[_seq][3] / (float)hTex;
-	int wPixEne = jefe1Mov[_seq][2];
-	int hPixEne = jefe1Mov[_seq][3]; 
+	float wTexEne = wPixEne / (float)wTex;
+	float hTexEne = hPixEne / (float)hTex;
 	int xPixEne = _x;
 	int yPixEne = GAME_HEIGHT - (_y + hPixEne);
 

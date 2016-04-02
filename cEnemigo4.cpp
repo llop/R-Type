@@ -54,7 +54,8 @@ cEnemigo4::cEnemigo4(cSistema* sis, int x, int y, int direccion) : cEnemigo(sis,
 	_subState = ENEMIGO4_ANDA;
 	_direccion = direccion;
 
-	_vida = ENEMIGO4_VIDA_INICIAL;
+	_vida = _sis->dificultad()==DIFICULTAD_NORMAL ? ENEMIGO4_VIDA_INICIAL : ENEMIGO4_VIDA_INICIAL_HARD;
+	_vida = int(_vida*((cNivel*)_sis->nivel())->factorDificultad());
 	_puntos = ENEMIGO4_PUNTOS;
 
 	_esJefe = false;
@@ -217,17 +218,16 @@ void cEnemigo4::logica() {
 		}
 
 		//IA DISPAROS
-		int auxRandom = rand() % 100;
-		if (auxRandom == 1) {
+		int modulo = _sis->dificultad() == DIFICULTAD_NORMAL ? ENEMIGO4_DISPARO : ENEMIGO4_DISPARO_HARD;
+		modulo = int(modulo / nivel->factorDificultad());
+		if (!(rand() % modulo)) {
 			// meter el nuevo disparo en el nivel
 			int nX, nY;
 			nave->getPosicion(nX, nY);
 			float vectX = float(nX - _x);
 			float vectY = float(nY - _y);
 			float len = sqrt(vectX*vectX + vectY*vectY);
-			vectX /= len;
-			vectY /= len;
-			nivel->pushDisparo(new cDisparoEnemigo(_sis, _x, _y, vectX, vectY));
+			nivel->pushDisparo(new cDisparoEnemigo(_sis, _x, _y, vectX/len, vectY/len));
 		}
 	}
 	else if (_state == ENEMIGO_EXPLO) {

@@ -44,16 +44,16 @@ public:
 #define ENEMIGO1_NUM_FRAMES 8
 #define ENEMIGO1_MUEVE_DELAY 6
 #define ENEMIGO1_MUERE_DELAY 6
+
 #define ENEMIGO1_VIDA_INICIAL 20
+#define ENEMIGO1_VIDA_INICIAL_HARD 40
+#define ENEMIGO1_DISPARO 250
+#define ENEMIGO1_DISPARO_HARD 125
+
 #define ENEMIGO1_EXPLO_FRAMES 6
 #define ENEMIGO1_PUNTOS 1
 
 class cEnemigo1 : public cEnemigo {
-private:
-
-	float _angle;
-	int _yBase;
-
 public:
 	//cEnemigo1(cSistema* sis);
 	cEnemigo1(cSistema* sis, int x, int y);
@@ -62,7 +62,7 @@ public:
 	void muerete();
 	void caja(cRect &rect) const;
 	
-	void colision(cRect &caja, int &colMask) const;
+	void colision(cRect &rect, int &colMask) const;
 
 	void logica();
 	void pinta() const;
@@ -93,7 +93,7 @@ public:
 	void muerete();
 	void caja(cRect &rect) const;
 
-	void colision(cRect &caja, int &colMask) const;
+	void colision(cRect &rect, int &colMask) const;
 
 	void logica();
 	void pinta() const;
@@ -140,7 +140,7 @@ public:
 	void muerete();
 	void caja(cRect &rect) const;
 	
-	void colision(cRect &caja, int &colMask) const;
+	void colision(cRect &rect, int &colMask) const;
 
 	void logica();
 	void pinta() const;
@@ -160,7 +160,10 @@ struct cExplo {
 
 #define JEFE1_MUEVE_DELAY 6
 #define JEFE1_IDLE_DELAY 480
+
 #define JEFE1_VIDA_INICIAL 500
+#define JEFE1_VIDA_INICIAL_HARD 1000
+
 #define JEFE1_PUNTOS 35
 
 #define JEFE1_NUM_FRAMES 24
@@ -173,6 +176,8 @@ struct cExplo {
 #define JEFE1_TIRO_DELAY 240
 
 #define JEFE1_INC_ANG_COLA 0.02f
+#define JEFE1_INC_ANG_COLA_HARD 0.024f
+
 #define JEFE1_INC_MOV 2
 
 #define JEFE1_MUERE_DELAY 6
@@ -181,7 +186,9 @@ struct cExplo {
 #define JEFE1_COLA_EXPLO_NUM_FRAMES 6
 #define JEFE1_EXPLO_NUM_FRAMES 9
 #define JEFE1_MAX_NUM_EXPLO 5
+
 #define JEFE1_NUM_TIROS 10
+#define JEFE1_NUM_TIROS_HARD 16
 
 #define JEFE1_FLASH_IMPACTO 24
 
@@ -221,7 +228,7 @@ public:
 	void offset(int x, int y);
 	void restaVida(int vida);
 	
-	void colision(cRect &caja, int &colMask) const;
+	void colision(cRect &rect, int &colMask) const;
 
 	void logica();
 	void pinta() const;
@@ -235,10 +242,17 @@ public:
 #define ENEMIGO3_INC_ANGLE 0.06f
 #define ENEMIGO3_MUEVE_DELAY 6
 #define ENEMIGO3_MUERE_DELAY 6
-#define ENEMIGO3_VIDA_INICIAL 40
+
+#define ENEMIGO3_VIDA_INICIAL 32
+#define ENEMIGO3_VIDA_INICIAL_HARD 50
+
+#define ENEMIGO3_DISPARO_PIEZA 10000
+#define ENEMIGO3_DISPARO_PIEZA_HARD 6000
+
 #define ENEMIGO3_EXPLO_FRAMES 6
-#define ENEMIGO3_PUNTOS 2
 #define ENEMIGO3_MAX_NUM_EXPLO 3
+
+#define ENEMIGO3_PUNTOS 2
 
 class cEnemigo3 : public cEnemigo {
 private:
@@ -265,7 +279,7 @@ public:
 	void restaVida(int vida);
 
 	void offset(int x, int y);
-	void colision(cRect &caja, int &colMask) const;
+	void colision(cRect &rect, int &colMask) const;
 
 	void logica();
 	void pinta() const;
@@ -279,6 +293,7 @@ public:
 
 #define JEFE2_MUEVE_DELAY 6
 #define JEFE2_VIDA_INICIAL 2000
+#define JEFE2_VIDA_INICIAL_HARD 3000
 #define JEFE2_PUNTOS 65
 
 #define JEFE2_FLASH_IMPACTO 24
@@ -331,7 +346,7 @@ public:
 	void caja(cRect &rect) const;
 	void offset(int x, int y);
 	
-	void colision(cRect &caja, int &colMask) const;
+	void colision(cRect &rect, int &colMask) const;
 
 	void logica();
 	void pinta() const;
@@ -391,7 +406,7 @@ public:
 	void muerete();
 	void restaVida(int vida);
 	void caja(cRect &rect) const;
-	void colision(cRect &caja, int &colMask) const;
+	void colision(cRect &rect, int &colMask) const;
 	void offset(int x, int y);
 	void moveIt(int x, int y);
 	bool isDead();
@@ -432,7 +447,7 @@ public:
 	void offset(int x, int y);
 	void restaVida(int vida);
 
-	void colision(cRect &caja, int &colMask) const;
+	void colision(cRect &rect, int &colMask) const;
 
 	void logica();
 	void pinta() const;
@@ -455,7 +470,13 @@ public:
 
 #define ENEMIGO4_MUEVE_DELAY 12
 #define ENEMIGO4_MUERE_DELAY 4
+
 #define ENEMIGO4_VIDA_INICIAL 60
+#define ENEMIGO4_VIDA_INICIAL_HARD 100
+
+#define ENEMIGO4_DISPARO 240
+#define ENEMIGO4_DISPARO_HARD 120
+
 #define ENEMIGO4_PUNTOS 3
 
 class cEnemigo4 : public cEnemigo {
@@ -465,7 +486,6 @@ protected:
 	int _direccion;		// anda para la izquierda o la derecha?
 
 public:
-	//cEnemigo1(cSistema* sis);
 	cEnemigo4(cSistema* sis, int x, int y, int direccion);
 	~cEnemigo4();
 
@@ -473,7 +493,44 @@ public:
 	void offset(int x, int y);
 	void caja(cRect &rect) const;
 
-	void colision(cRect &caja, int &colMask) const;
+	void colision(cRect &rect, int &colMask) const;
+
+	void logica();
+	void pinta() const;
+
+};
+
+
+
+#define ENEMIGO5_MUEVE_DELAY 6
+#define ENEMIGO5_MUERE_DELAY 6
+
+#define ENEMIGO5_VIDA_INICIAL 20
+#define ENEMIGO5_VIDA_INICIAL_HARD 30
+
+#define ENEMIGO5_AVANCE 2
+#define ENEMIGO5_AVANCE_HARD 3
+
+#define ENEMIGO5_NUM_ANGULOS 14
+#define ENEMIGO5_MOV_FRAMES 2
+#define ENEMIGO5_EXPLO_FRAMES 6
+
+#define ENEMIGO5_PUNTOS 3
+
+class cEnemigo5 : public cEnemigo {
+protected:
+
+	float _angulo;
+
+public:
+	//cEnemigo1(cSistema* sis);
+	cEnemigo5(cSistema* sis, int x, int y);
+	~cEnemigo5();
+
+	void muerete();
+	void caja(cRect &rect) const;
+
+	void colision(cRect &rect, int &colMask) const;
 
 	void logica();
 	void pinta() const;

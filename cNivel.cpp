@@ -207,14 +207,11 @@ void cNivel::aplicaScroll() {
 	// que sea la subclase quien implementa el avance en cada momento
 	int avanza = avanzaPosicion();
 
-	// avanzar automaticamente todo
+	// avanzar automaticamente todo:
+	// la nave, el HUD, y los enemigos que se dejen
 	if (avanza) {
 		_posicion += avanza;
-		//for (list<cItem*>::iterator it=_items.begin(); it!=_items.end(); ++it) (*it)->offset(avanza, 0);
-		//for (list<cDisparo*>::iterator it=_disparos.begin(); it!=_disparos.end(); ++it) (*it)->offset(avanza, 0);
 		for (list<cEnemigo*>::iterator it=_enemigos.begin(); it!=_enemigos.end(); ++it) (*it)->offset(avanza, 0);
-		//for (list<cEscudo*>::iterator it=_escudos.begin(); it!=_escudos.end(); ++it) (*it)->offset(avanza, 0);
-		// la nave y el hud
 		_naveEspacial->offset(avanza, 0);
 		_hud->offset(avanza, 0);
 	}

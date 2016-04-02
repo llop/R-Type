@@ -83,8 +83,11 @@ void cDisparoEnemigo::caja(cRect &rect) const {
 void cDisparoEnemigo::logica() {
 	if (_state == DISPARO_VIVE) {
 		cNivel* nivel = ((cNivel*)_sis->nivel());
-		_xF += _pixelsAvanzaX*VELOCIDAD_DISPARO_ENEMIGO;
-		_yF += _pixelsAvanzaY*VELOCIDAD_DISPARO_ENEMIGO;
+		float velo = float(_sis->dificultad() == DIFICULTAD_NORMAL ?
+			VELOCIDAD_DISPARO_ENEMIGO : VELOCIDAD_DISPARO_ENEMIGO_HARD);
+		velo *= nivel->factorDificultad();
+		_xF += _pixelsAvanzaX*velo;
+		_yF += _pixelsAvanzaY*velo;
 	
 		_x = int(_xF);
 		_y = int(_yF);

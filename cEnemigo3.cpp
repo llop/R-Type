@@ -82,9 +82,11 @@ cEnemigo3::cEnemigo3(cSistema* sis, int x, int y, int numPiezas, float radio, fl
 
 	_numPiezas = numPiezas;
 	vector<int> base(3);
-	base[0] = ENEMIGO3_VIDA_INICIAL;	// la vida
-	base[1] = 0;						// la seq cuando peta
-	base[2] = ENEMIGO2_MUERE_DELAY;		// delay cuando peta
+	base[0] = _sis->dificultad()==DIFICULTAD_NORMAL ?
+		ENEMIGO3_VIDA_INICIAL : ENEMIGO3_VIDA_INICIAL_HARD;	// la vida
+	base[0] = int(base[0]*((cNivel*)_sis->nivel())->factorDificultad());
+ 	base[1] = 0;						// la seq cuando peta
+	base[2] = ENEMIGO3_MUERE_DELAY;		// delay cuando peta
 	_piezas.resize(_numPiezas, base);
 
 	_antihorario = antihorario;
@@ -292,7 +294,10 @@ void cEnemigo3::logica() { // cambiar logica quan es vegi
 			}
 
 			// intentar disparar
-			if (_piezas[i][0]>0 && !(rand()%10000)) {
+			int modulo = _sis->dificultad()==DIFICULTAD_NORMAL ? 
+				ENEMIGO3_DISPARO_PIEZA : ENEMIGO3_DISPARO_PIEZA_HARD;
+			modulo = int(modulo/nivel->factorDificultad());
+			if (_piezas[i][0]>0 && !(rand()%modulo)) {
 				float incAngle = (_2PI)/8;
 				float angTiro = 0.0f;
 				for (int i=0; i<8; ++i) {

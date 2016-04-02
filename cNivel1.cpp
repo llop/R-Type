@@ -14,7 +14,7 @@ cNivel1::cNivel1(cSistema* sis, cNaveEspacial* naveEspacial,
 														idTextura, idFondo, 
 														ficheroTextura,
 														ficheroFondo) {
-	//_posicion = 4200;//3218;
+	//_posicion = 4200-640;//3218;
 }
 
 
@@ -67,6 +67,11 @@ void cNivel1::generaEnemigos() {
 	//	pushEnemigo(e);
 	//}
 
+	if (_posicion == 42 * TILE_WIDTH - GAME_WIDTH && !_delay) {
+		cEnemigo5* enemigo = new cEnemigo5(_sis, rect.x + rect.w + 8, 300);
+		pushEnemigo(enemigo);
+	}
+
 	int inter = 8;
 	int iniPos = 50 * TILE_WIDTH - GAME_WIDTH;
 	if (!(_posicion%inter) && !_delay && _posicion >= iniPos && _posicion < iniPos+(inter*8)) {
@@ -110,7 +115,6 @@ void cNivel1::generaEnemigos() {
 	}
 
 
-
 	// enemigo 3 (251, 14) -> (4016, 224), radio (14-5) -> 144, spawnPos = (4016-144-15-640) = 3217
 	if (_posicion==3218 && !_delay) {
 		cEnemigo3* enemigo3 = new cEnemigo3(_sis, 4016, 224, 10, 144.0f, 0.0f, 0.005f, false);
@@ -120,6 +124,31 @@ void cNivel1::generaEnemigos() {
 		pushEnemigo(enemigo3);
 	}
 	
+	if (_posicion == 288 * TILE_WIDTH - GAME_WIDTH && !_delay) {
+		cEnemigo1* enemigo = new cEnemigo1(_sis, rect.x + rect.w + 10, GAME_HEIGHT >> 1);
+		pushEnemigo(enemigo);
+	} else if (_posicion == 289 * TILE_WIDTH - GAME_WIDTH && !_delay) {
+		cEnemigo1* enemigo = new cEnemigo1(_sis, rect.x + rect.w + 10, (GAME_HEIGHT >> 1) - 16);
+		pushEnemigo(enemigo);
+		enemigo = new cEnemigo1(_sis, rect.x + rect.w + 10, (GAME_HEIGHT >> 1) + 16);
+		pushEnemigo(enemigo);
+	} else if (_posicion == 290 * TILE_WIDTH - GAME_WIDTH && !_delay) {
+		cEnemigo1* enemigo = new cEnemigo1(_sis, rect.x + rect.w + 10, (GAME_HEIGHT >> 1) - 32);
+		pushEnemigo(enemigo);
+		enemigo = new cEnemigo1(_sis, rect.x + rect.w + 10, (GAME_HEIGHT >> 1) + 32);
+		pushEnemigo(enemigo);
+	} else if (_posicion == 291 * TILE_WIDTH - GAME_WIDTH && !_delay) {
+		cEnemigo1* enemigo = new cEnemigo1(_sis, rect.x + rect.w + 10, (GAME_HEIGHT >> 1) - 48);
+		pushEnemigo(enemigo);
+		enemigo = new cEnemigo1(_sis, rect.x + rect.w + 10, (GAME_HEIGHT >> 1) + 48);
+		pushEnemigo(enemigo);
+	} else if (_posicion == 292 * TILE_WIDTH - GAME_WIDTH && !_delay) {
+		cEnemigo1* enemigo = new cEnemigo1(_sis, rect.x + rect.w + 10, (GAME_HEIGHT >> 1) - 64);
+		pushEnemigo(enemigo);
+		enemigo = new cEnemigo1(_sis, rect.x + rect.w + 10, (GAME_HEIGHT >> 1) + 64);
+		pushEnemigo(enemigo);
+	}
+
 	// generar el jefe
 	if (_posicion==4200 && !_delay) {
 		cJefe1* jefe = new cJefe1(_sis);

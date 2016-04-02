@@ -69,6 +69,8 @@ public:
 	cSprite* naveEspacial() const;
 	cSprite* nivel() const;
 
+	int dificultad() const;
+
 	// texturas
 	void cargaTextura(int id, const char* ficheroTextura);
 	int idTextura(int id) const;
@@ -80,6 +82,7 @@ public:
 	void avanzaNivel();
 	void cargaNivel();
 	void gameOver();
+
 
 	// esto para el game loop
 	void procesaTeclas(unsigned char *keys);

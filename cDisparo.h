@@ -63,7 +63,9 @@ public:
 #define DISPARO_ENEMIGO_VIVE_FRAMES 4
 #define DISPARO_ENEMIGO_EXPLO_FRAMES 5
 #define DANO_DISPARO_ENEMIGO 100
+
 #define VELOCIDAD_DISPARO_ENEMIGO 3
+#define VELOCIDAD_DISPARO_ENEMIGO_HARD 4
 
 // disparo enemigo
 class cDisparoEnemigo : public cDisparo {

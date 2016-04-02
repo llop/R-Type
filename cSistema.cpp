@@ -11,6 +11,7 @@ cSistema::cSistema() {
 	_naveEspacial = NULL;
 	_nivel = NULL;
 	_numNivel = NIVEL1;
+	_dificultad = DIFICULTAD_NORMAL;
 	_menu = NULL;
 	_data = new cData();
 	_estado = MENU;
@@ -52,6 +53,10 @@ cSprite* cSistema::naveEspacial() const {
 
 cSprite* cSistema::nivel() const {
 	return _nivel;
+}
+
+int cSistema::dificultad() const {
+	return _dificultad;
 }
 
 
@@ -117,6 +122,7 @@ void cSistema::arrancaPartida() {
 	_naveEspacial = new cNaveEspacial(this);
 
 	_numNivel = NIVEL1;
+	_dificultad = ((cMenu*)_menu)->dificultad();
 	cargaNivel();
 }
 

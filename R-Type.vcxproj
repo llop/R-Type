@@ -121,6 +121,7 @@
     <ClCompile Include="cSprite.cpp" />
     <ClCompile Include="cTexture.cpp" />
     <ClCompile Include="GLUTMain.cpp" />
+    <ClCompile Include="cEnemigo5.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cData.h" />

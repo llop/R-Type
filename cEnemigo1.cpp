@@ -28,16 +28,14 @@ int e1dieMid = 311;
 cEnemigo1::cEnemigo1(cSistema* sis, int x, int y) : cEnemigo(sis, x, y) {
 	_sis->cargaTextura(TEX_ENE1, "img\\r-typesheet5.png");
 	_sis->cargaTextura(TEX_NAVE1, "img\\r-typesheet1.png");
-
-	_angle = 0;
-	_yBase = _y;
 	
 	_state = ENEMIGO_VIVE;
 	_seq = 0;
 	_delay = ENEMIGO1_MUEVE_DELAY;
 	
-	_vida = ENEMIGO1_VIDA_INICIAL;
-	_puntos = ENEMIGO1_PUNTOS;
+	_vida = _sis->dificultad()==DIFICULTAD_NORMAL ? ENEMIGO1_VIDA_INICIAL : ENEMIGO1_VIDA_INICIAL_HARD;
+	_vida = int(_vida*((cNivel*)_sis->nivel())->factorDificultad());
+ 	_puntos = ENEMIGO1_PUNTOS;
 
 	_esJefe = false;
 }
@@ -62,10 +60,10 @@ void cEnemigo1::caja(cRect &rect) const {
 }
 
 void cEnemigo1::colision(cRect &rect, int &colMask) const {
-	cRect myRect;
-	caja(myRect);
 	colMask = 0;
 	if (_state == ENEMIGO_VIVE) {
+		cRect myRect;
+		caja(myRect);
 		if (myRect.x < rect.x+rect.w && myRect.x+myRect.w > rect.x &&
 			myRect.y < rect.y+rect.h && myRect.y+myRect.h > rect.y) {
 				colMask = 1;
@@ -76,11 +74,8 @@ void cEnemigo1::colision(cRect &rect, int &colMask) const {
 void cEnemigo1::logica() {
 	if (_state == ENEMIGO_VIVE) {
 
-		// actualizar posicion
-		//_angle += ENEMIGO1_INC_ANGLE;
 		_x -= ENEMIGO1_SPEED_LEFT;
-		//_y = int(_yBase + sin(_angle) * ENEMIGO1_ALT_MOV);
-
+		
 		// estos los necesitaremos por ahi
 		cNivel* nivel = (cNivel*)_sis->nivel();
 		cNaveEspacial* nave = (cNaveEspacial*)_sis->naveEspacial();
@@ -143,17 +138,16 @@ void cEnemigo1::logica() {
 		}
 
 		//IA DISPAROS
-		int auxRandom = rand() % 250;
-		if (auxRandom == 1) {
+		int modulo = _sis->dificultad() == DIFICULTAD_NORMAL ? ENEMIGO1_DISPARO : ENEMIGO1_DISPARO_HARD;
+		modulo = int(modulo/nivel->factorDificultad());
+		if (!(rand()%modulo)) {
 			// meter el nuevo disparo en el nivel
 			int nX, nY;
 			nave->getPosicion(nX, nY);
 			float vectX = float(nX - _x);
 			float vectY = float(nY - _y);
 			float len = sqrt(vectX*vectX + vectY*vectY);
-			vectX /= len;
-			vectY /= len;
-			nivel->pushDisparo(new cDisparoEnemigo(_sis, _x, _y, vectX, vectY));
+			nivel->pushDisparo(new cDisparoEnemigo(_sis, _x, _y, vectX/len, vectY/len));
 		}
 	} else if (_state == ENEMIGO_EXPLO) {
 		// avanzar en la animacion
@@ -185,12 +179,12 @@ void cEnemigo1::pinta() const{
 		glBindTexture(GL_TEXTURE_2D, tex);
 		glBegin(GL_QUADS);
 
+		wPixEne = e1mov[_seq][2];
+		hPixEne = e1mov[_seq][3];
 		xTexEne = e1mov[_seq][0] / (float)wTex;
 		yTexEne = e1mov[_seq][1] / (float)hTex;
-		wTexEne = e1mov[_seq][2] / (float)wTex;
-		hTexEne = e1mov[_seq][3] / (float)hTex;
-		wPixEne = e1mov[_seq][2];
-		hPixEne = e1mov[_seq][3]; 
+		wTexEne = wPixEne / (float)wTex;
+		hTexEne = hPixEne / (float)hTex;
 		xPixEne = _x - (wPixEne >> 1);
 		yPixOffset = e1movMid - e1mov[_seq][1];
 		yPixEne = GAME_HEIGHT - (_y - yPixOffset + hPixEne);
@@ -203,12 +197,12 @@ void cEnemigo1::pinta() const{
 		glBindTexture(GL_TEXTURE_2D, tex);
 		glBegin(GL_QUADS);
 
-		xTexEne = e1die[_seq][0] / (float)wTex;
-		yTexEne = e1die[_seq][1] / (float)hTex;
-		wTexEne = e1die[_seq][2] / (float)wTex;
-		hTexEne = e1die[_seq][3] / (float)hTex;
 		wPixEne = e1die[_seq][2];
 		hPixEne = e1die[_seq][3];
+		xTexEne = e1die[_seq][0] / (float)wTex;
+		yTexEne = e1die[_seq][1] / (float)hTex;
+		wTexEne = wPixEne / (float)wTex;
+		hTexEne = hPixEne / (float)hTex;
 		xPixEne = _x - (wPixEne >> 1);
 		yPixOffset = e1dieMid - e1die[_seq][1];
 		yPixEne = GAME_HEIGHT - (_y - yPixOffset + hPixEne);

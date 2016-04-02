@@ -42,7 +42,7 @@ cMenu::cMenu(cSistema* sis) : cSprite(sis) {
 
 	_state = PANTALLA_INICIO;
 	_seleccionado = INICIO_START;
-	_dificultad = DIFICULTAD_NORMAL;
+	_dificultad = _sis->dificultad();
 	_continua = GAME_OVER_CONTINUE;
 
 	_tiempoVida = 0;
