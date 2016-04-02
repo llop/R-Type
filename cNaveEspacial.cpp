@@ -85,7 +85,7 @@ int cNaveEspacial::magias() const {
 	return _magias;
 }
 bool cNaveEspacial::puedeTirarMagia() const {
-	return _tiempoVida - _ultimaMagia >= NAVE_MAGIA_DELAY;
+	return _magias && _tiempoVida - _ultimaMagia >= NAVE_MAGIA_DELAY;
 }
 int cNaveEspacial::cargaDisparo() const {
 	return _cargaTiro;
@@ -194,8 +194,7 @@ void cNaveEspacial::no_dispara() {
 }
 
 void cNaveEspacial::tira_magia() {
-	long long intervalo = _tiempoVida - _ultimaMagia;
-	if (intervalo < NAVE_MAGIA_DELAY) return;
+	if (!puedeTirarMagia()) return;
 
 	_ultimaMagia = _tiempoVida;
 	--_magias;
