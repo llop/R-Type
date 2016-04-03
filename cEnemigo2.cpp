@@ -46,6 +46,7 @@ cEnemigo2::cEnemigo2(cSistema* sis, int x, int y) : cEnemigo(sis, x, y) {
 	_delay = ENEMIGO2_MUEVE_DELAY;
 
 	_vida = _sis->dificultad() == DIFICULTAD_NORMAL ? ENEMIGO2_VIDA_INICIAL : ENEMIGO2_VIDA_INICIAL_HARD;
+	_vida = int(_vida * ((cNivel*)_sis->nivel())->factorDificultad());
 	_puntos = ENEMIGO2_PUNTOS;
 
 	_esJefe = false;

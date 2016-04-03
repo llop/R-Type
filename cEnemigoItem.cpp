@@ -35,7 +35,8 @@ cEnemigoItem::cEnemigoItem(cSistema* sis, int x, int y,
 	_seq = 0;
 	_delay = ENEMIGO_ITEM_MUEVE_DELAY;
 	
-	_vida = ENEMIGO_ITEM_VIDA_INICIAL;
+	_vida = _sis->dificultad() == DIFICULTAD_NORMAL ? ENEMIGO_ITEM_VIDA_INICIAL : ENEMIGO_ITEM_VIDA_INICIAL_HARD;
+	_vida = int(_vida * ((cNivel*)_sis->nivel())->factorDificultad());
 	_puntos = ENEMIGO_ITEM_PUNTOS;
 
 	_xF = float(_x);
