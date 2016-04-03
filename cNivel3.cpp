@@ -37,37 +37,54 @@ void cNivel3::generaEnemigos() {
 	cRect rect;
 	caja(rect);
 	// generar una cadena de malos
-	int inter = 8;
-	if (!(_posicion%inter) && !_delay && _posicion < inter * 6) {
-		int alturaRandom = rand() % 400;
-		cEnemigo1* e = new cEnemigo1(_sis, rect.x + rect.w + 10, alturaRandom);
-		pushEnemigo(e);
+	int inter = 10;
+	int iniPos = 50 * TILE_WIDTH - GAME_WIDTH;
+	if (!(_posicion%inter) && !_delay && _posicion >= iniPos && _posicion < iniPos + (inter * 1)) {
+		cEnemigo1* enemigo = new cEnemigo1(_sis, rect.x + rect.w + 10, 200);
+		pushEnemigo(enemigo);
 	}
 
-	if (_posicion >= 800 && !(_posicion%inter) && !_delay && _posicion < 800 + (inter * 4)) {
-		cEnemigo2* e = new cEnemigo2(_sis, rect.x + rect.w + 10, 100);
-		pushEnemigo(e);
+	iniPos = 60 * TILE_WIDTH - GAME_WIDTH;
+	if (!(_posicion%inter) && !_delay && _posicion >= iniPos && _posicion < iniPos + (inter * 3)) {
+		int numRand = rand() % 200;
+		cEnemigo1* enemigo = new cEnemigo1(_sis, rect.x + rect.w + 10, 100 + numRand);
+		pushEnemigo(enemigo);
 	}
 
-	if (_posicion == 200 && !_delay) {
-		cEnemigoItem* e = new cEnemigoItem(_sis, rect.x + rect.w + 8, 200, -5.0f, 0.0f, ITEM_DISPARO_RB);
-		pushEnemigo(e);
+	/*iniPos = 90 * TILE_WIDTH - GAME_WIDTH;
+	if (!(_posicion%inter) && !_delay && _posicion >= iniPos && _posicion < iniPos + (inter * 5)) {
+	cEnemigo2* enemigo = new cEnemigo2(_sis, rect.x + rect.w + 10, 200);
+	pushEnemigo(enemigo);
+	}*/
+
+	iniPos = 90 * TILE_WIDTH - GAME_WIDTH;
+	if (!(_posicion%inter) && !_delay && _posicion >= iniPos && _posicion < iniPos + (inter * 4)) {
+		cEnemigo1* enemigo1 = new cEnemigo1(_sis, rect.x + rect.w + 10, 250);
+		cEnemigo2* enemigo2 = new cEnemigo2(_sis, rect.x + rect.w + 10, 100);
+		pushEnemigo(enemigo1);
+		pushEnemigo(enemigo2);
 	}
-	if (_posicion == 300 && !_delay) {
-		cEnemigoItem* e = new cEnemigoItem(_sis, rect.x + rect.w + 8, 200, -5.0f, 0.0f, ITEM_ESCUDO);
-		pushEnemigo(e);
+
+	if (_posicion == 110 * TILE_WIDTH - GAME_WIDTH && !_delay) {
+		cEnemigoItem* enemigo = new cEnemigoItem(_sis, rect.x + rect.w + 8, 300, -5.0f, 0.0f, ITEM_ESCUDO);
+		pushEnemigo(enemigo);
 	}
-	if (_posicion == 400 && !_delay) {
-		cEnemigoItem* e = new cEnemigoItem(_sis, rect.x + rect.w + 8, 200, -5.0f, 0.0f, ITEM_ESCUDO);
-		pushEnemigo(e);
+
+	if (_posicion == 130 * TILE_WIDTH - GAME_WIDTH && !_delay) {
+		int y = 100;
+		for (int i = 0; i < 5; ++i) {
+			cEnemigo1* enemigo = new cEnemigo1(_sis, rect.x + rect.w + 10, y += 32);
+			pushEnemigo(enemigo);
+		}
 	}
-	if (_posicion == 500 && !_delay) {
-		cEnemigoItem* e = new cEnemigoItem(_sis, rect.x + rect.w + 8, 200, -5.0f, 0.0f, ITEM_ESCUDO);
-		pushEnemigo(e);
+	
+	if (_posicion == 150 * TILE_WIDTH - GAME_WIDTH && !_delay) {
+		cEnemigo5* enemigo = new cEnemigo5(_sis, rect.x + rect.w + 8, 200);
+		pushEnemigo(enemigo);
 	}
 
 	// generar el jefe
-	if (_posicion == 5084-GAME_WIDTH && !_delay) {
+	if (_posicion == 5084 - GAME_WIDTH && !_delay) {
 		cJefe3* jefe = new cJefe3(_sis);
 		pushEnemigo(jefe);
 	}
