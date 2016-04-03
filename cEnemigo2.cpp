@@ -45,7 +45,7 @@ cEnemigo2::cEnemigo2(cSistema* sis, int x, int y) : cEnemigo(sis, x, y) {
 	_seq = 0;
 	_delay = ENEMIGO2_MUEVE_DELAY;
 
-	_vida = ENEMIGO2_VIDA_INICIAL;
+	_vida = _sis->dificultad() == DIFICULTAD_NORMAL ? ENEMIGO2_VIDA_INICIAL : ENEMIGO2_VIDA_INICIAL_HARD;
 	_puntos = ENEMIGO2_PUNTOS;
 
 	_esJefe = false;
@@ -151,8 +151,9 @@ void cEnemigo2::logica() { // cambiar logica quan es vegi
 		}
 
 		//IA DISPAROS
-		int auxRandom = rand() % 250;
-		if (auxRandom == 1) {
+		int modulo = _sis->dificultad() == DIFICULTAD_NORMAL ? ENEMIGO2_DISPARO : ENEMIGO2_DISPARO_HARD;
+		modulo = int(modulo / nivel->factorDificultad());
+		if (!(rand() % modulo)) {
 			// meter el nuevo disparo en el nivel
 			int nX, nY;
 			nave->getPosicion(nX, nY);

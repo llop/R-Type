@@ -76,7 +76,12 @@ public:
 #define ENEMIGO2_NUM_FRAMES 16
 #define ENEMIGO2_MUEVE_DELAY 6
 #define ENEMIGO2_MUERE_DELAY 6
+
 #define ENEMIGO2_VIDA_INICIAL 20
+#define ENEMIGO2_VIDA_INICIAL_HARD 40
+#define ENEMIGO2_DISPARO 250
+#define ENEMIGO2_DISPARO_HARD 125
+
 #define ENEMIGO2_EXPLO_FRAMES 6
 #define ENEMIGO2_PUNTOS 1
 
@@ -112,6 +117,7 @@ public:
 #define ENEMIGO_ITEM_AVANCE 2
 
 #define ENEMIGO_ITEM_VIDA_INICIAL 20
+#define ENEMIGO_ITEM_VIDA_INICIAL_HARD 40
 #define ENEMIGO_ITEM_PUNTOS 2
 
 #define ENEMIGO_ITEM_MUEVE_DELAY 6
@@ -358,10 +364,12 @@ public:
 //----------------------------------------------------------------------
 #define JEFE3_MUEVE_DELAY 6
 #define JEFE3_VIDA_INICIAL 1000
-#define JEFE3_PUNTOS 80
+#define JEFE3_VIDA_INICIAL_HARD 1500
+#define JEFE3_PUNTOS 100
 
 #define JEFE3_MINI_MUEVE_DELAY 6
 #define JEFE3_MINI_VIDA_INICIAL 100
+#define JEFE3_MINI_VIDA_INICIAL_HARD 200
 #define JEFE3_MINI_PUNTOS 20
 #define JEFE3_INC_MOV 2
 
@@ -383,9 +391,13 @@ public:
 #define JEFE3_MINI_EXPLO_NUM_FRAMES 6
 #define JEFE3_MAX_NUM_EXPLO 5
 
-#define JEFE3_NUM_MINIS 30
+#define JEFE3_NUM_MINIS 10
+#define JEFE3_NUM_MINIS_HARD 20
+#define JEFE3_INTERVALO_ATTACK 100
+#define JEFE3_INTERVALO_ATTACK_HARD 75
 #define JEFE3_INTERVALO_MINIS_ATTACK 200
-#define VELOCIDAD_JEFE3_MINI 5
+#define JEFE3_INTERVALO_MINIS_ATTACK_HARD 150
+#define VELOCIDAD_JEFE3_MINI 7
 
 #define JEFE3_TIEMPO_MUERTO 240
 
@@ -395,7 +407,6 @@ protected:
 	long long _ultimoImpacto;
 	int _tiempoMuerto;
 	int _subState;
-	bool _attacking;
 	float _pixelsAvanzaX;
 	float _pixelsAvanzaY;
 

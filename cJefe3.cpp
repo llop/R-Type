@@ -30,16 +30,16 @@ cJefe3::cJefe3(cSistema* sis) : cEnemigo(sis) {
 	_seq = 0;
 	_delay = JEFE3_MUEVE_DELAY;
 
-	_vida = JEFE3_VIDA_INICIAL;
+	_vida = _sis->dificultad() == DIFICULTAD_NORMAL ? JEFE3_VIDA_INICIAL : JEFE3_VIDA_INICIAL_HARD;
 	_puntos = JEFE3_PUNTOS;
 
 	_tiempoVida = 0;
 	_ultimoImpacto = -JEFE3_FLASH_IMPACTO;
 
 	_x = 5075;
-	_y = 200;
+	_y = 480;
 
-	_subState = JEFE3_IDLE;
+	_subState = JEFE3_MOVE_UP;
 
 	_esJefe = true;
 	creaMinis();
@@ -50,13 +50,23 @@ cJefe3::~cJefe3() {
 }
 
 void cJefe3::creaMinis() {
-	int i, j;
+	int i, j, n, x;
+	n = _sis->dificultad() == DIFICULTAD_NORMAL ? JEFE3_NUM_MINIS : JEFE3_NUM_MINIS_HARD;
+
 	for (i = 0; i < 5; i++) { //x 5000->5150
 		for (j = 0; j < 5; j++) { // y 150->250
-			cMiniJefe3* e1 = new cMiniJefe3(_sis, (5000+30*i), (150+20*j));
+			cMiniJefe3* e1 = new cMiniJefe3(_sis, (5000+30*i), (430+20*j));
 			_minis.insert(_minis.end(), e1);
 			((cNivel*)_sis->nivel())->pushEnemigo(e1);
 		}
+	}
+	for (x = 0; x < n; x++) {
+		int xRand, yRand;
+		xRand = rand() % 150;
+		yRand = rand() % 100;
+		cMiniJefe3* e2 = new cMiniJefe3(_sis, (5000 + xRand), (430 + yRand));
+		_minis.insert(_minis.end(), e2);
+		((cNivel*)_sis->nivel())->pushEnemigo(e2);
 	}
 }
 
@@ -80,6 +90,7 @@ void cJefe3::restaVida(int vida) {
 	if (_minis.size() <= 0) {
 		// las magias le afectan solo cuando no quedan minis
 		cEnemigo::restaVida(vida);
+		_ultimoImpacto = _tiempoVida;
 	}
 };
 
@@ -201,7 +212,8 @@ void cJefe3::logica() {
 
 		if (_minis.size()>0) {
 		//ataque minijefes
-			int auxRandom = rand() % JEFE3_INTERVALO_MINIS_ATTACK;
+			int aux = _sis->dificultad() == DIFICULTAD_NORMAL ? JEFE3_INTERVALO_MINIS_ATTACK : JEFE3_INTERVALO_MINIS_ATTACK_HARD;
+			int auxRandom = rand() % aux;
 			if (auxRandom == 1) {
 				list<cMiniJefe3*>::iterator it = _minis.begin();
 				cMiniJefe3* single = *it;
@@ -213,7 +225,8 @@ void cJefe3::logica() {
 
 		else {
 		// ataque frenetico si jefe esta solo
-			int auxRandom = rand() % 100;
+			int aux = _sis->dificultad() == DIFICULTAD_NORMAL ? JEFE3_INTERVALO_ATTACK : JEFE3_INTERVALO_ATTACK_HARD;
+			int auxRandom = rand() % aux;
 			if (auxRandom == 1) {
 				int xTiro = _x;
 				int yTiro = _y;
@@ -228,9 +241,9 @@ void cJefe3::logica() {
 
 
 		// actualizar estado
-		if (_tiempoVida == 400) {
+		/*if (_tiempoVida == 0) {
 			_subState = JEFE3_MOVE_UP;
-		}
+		}*/
 
 	}
 
@@ -419,7 +432,7 @@ cMiniJefe3::cMiniJefe3(cSistema* sis, int x, int y) : cEnemigo(sis, x, y) {
 	_seq = 0;
 	_delay = JEFE3_MINI_MUEVE_DELAY;
 
-	_vida = JEFE3_MINI_VIDA_INICIAL;
+	_vida = _sis->dificultad() == DIFICULTAD_NORMAL ? JEFE3_MINI_VIDA_INICIAL : JEFE3_MINI_VIDA_INICIAL_HARD;
 	_puntos = JEFE3_MINI_PUNTOS;
 
 	_tiempoVida = 0;
@@ -427,8 +440,7 @@ cMiniJefe3::cMiniJefe3(cSistema* sis, int x, int y) : cEnemigo(sis, x, y) {
 
 	_x = x;
 	_y = y;
-	_attacking = false;
-	_subState = JEFE3_IDLE;
+	_subState = JEFE3_MOVE_UP;
 	_pixelsAvanzaX = 0;
 	_pixelsAvanzaY = 0;
 	_esJefe = true;
@@ -453,6 +465,7 @@ void cMiniJefe3::caja(cRect &rect) const {
 void cMiniJefe3::restaVida(int vida) {
 	// impactos fisicos de la nave o magias le quitan muy poca vida
 	cEnemigo::restaVida(vida / 10);
+	_ultimoImpacto = _tiempoVida;
 };
 
 void cMiniJefe3::colision(cRect &rect, int &colMask) const {
@@ -486,6 +499,16 @@ bool cMiniJefe3::isDead() {
 }
 
 void cMiniJefe3::attack() {
+	int nX, nY;
+	cNaveEspacial* nave = (cNaveEspacial*)_sis->naveEspacial();
+	nave->getPosicion(nX, nY);
+	float vectX = float(nX - _x);
+	float vectY = float(nY - _y);
+	float len = sqrt(vectX*vectX + vectY*vectY);
+	vectX /= len;
+	vectY /= len;
+	_pixelsAvanzaX = vectX;
+	_pixelsAvanzaY = vectY;
 	_subState = JEFE3_MINI_ATTACK;
 }
 
@@ -498,24 +521,9 @@ void cMiniJefe3::logica() {
 		cNaveEspacial* nave = (cNaveEspacial*)_sis->naveEspacial();
 
 		if (_subState == JEFE3_MINI_ATTACK) {
-			if (_attacking) {
-				//seguir su trayectoria
-				_x += int(_pixelsAvanzaX*VELOCIDAD_JEFE3_MINI);
-				_y += int(_pixelsAvanzaY*VELOCIDAD_JEFE3_MINI);
-			}
-			else {
-				// fijar objetivo
-				int nX, nY;
-				nave->getPosicion(nX, nY);
-				float vectX = float(nX - _x);
-				float vectY = float(nY - _y);
-				float len = sqrt(vectX*vectX + vectY*vectY);
-				vectX /= len;
-				vectY /= len;
-				_pixelsAvanzaX = vectX;
-				_pixelsAvanzaY = vectY;
-				_attacking = true;
-			}
+			//seguir su trayectoria
+			_x += int(_pixelsAvanzaX*VELOCIDAD_JEFE3_MINI);
+			_y += int(_pixelsAvanzaY*VELOCIDAD_JEFE3_MINI);
 		}
 
 		// chequear impactos
