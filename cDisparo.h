@@ -81,6 +81,7 @@ public:
 	
 	void colision(cRect &rect, int &colMask) const;
 	void caja(cRect &rect) const;
+	void offset(int x, int y);
 
 	void explota();
 	void muerete();

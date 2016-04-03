@@ -80,6 +80,12 @@ void cDisparoEnemigo::caja(cRect &rect) const {
 	rect.y = _y - (rect.h>>1);
 }
 
+
+void cDisparoEnemigo::offset(int x, int y) {
+	_xF = float(_xF + x);
+	_yF = float(_yF + y);
+}
+
 void cDisparoEnemigo::logica() {
 	if (_state == DISPARO_VIVE) {
 		cNivel* nivel = ((cNivel*)_sis->nivel());

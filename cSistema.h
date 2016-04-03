@@ -28,7 +28,8 @@
 #define NIVEL1 0
 #define NIVEL2 1
 #define NIVEL3 2
-#define NUM_NIVELES 3
+#define NIVEL4 3
+#define NUM_NIVELES 4
 
 
 struct cRect {

@@ -190,3 +190,32 @@ public:
 	void posicionRespawn(int &x, int &y);
 	float factorDificultad() const;
 };
+
+
+
+#define NIVEL4_FREC_GRIPAU 120
+#define NIVEL4_FREC_GRIPAU_HARD 60
+
+#define NIVEL4_ITER 40
+#define NIVEL4_AVANCE 12
+
+class cNivel4 : public cNivel {
+protected:
+
+	int _iterAvance;
+
+	int avanzaPosicion();
+	void generaEnemigos();
+
+public:
+
+	cNivel4(cSistema* sis, cNaveEspacial* naveEspaciall,
+		int tilesAncho, int tilesAlto,
+		const char* ficheroMapa,
+		int idTextura, int idFondo,
+		const char* ficheroTextura,
+		const char* ficheroFondo);
+
+	void posicionRespawn(int &x, int &y);
+	float factorDificultad() const;
+};

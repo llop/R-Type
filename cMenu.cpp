@@ -670,7 +670,7 @@ void cMenu::pinta() const {
 		int incStage = 24;
 
 		stringstream text1;
-		text1<<"stage "<<_nivel<<" clear!";
+		text1<<"stage "<<(_nivel+1)<<" clear!";
 		pintaStringCentrado(yStage, boldCaracteres, text1.str());
 		
 		// pinta puntuacion

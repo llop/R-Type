@@ -23,7 +23,7 @@ using namespace std;
 #define NAVE_MUEVE_DELAY 6
 #define NAVE_EXPLO_DELAY 6
 
-#define NAVE_PIXELS_MUEVE 3
+#define NAVE_PIXELS_MUEVE 4
 
 #define NAVE_TIRO_ESCUDO_DELAY 4
 #define NAVE_TIRO_DELAY 4

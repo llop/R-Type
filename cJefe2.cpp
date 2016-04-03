@@ -84,7 +84,7 @@ cJefe2::cJefe2(cSistema* sis) : cEnemigo(sis) {
 	_seq = 0;
 	_delay = JEFE2_MUEVE_DELAY;
 	
-	_vida = JEFE2_VIDA_INICIAL;
+	_vida = _sis->dificultad()==DIFICULTAD_NORMAL ? JEFE2_VIDA_INICIAL : JEFE2_VIDA_INICIAL_HARD;
 	_puntos = JEFE2_PUNTOS;
 
 	_tiempoVida = 0;

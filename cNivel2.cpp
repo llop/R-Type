@@ -36,6 +36,7 @@ float cNivel2::factorDificultad() const {
 void cNivel2::generaEnemigos() {
 	cRect rect;
 	caja(rect);
+	/*
 	// generar una cadena de malos
 	int inter = 8;
 	if (!(_posicion%inter) && !_delay && _posicion < inter * 6) {
@@ -66,7 +67,14 @@ void cNivel2::generaEnemigos() {
 	}
 
 	// generar el jefe
-	if (_posicion==3392 && !_delay) {
+	
+	*/
+
+
+	//------------------------------------------------------------------------------
+	// generar jefe
+	//------------------------------------------------------------------------------
+	if (_posicion == 3392 && !_delay) {
 		cJefe2* jefe = new cJefe2(_sis);
 		pushEnemigo(jefe);
 	}

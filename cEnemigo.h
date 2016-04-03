@@ -539,3 +539,100 @@ public:
 
 
 
+
+
+//----------------------------------------------------------------------
+// jefe nivel 4
+//----------------------------------------------------------------------
+
+#define JEFE4_MUEVE_DELAY 6
+
+#define JEFE4_VIDA_INICIAL_CRITTER1 2000
+#define JEFE4_VIDA_INICIAL_CRITTER1_HARD 4000
+#define JEFE4_VIDA_INICIAL_CRITTER2 1000
+#define JEFE4_VIDA_INICIAL_CRITTER2_HARD 2000
+
+#define JEFE4_PUNTOS_CRITTER1 100
+#define JEFE4_PUNTOS_CRITTER2 40
+
+#define JEFE4_FLASH_IMPACTO 24
+
+#define JEFE4_IDLE 0
+#define JEFE4_ATACA 1
+
+#define JEFE4_BARRERA_CERRADA 1
+#define JEFE4_BARRERA_ABIERTA 2
+
+#define JEFE4_BOCA_CERRADA 1
+#define JEFE4_BOCA_ABIERTA 2
+
+#define JEFE4_MUERE_DELAY 6
+
+#define JEFE4_INTERVALO_ATAQUE1 124
+#define JEFE4_INTERVALO_ATAQUE2 248
+#define JEFE4_INTERVALO_ATAQUE1_HARD 64
+#define JEFE4_INTERVALO_ATAQUE2_HARD 128
+
+#define JEFE4_INTERVALO_CIERRA1 300
+#define JEFE4_INTERVALO_CIERRA2 480
+#define JEFE4_INTERVALO_CIERRA1_HARD 164
+#define JEFE4_INTERVALO_CIERRA2_HARD 256
+
+#define JEFE4_INTERVALO_VOMITO1 60
+#define JEFE4_INTERVALO_VOMITO2 100
+#define JEFE4_INTERVALO_VOMITO1_HARD 40
+#define JEFE4_INTERVALO_VOMITO2_HARD 60
+
+#define JEFE4_TIROS1 6
+#define JEFE4_TIROS2 4
+#define JEFE4_TIROS1_HARD 10
+#define JEFE4_TIROS2_HARD 6
+
+#define JEFE4_INTERVALO_BOCA 120
+
+#define JEFE4_TIEMPO_MUERTO 480
+#define JEFE4_MAX_NUM_EXPLO 16
+
+class cJefe4 : public cEnemigo {
+protected:
+
+	long long _tiempoVida;
+	int _tiempoMuerto;
+
+	vector<int> _vidaCritter;
+	vector<int> _xCritter;
+	vector<int> _yCritter;
+	vector<long long> _ultimoAtaque;
+	vector<long long> _ultimoImpacto;
+	vector<int> _estadoCritter;
+	vector<int> _subEstadoCritter;
+	vector<int> _seqBarrera;
+	vector<bool> _pulsaBarrera;
+	vector<int> _seqCritter;
+	vector<int> _seqExploCritter;
+	vector<int> _delayBarrera;
+	vector<int> _delayCritter;
+	vector<int> _cuentaTiros;
+
+	int _subState;
+	int _seqExplo;
+	list<cExplo> _exploCuerpo;
+
+	void pintaVivo() const;
+	void pintaExplo() const;
+
+public:
+	cJefe4(cSistema* sis);
+	~cJefe4();
+
+	void muerete();
+	void restaVida(int vida);
+	void caja(cRect &rect) const;
+	void offset(int x, int y);
+
+	void colision(cRect &rect, int &colMask) const;
+
+	void logica();
+	void pinta() const;
+
+};

@@ -152,10 +152,16 @@ void cSistema::cargaNivel() {
 							"img\\level2-back.png");
 	} else if (_numNivel == NIVEL3) {
 		_nivel = new cNivel3(this, nave, // funcionaaa yuhuuu!!!!
-							328, 28, "maps\\level-03.csv", 
-							TEX_NIVEL3, TEX_FONDO3, 
-							"maps\\stage3-03.png", 
-							"img\\Outer-Space-Wallpaper.png");
+			328, 28, "maps\\level-03.csv",
+			TEX_NIVEL3, TEX_FONDO3,
+			"maps\\stage3-03.png",
+			"img\\Outer-Space-Wallpaper.png");
+	} else if (_numNivel == NIVEL4) {
+		_nivel = new cNivel4(this, nave,
+			96, 28, "maps\\level-04.csv",
+			TEX_NIVEL4, TEX_FONDO4,
+			"maps\\level-4.png",
+			"img\\level4-back.png");
 	} else if (_numNivel == NUM_NIVELES) {
 
 		// partida completada

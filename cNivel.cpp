@@ -164,10 +164,6 @@ const list<cDisparo*> cNivel::disparos() const {
 	return _disparos;
 }
 
-//const list<cEscudo*> cNivel::escudos() const {
-//	return _escudos;
-//}
-
 void cNivel::pushItem(cItem* item) {
 	_items.insert(_items.end(), item);
 }
@@ -179,11 +175,6 @@ void cNivel::pushEnemigo(cEnemigo* enemigo) {
 void cNivel::pushDisparo(cDisparo* disparo) {
 	_disparos.insert(_disparos.end(), disparo);
 }
-
-//void cNivel::pushEscudo(cEscudo* escudo) {
-//	_escudos.insert(_escudos.end(), escudo);
-//}
-
 
 
 void cNivel::procesaTeclas(unsigned char* keys) {
@@ -211,6 +202,7 @@ void cNivel::aplicaScroll() {
 	// la nave, el HUD, y los enemigos que se dejen
 	if (avanza) {
 		_posicion += avanza;
+		for (list<cDisparo*>::iterator it = _disparos.begin(); it != _disparos.end(); ++it) (*it)->offset(avanza, 0);
 		for (list<cEnemigo*>::iterator it=_enemigos.begin(); it!=_enemigos.end(); ++it) (*it)->offset(avanza, 0);
 		_naveEspacial->offset(avanza, 0);
 		_hud->offset(avanza, 0);
@@ -255,13 +247,6 @@ void cNivel::aplicaMuertes() {
 			delete enemigo;
 		} else ++it;
 	}
-	//for (list<cEscudo*>::iterator it=_escudos.begin(); it!=_escudos.end();) {
-	//	cEscudo* escudo = *it;
-	//	if (escudo->muerto()) {
-	//		it = _escudos.erase(it);
-	//		delete escudo;
-	//	} else ++it;
-	//}
 }
 
 
@@ -529,13 +514,6 @@ void cNivel::pinta() const {
 		glDisable(GL_TEXTURE_2D);
 	}
 
-	// pintar mierdas
-	for (list<cEnemigo*>::const_reverse_iterator it = _enemigos.rbegin(); it != _enemigos.rend(); ++it) (*it)->pinta();
-	for (list<cItem*>::const_iterator it = _items.begin(); it != _items.end(); ++it) (*it)->pinta();
-	
-	// pintar la nave
-	if (_state == NIVEL_VIVE) _naveEspacial->pinta();
-
 	// pintar el fondo
 	int px, py;
 	int colIni = _posicion / TILE_WIDTH;
@@ -574,7 +552,12 @@ void cNivel::pinta() const {
 	glDisable(GL_TEXTURE_2D);
 
 	// dejar los tiros por encima
-	//if (_state == NIVEL_VIVE) for (list<cEscudo*>::const_iterator it = _escudos.begin(); it != _escudos.end(); ++it) (*it)->pinta();
+	// pintar mierdas
+	for (list<cEnemigo*>::const_reverse_iterator it = _enemigos.rbegin(); it != _enemigos.rend(); ++it) (*it)->pinta();
+	for (list<cItem*>::const_iterator it = _items.begin(); it != _items.end(); ++it) (*it)->pinta();
+
+	// pintar la nave
+	if (_state == NIVEL_VIVE) _naveEspacial->pinta();
 	for (list<cDisparo*>::const_iterator it = _disparos.begin(); it != _disparos.end(); ++it) (*it)->pinta();
 	
 	_hud->pinta();

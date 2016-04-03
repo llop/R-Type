@@ -98,6 +98,9 @@
     <ClCompile Include="cEnemigo5.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="cNivel4.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cData.h">
