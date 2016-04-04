@@ -17,15 +17,15 @@ cNivel4::cNivel4(cSistema* sis, cNaveEspacial* naveEspacial,
 }
 
 float cNivel4::factorDificultad() const {
-	float posFinal = float((42*TILE_WIDTH)*NIVEL4_ITER+((_tilesAncho-42)*TILE_WIDTH));
-	float factor = (_posicion+(42*TILE_WIDTH)*_iterAvance) / posFinal;
+	float posFinal = float((40*TILE_WIDTH)*NIVEL4_ITER+((_tilesAncho-40)*TILE_WIDTH));
+	float factor = (_posicion+(40*TILE_WIDTH)*_iterAvance) / posFinal;
 	return 4 * (factor / NUM_NIVELES) + 1;
 };
 
 
 int cNivel4::avanzaPosicion() {
 	int avanza = NIVEL4_AVANCE;
-	if (!((_posicion+NIVEL4_AVANCE)%(42*TILE_WIDTH)) && _iterAvance<NIVEL4_ITER) {
+	if (!((_posicion+NIVEL4_AVANCE)%(40*TILE_WIDTH)) && _iterAvance<NIVEL4_ITER) {
 		++_iterAvance;
 		avanza = -_posicion;
 	}
@@ -34,7 +34,7 @@ int cNivel4::avanzaPosicion() {
 }
 
 void cNivel4::generaEnemigos() {
-	int posReal = _posicion + (42 * TILE_WIDTH)*_iterAvance;
+	int posReal = _posicion + (40 * TILE_WIDTH)*_iterAvance;
 
 	if (_iterAvance>= 2 && _iterAvance < NIVEL4_ITER) {
 		cRect rect;
@@ -90,11 +90,10 @@ void cNivel4::generaEnemigos() {
 
 	}
 
-	int posFinal = (42 * TILE_WIDTH)*NIVEL4_ITER + ((_tilesAncho - 42)*TILE_WIDTH);
-	if (posReal == posFinal-(GAME_WIDTH/NIVEL4_AVANCE)*NIVEL4_AVANCE) {
+	int posFinal = (40 * TILE_WIDTH)*NIVEL4_ITER + ((_tilesAncho - 40)*TILE_WIDTH);
+	if (posReal == (40 * TILE_WIDTH)*NIVEL4_ITER) {
 		cJefe4* enemigo = new cJefe4(_sis);
 		pushEnemigo(enemigo);
-
 	}
 }
 

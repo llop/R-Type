@@ -602,7 +602,7 @@ public:
 #define JEFE4_INTERVALO_BOCA 120
 
 #define JEFE4_TIEMPO_MUERTO 480
-#define JEFE4_MAX_NUM_EXPLO 16
+#define JEFE4_MAX_NUM_EXPLO 24
 
 class cJefe4 : public cEnemigo {
 protected:

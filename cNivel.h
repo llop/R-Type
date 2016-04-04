@@ -197,7 +197,7 @@ public:
 #define NIVEL4_FREC_GRIPAU_HARD 60
 
 #define NIVEL4_ITER 40
-#define NIVEL4_AVANCE 12
+#define NIVEL4_AVANCE 10
 
 class cNivel4 : public cNivel {
 protected:

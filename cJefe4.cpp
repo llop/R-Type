@@ -59,8 +59,6 @@ int jefe4Explo[9][4] = {
 };
 int jefe4ExploMid[2] = { 65, 131 };
 
-
-
 int critterSize[2] = { 128, 80 };
 int barreraSize[2] = { 48, 48 };
 int bestiaSize[2] = { 64, 80 };
@@ -70,6 +68,8 @@ int offsetsCritter[3][2] = {
 	{ 81, 36 }		// boca
 
 };
+
+
 cJefe4::cJefe4(cSistema* sis) : cEnemigo(sis) {
 	_sis->cargaTextura(TEX_JEFE4, "img\\r-typesheet41.png");
 	_sis->cargaTextura(TEX_EXPLO2, "img\\r-typesheet44.png");
