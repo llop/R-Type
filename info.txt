@@ -1,0 +1,26 @@
+VJ – Videojocs
+Curs 2015/16 (Q2)
+Exercici 2D - R-Type
+
+Autors:
+	- Albert Lobo
+	- Oriol Mominó
+
+Funcionalitats implementades:
+	NIVELLS: 4 nivells diferents amb un ordre establert.
+	ENEMICS: 5 enemics amb comportament i aspectes diferents.
+	JEFES FINALS: 4 jefes diferents corresponents a cadascun dels 4 nivells del joc.
+	HUD: Mostra les vides restants, màgies restants, puntuació acumulada, procés de càrrega del dispar.
+	ESTRUCTURA BÀSICA: Pantalla de menú inicial que comunica amb les pantalles del joc, instruccions, crèdits i puntuacions.
+	POWER-UPs: Power-ups que proporcionen a la nau diversos escuts i tirs diferents.
+	DIFICULTAT: Es pot escollir la dificultat NORMAL o HARD des del menú principal.
+	PUNTUACIÓ: Llista dels millors jugadors amb les seves corresponents puntuacions.
+
+Instruccions:
+	MENÚ I PANTALLES: Amb les fletxes del teclat et mous per les diferents opcions i amb el SPACE selecciones la opció desitjada.
+	JOC:
+		- Moviment de la nau: Fletxes del teclat.
+		- Dispar de la nau: SPACE
+		- Dispar potent: Mantenir SPACE per carregar el dispar i alliberar SPACE per disparar.
+		- Llançar escut endavant: N
+		- Màgies: M
