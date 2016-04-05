@@ -58,7 +58,7 @@ void cSistema::cargaSonido(int id, const char* ficheroSonido, bool loop, int num
 }
 
 void cSistema::playSonido(int id) {
-	_sonidos->playSonido(id, _tiempo);
+	_sonidos->playSonido(id);
 }
 
 void cSistema::stopSonido(int id) {
@@ -233,6 +233,9 @@ void cSistema::continuePartida() {
 
 void cSistema::logica() {
 	++_tiempo;
+
+	_sonidos->logica();
+
 	if (_estado == MENU) logicaMenu();
 	else if (_estado == NIVEL) logicaNivel();
 }

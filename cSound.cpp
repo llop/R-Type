@@ -1,6 +1,11 @@
 #include "cSound.h"
 
 
+cSoundManager::cSoundManager() {
+	_tiempo = 0;
+	_ultimoSonido = -6;
+}
+
 void cSoundManager::cargaSonido(int id, const char* ficheroSonido, bool loop, int num, long long delay) {
 	if (_sounds[id].empty()) {
 		_sounds[id].resize(num);
@@ -14,16 +19,20 @@ void cSoundManager::cargaSonido(int id, const char* ficheroSonido, bool loop, in
 	}
 }
 
-void cSoundManager::playSonido(int id, long long time) {
+void cSoundManager::playSonido(int id) {
+	//long long intervalo = _tiempo - _ultimoSonido;
+	//if (intervalo < 6) return;
+
 	if (!_sounds[id].empty()) {
-		long long interval = time - _lastPlayed[id][_soundIndex[id]];
+		long long interval = _tiempo - _lastPlayed[id][_soundIndex[id]];
 		if (interval >= _delay[id]) {
 			cSound &sound = _sounds[id][_soundIndex[id]];
 			sound.stop();
 			sound.rewind();
 			sound.play();
 			_soundIndex[id] = (_soundIndex[id] + 1) % _sounds[id].size();
-			_lastPlayed[id][_soundIndex[id]] = time;
+			_lastPlayed[id][_soundIndex[id]] = _tiempo;
+			_ultimoSonido = _tiempo;
 		}
 	}
 }
@@ -42,6 +51,10 @@ void cSoundManager::stopSonidos() {
 			_sounds[id][i].rewind();
 		}
 	}
+}
+
+void cSoundManager::logica() {
+	++_tiempo;
 }
 
 

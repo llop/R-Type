@@ -30,7 +30,7 @@ int escudoSecMid = 8;
 cEscudo::cEscudo(cSistema* sis, int x, int y, int tipo) : cSprite(sis, x, y) {
 	_sis->cargaTextura(TEX_NAVE2, "img\\r-typesheet2.png");
 	_sis->cargaTextura(TEX_ESCUDO, "img\\r-typesheet3.png");
-
+	
 	_state = ESCUDO_VUELTA;
 	_seq = 0;
 	_delay = ESCUDO_MUEVE_DELAY;

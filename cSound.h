@@ -64,14 +64,22 @@ private:
 class cSoundManager {
 private:
 
+	long long _tiempo;
+	long long _ultimoSonido;
+
 	vector<cSound> _sounds[NUM_SOUNDS];
 	int _soundIndex[NUM_SOUNDS];
 	vector<long long> _lastPlayed[NUM_SOUNDS];
 	long long _delay[NUM_SOUNDS];
 
 public:
+
+	cSoundManager();
+
+	void logica();
+
 	void cargaSonido(int id, const char* ficheroSonido, bool loop, int num, long long delay);
-	void playSonido(int id, long long time);
+	void playSonido(int id);
 	void stopSonido(int id);
 
 	void stopSonidos();

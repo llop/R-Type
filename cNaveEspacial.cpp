@@ -50,6 +50,15 @@ int flashMid = 91;
 cNaveEspacial::cNaveEspacial(cSistema* sis) : cSprite(sis) {
 	_sis->cargaTextura(TEX_NAVE1, "img\\r-typesheet1.png");
 
+	//_sis->cargaSonido(SOUND_EXPLO_NAVE, "wavs\\rtype-49.wav");
+
+
+	_sis->cargaSonido(SOUND_DISPARO_NAVE, "wavs\\rtype-048.wav", false, 5, 6);
+	_sis->cargaSonido(SOUND_DISPARO_RB_NAVE, "wavs\\rtype-049.wav", false, 5, 6);
+
+	_sis->cargaSonido(SOUND_DISPARO_ESCUDO1, "wavs\\rtype-048.wav", false, 5, 6);
+	_sis->cargaSonido(SOUND_DISPARO_ESCUDO2, "wavs\\rtype-049.wav", false, 5, 6);
+
 	_x=GAME_WIDTH>>1;
 	_y=(GAME_HEIGHT-HUD_HPIX)>>1;
 
@@ -172,7 +181,16 @@ void cNaveEspacial::no_dispara() {
 		long long intervaloEscudo = _tiempoVida - _ultimoTiroEscudo;
 		if (intervaloEscudo >= NAVE_TIRO_ESCUDO_DELAY && !_escudos.empty()) {
 			_ultimoTiroEscudo = _tiempoVida;
-			for (unsigned int i=0; i<_escudos.size(); ++i) _escudos[i]->dispara();
+			for (unsigned int i=0; i<_escudos.size(); ++i) {
+
+				if (!i) {
+					_sis->playSonido(SOUND_DISPARO_ESCUDO1);
+				} else if (i == 1)  {
+					_sis->playSonido(SOUND_DISPARO_ESCUDO2);
+				}
+
+				_escudos[i]->dispara();
+				}
 		}
 
 		// no permitir disparar muy rapido
@@ -189,6 +207,13 @@ void cNaveEspacial::no_dispara() {
 		tamano = min(NAVE_MAX_CARGA_TIRO, tamano/NAVE_FACTOR_CARGA_TIRO);
 		cDisparoNave* tiro = new cDisparoNave(_sis, xTiro, yTiro, _tipoTiro, tamano);
 		((cNivel*)_sis->nivel())->pushDisparo(tiro);
+
+
+		if (_tipoTiro == DISPARO_NAVE_NORMAL) {
+			_sis->playSonido(SOUND_DISPARO_NAVE);
+		} else if (_tipoTiro == DISPARO_NAVE_CIRCULAR) {
+			_sis->playSonido(SOUND_DISPARO_RB_NAVE);
+		}
 	}
 	_cargaTiro = 0;
 }

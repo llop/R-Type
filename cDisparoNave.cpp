@@ -60,7 +60,7 @@ int tiroCircAva[24] = {
 cDisparoNave::cDisparoNave(cSistema* sis, int x, int y, int tipo, int tamano) : cDisparo(sis, x, y) {
 	_sis->cargaTextura(TEX_NAVE1, "img\\r-typesheet1.png");
 	_sis->cargaTextura(TEX_NAVE2, "img\\r-typesheet2.png");
-
+	
 	_tamano = tamano;
 	_dano = 20 + _tamano*100;
 	_malo = false;
@@ -68,6 +68,12 @@ cDisparoNave::cDisparoNave(cSistema* sis, int x, int y, int tipo, int tamano) : 
 	_tipo = tipo;
 	_pixelsAvanza = tiroNave[0][2] - _tamano - (_tamano>>1);
 	
+
+	if (_tipo == DISPARO_NAVE_NORMAL) {
+		_sis->playSonido(SOUND_DISPARO_NAVE);
+	} else if (_tipo == DISPARO_NAVE_CIRCULAR) {
+		_sis->playSonido(SOUND_DISPARO_RB_NAVE);
+	}
 
 	_state = DISPARO_VIVE;
 	_seq = 0;
