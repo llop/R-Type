@@ -61,22 +61,41 @@ private:
 #define NUM_SOUNDS 25
 
 
+struct cSoundWrapper {
+	vector<cSound> _sources;
+	int _numSources;
+	long long _lastPlayed;
+	long long _delay;
+	int _queued;
+	int _playIndex;
+	bool _loaded;
+
+	cSoundWrapper();
+	void init(const char* ficheroSonido, bool loop, int numSources, long long delay);
+
+};
+
+
+#define SONIDO_DELAY 6
+
 class cSoundManager {
 private:
 
 	long long _tiempo;
 	long long _ultimoSonido;
+	list<int> _que;
+	cSoundWrapper _sounds[NUM_SOUNDS];
 
-	vector<cSound> _sounds[NUM_SOUNDS];
-	int _soundIndex[NUM_SOUNDS];
-	vector<long long> _lastPlayed[NUM_SOUNDS];
-	long long _delay[NUM_SOUNDS];
+	//vector<cSound> _sounds[NUM_SOUNDS];
+	//int _soundIndex[NUM_SOUNDS];
+	//vector<long long> _lastPlayed[NUM_SOUNDS];
+	//long long _delay[NUM_SOUNDS];
 
 public:
 
 	cSoundManager();
 
-	void logica();
+	void suena();
 
 	void cargaSonido(int id, const char* ficheroSonido, bool loop, int num, long long delay);
 	void playSonido(int id);

@@ -74,8 +74,6 @@ cJefe4::cJefe4(cSistema* sis) : cEnemigo(sis) {
 	_sis->cargaTextura(TEX_JEFE4, "img\\r-typesheet41.png");
 	_sis->cargaTextura(TEX_EXPLO2, "img\\r-typesheet44.png");
 
-	_sis->cargaSonido(SOUND_EXPLO1, "wavs\\rtype-083.wav", false, 50, 20);
-
 	_state = ENEMIGO_VIVE;
 	_seq = 0;
 	_delay = JEFE4_MUEVE_DELAY;

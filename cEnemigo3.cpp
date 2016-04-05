@@ -139,7 +139,11 @@ void cEnemigo3::restaVida(int vida) {
 	for (int i = 0; i < _numPiezas; ++i) {
 		if (_piezas[i][0] > 0) {
 			_piezas[i][0] -= vida;
-			if (_piezas[i][0] <= 0) ((cNaveEspacial*)_sis->naveEspacial())->sumaPuntos(_puntos);
+			if (_piezas[i][0] <= 0) {
+				((cNaveEspacial*)_sis->naveEspacial())->sumaPuntos(_puntos);
+
+				_sis->playSonido(SOUND_EXPLO2);
+			}
 		}
 	}
 }
@@ -270,7 +274,11 @@ void cEnemigo3::logica() { // cambiar logica quan es vegi
 						yPixBola<rectDisp.y+rectDisp.h && yPixBola+hPixBola>rectDisp.y) {
 							if (_piezas[i][0] > 0) {
 								_piezas[i][0] -= disparo->dano();
-								if (_piezas[i][0]<=0) nave->sumaPuntos(_puntos);
+								if (_piezas[i][0] <= 0) {
+									nave->sumaPuntos(_puntos);
+
+									_sis->playSonido(SOUND_EXPLO2);
+								}
 							}
 							disparo->explota();
 					}
@@ -287,7 +295,11 @@ void cEnemigo3::logica() { // cambiar logica quan es vegi
 					yPixBola<rectEsc.y+rectEsc.h && yPixBola+hPixBola>rectEsc.y) {
 						if (_piezas[i][0] > 0) {
 							_piezas[i][0] -= escudo->dano();
-							if (_piezas[i][0]<=0) nave->sumaPuntos(_puntos);
+							if (_piezas[i][0] <= 0) {
+								nave->sumaPuntos(_puntos);
+
+								_sis->playSonido(SOUND_EXPLO2);
+							}
 						}
 						escudo->choca();
 				}

@@ -1,60 +1,100 @@
 #include "cSound.h"
 
 
+cSoundWrapper::cSoundWrapper() {
+	_loaded = false;
+}
+
+void cSoundWrapper::init(const char* ficheroSonido, bool loop, int numSources, long long delay) {
+	_numSources = numSources;
+	_sources.resize(_numSources);
+	for (int i = 0; i < _numSources; ++i) _sources[i].loadWAV(ficheroSonido, loop);
+	_delay = delay;
+	_lastPlayed = -_delay;
+	_queued = 0;
+	_playIndex = 0;
+	_loaded = true;
+}
+
+
 cSoundManager::cSoundManager() {
 	_tiempo = 0;
-	_ultimoSonido = -6;
+	_ultimoSonido = -SONIDO_DELAY;
 }
 
 void cSoundManager::cargaSonido(int id, const char* ficheroSonido, bool loop, int num, long long delay) {
-	if (_sounds[id].empty()) {
-		_sounds[id].resize(num);
-		_lastPlayed[id].resize(num);
-		for (int i = 0; i < num; ++i) {
-			_sounds[id][i].loadWAV(ficheroSonido, loop);
-			_lastPlayed[id][i] = -delay;
-		}
-		_delay[id] = delay;
-		_soundIndex[id] = 0;
+	if (!_sounds[id]._loaded) {
+		_sounds[id].init(ficheroSonido, loop, num, delay);
 	}
 }
 
 void cSoundManager::playSonido(int id) {
 	//long long intervalo = _tiempo - _ultimoSonido;
-	//if (intervalo < 6) return;
+	//if (intervalo < SONIDO_DELAY) return;
 
-	if (!_sounds[id].empty()) {
-		long long interval = _tiempo - _lastPlayed[id][_soundIndex[id]];
-		if (interval >= _delay[id]) {
-			cSound &sound = _sounds[id][_soundIndex[id]];
-			sound.stop();
-			sound.rewind();
-			sound.play();
-			_soundIndex[id] = (_soundIndex[id] + 1) % _sounds[id].size();
-			_lastPlayed[id][_soundIndex[id]] = _tiempo;
-			_ultimoSonido = _tiempo;
+	if (_sounds[id]._loaded) {
+
+		if (_sounds[id]._queued < 1) {//_sounds[id]._numSources) {
+			++_sounds[id]._queued;
+			_que.push_back(id);
 		}
+
 	}
 }
 
 void cSoundManager::stopSonido(int id) {
-	for (unsigned int i = 0; i < _sounds[id].size(); ++i) {
-		_sounds[id][i].stop();
-		_sounds[id][i].rewind();
+	if (_sounds[id]._loaded) {
+		for (int i = 0; i < _sounds[id]._numSources; ++i) {
+			_sounds[id]._sources[i].stop();
+			_sounds[id]._sources[i].rewind();
+			_sounds[id]._queued = 0;
+		}
+		_que.remove(id);
 	}
 }
 
 void cSoundManager::stopSonidos() {
 	for (int id = 0; id < NUM_SOUNDS; ++id) {
-		for (unsigned int i = 0; i < _sounds[id].size(); ++i) {
-			_sounds[id][i].stop();
-			_sounds[id][i].rewind();
-		}
+		stopSonido(id);
 	}
 }
 
-void cSoundManager::logica() {
+void cSoundManager::suena() {
 	++_tiempo;
+
+	long long intervalo = _tiempo - _ultimoSonido;
+	if (intervalo < SONIDO_DELAY) return;
+
+	if (!_que.empty()) {
+		list<int>::iterator it = _que.begin();
+		while (it != _que.end()) {
+			int id = *it;
+
+			bool played = false;
+			if (_sounds[id]._loaded && _sounds[id]._queued) {
+				long long inter = _tiempo - _sounds[id]._lastPlayed;
+				if (inter > _sounds[id]._delay) {
+					int index = _sounds[id]._playIndex;
+					cSound &sound = _sounds[id]._sources[index];
+					//sound.stop();
+					//sound.rewind();
+					sound.play();
+					_sounds[id]._playIndex = (index + 1) % _sounds[id]._numSources;
+					_sounds[id]._lastPlayed = _tiempo;
+					--_sounds[id]._queued;
+
+					_ultimoSonido = _tiempo;
+					played = true;
+				}
+			}
+
+			if (played) {
+				_que.erase(it);
+				return;
+			} else ++it;
+
+		}
+	}
 }
 
 
@@ -125,7 +165,11 @@ bool cSound::loadWAV(const char* fileName, bool continuousLoop) {
 
 bool cSound::play() {
 	alSourcePlay(_audioSource);
-	return (alGetError() == AL_NO_ERROR);
+	bool ret = alGetError() == AL_NO_ERROR;
+	if (!ret) {
+		int a = 0;
+	}
+	return ret;
 }
 
 

@@ -65,6 +65,8 @@ cEnemigo5::~cEnemigo5() {
 }
 
 void cEnemigo5::muerete() {
+	_sis->playSonido(SOUND_EXPLO2);
+
 	_vida = 0;
 	_state = ENEMIGO_EXPLO;
 	_seq = 0;

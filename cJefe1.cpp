@@ -99,9 +99,7 @@ int jefe1ExploMid[2] = { 65, 131 };
 cJefe1::cJefe1(cSistema* sis) : cEnemigo(sis) {
 	_sis->cargaTextura(TEX_JEFE1, "img\\r-typesheet30.png");
 	_sis->cargaTextura(TEX_EXPLO2, "img\\r-typesheet44.png");
-
-	_sis->cargaSonido(SOUND_EXPLO1, "wavs\\rtype-083.wav", false, 24, 6);
-	
+		
 	_state = ENEMIGO_VIVE;
 	_seq = 0;
 	_delay = JEFE1_MUEVE_DELAY;

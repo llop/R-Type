@@ -65,6 +65,8 @@ void cEnemigoItem::offset(int x, int y) {
 }
 
 void cEnemigoItem::muerete() {
+	_sis->playSonido(SOUND_EXPLO2);
+
 	// soltar el regalito
 	cRect myRect;
 	caja(myRect);

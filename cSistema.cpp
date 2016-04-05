@@ -149,7 +149,7 @@ void cSistema::arrancaPartida() {
 	delNaveEspacial();
 	_naveEspacial = new cNaveEspacial(this);
 
-	_numNivel = NIVEL4;
+	_numNivel = NIVEL1;
 	_dificultad = ((cMenu*)_menu)->dificultad();
 	cargaNivel();
 }
@@ -234,8 +234,6 @@ void cSistema::continuePartida() {
 void cSistema::logica() {
 	++_tiempo;
 
-	_sonidos->logica();
-
 	if (_estado == MENU) logicaMenu();
 	else if (_estado == NIVEL) logicaNivel();
 }
@@ -250,6 +248,9 @@ void cSistema::pintaNivel() {
 }
 
 void cSistema::pinta() {
+
+	_sonidos->suena();
+
 	if (_estado == MENU) pintaMenu();
 	else if (_estado == NIVEL) pintaNivel();
 }

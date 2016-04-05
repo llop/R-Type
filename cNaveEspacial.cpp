@@ -50,14 +50,18 @@ int flashMid = 91;
 cNaveEspacial::cNaveEspacial(cSistema* sis) : cSprite(sis) {
 	_sis->cargaTextura(TEX_NAVE1, "img\\r-typesheet1.png");
 
-	//_sis->cargaSonido(SOUND_EXPLO_NAVE, "wavs\\rtype-49.wav");
 
+	_sis->cargaSonido(SOUND_DISPARO_NAVE, "wavs\\rtype-048.wav", false, 8, 6);
+	_sis->cargaSonido(SOUND_DISPARO_RB_NAVE, "wavs\\rtype-049.wav", false, 8, 6);
 
-	_sis->cargaSonido(SOUND_DISPARO_NAVE, "wavs\\rtype-048.wav", false, 5, 6);
-	_sis->cargaSonido(SOUND_DISPARO_RB_NAVE, "wavs\\rtype-049.wav", false, 5, 6);
+	_sis->cargaSonido(SOUND_DISPARO_ESCUDO1, "wavs\\rtype-065.wav", false, 8, 6);
+	_sis->cargaSonido(SOUND_DISPARO_ESCUDO2, "wavs\\rtype-049.wav", false, 8, 6);
 
-	_sis->cargaSonido(SOUND_DISPARO_ESCUDO1, "wavs\\rtype-048.wav", false, 5, 6);
-	_sis->cargaSonido(SOUND_DISPARO_ESCUDO2, "wavs\\rtype-049.wav", false, 5, 6);
+	_sis->cargaSonido(SOUND_CARGA_DISPARO, "wavs\\rtype-051.wav", true, 1, 12);
+
+	_sis->cargaSonido(SOUND_EXPLO1, "wavs\\rtype-083.wav", false, 12, 8);
+	_sis->cargaSonido(SOUND_EXPLO2, "wavs\\rtype-053.wav", false, 12, 10);
+
 
 	_x=GAME_WIDTH>>1;
 	_y=(GAME_HEIGHT-HUD_HPIX)>>1;
@@ -161,6 +165,8 @@ void cNaveEspacial::atras() {
 void cNaveEspacial::dispara() {
 	if (_tiroPulsado) {
 		++_cargaTiro;
+
+		if (_cargaTiro == 2*NAVE_FLASH_DELAY) _sis->playSonido(SOUND_CARGA_DISPARO);
 	} else {
 		_tiroPulsado = true;
 		_cargaTiro = 0;
@@ -168,10 +174,14 @@ void cNaveEspacial::dispara() {
 }
 
 void cNaveEspacial::no_dispara() {
+	
+
 	// disparar cuando el jugador suelta la tecla
 	if (_tiroPulsado) {
 		_tiroPulsado = false;
 		
+		if (_cargaTiro >= 2*NAVE_FLASH_DELAY) _sis->stopSonido(SOUND_CARGA_DISPARO);
+
 		if (_sis->nivel() == NULL) {
 			_cargaTiro = 0;
 			return;
@@ -182,21 +192,22 @@ void cNaveEspacial::no_dispara() {
 		if (intervaloEscudo >= NAVE_TIRO_ESCUDO_DELAY && !_escudos.empty()) {
 			_ultimoTiroEscudo = _tiempoVida;
 			for (unsigned int i=0; i<_escudos.size(); ++i) {
-
-				if (!i) {
-					_sis->playSonido(SOUND_DISPARO_ESCUDO1);
-				} else if (i == 1)  {
-					_sis->playSonido(SOUND_DISPARO_ESCUDO2);
-				}
-
 				_escudos[i]->dispara();
-				}
+			}
 		}
+
 
 		// no permitir disparar muy rapido
 		long long intervalo = _tiempoVida - _ultimoTiro;
 		if (intervalo < _tiroDelay) return;
 		_ultimoTiro = _tiempoVida;
+
+		// que suene esto
+		if (_tipoTiro == DISPARO_NAVE_NORMAL) {
+			//_sis->playSonido(SOUND_DISPARO_NAVE);
+		} else if (_tipoTiro == DISPARO_NAVE_CIRCULAR) {
+			//_sis->playSonido(SOUND_DISPARO_RB_NAVE);
+		}
 
 		// el tiempo de carga determina lo tocho que saldra el proyectil
 		int xTiro = _x + (mov[_seq][2]>>1);
@@ -208,12 +219,6 @@ void cNaveEspacial::no_dispara() {
 		cDisparoNave* tiro = new cDisparoNave(_sis, xTiro, yTiro, _tipoTiro, tamano);
 		((cNivel*)_sis->nivel())->pushDisparo(tiro);
 
-
-		if (_tipoTiro == DISPARO_NAVE_NORMAL) {
-			_sis->playSonido(SOUND_DISPARO_NAVE);
-		} else if (_tipoTiro == DISPARO_NAVE_CIRCULAR) {
-			_sis->playSonido(SOUND_DISPARO_RB_NAVE);
-		}
 	}
 	_cargaTiro = 0;
 }
@@ -341,6 +346,8 @@ void cNaveEspacial::muerete() {
 
 	delEscudos();
 	_cargaTiro = 0;
+
+	_sis->stopSonido(SOUND_CARGA_DISPARO);
 }
 
 void cNaveEspacial::caja(cRect &rect) const {

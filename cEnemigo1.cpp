@@ -30,8 +30,6 @@ int e1dieMid = 311;
 cEnemigo1::cEnemigo1(cSistema* sis, int x, int y) : cEnemigo(sis, x, y) {
 	_sis->cargaTextura(TEX_ENE1, "img\\r-typesheet5.png");
 	_sis->cargaTextura(TEX_NAVE1, "img\\r-typesheet1.png");
-
-	_sis->cargaSonido(SOUND_EXPLO2, "wavs\\rtype-053.wav", false, 50, 6);
 	
 	_state = ENEMIGO_VIVE;
 	_seq = 0;

@@ -37,6 +37,11 @@ cDisparoEscudo::cDisparoEscudo(cSistema* sis, int x, int y, int tipo) : cDisparo
 	_seq = 0;
 	_delay = DISPARO_NAVE_DELAY;
 
+	if (_tipo == DISPARO_ESCUDO1_FRENTE) {
+		_sis->playSonido(SOUND_DISPARO_ESCUDO1);
+	} else if (_tipo == DISPARO_ESCUDO2_ARRIBA) {
+		_sis->playSonido(SOUND_DISPARO_ESCUDO2);
+	}
 }
 
 cDisparoEscudo::~cDisparoEscudo() {
