@@ -74,6 +74,8 @@ cJefe4::cJefe4(cSistema* sis) : cEnemigo(sis) {
 	_sis->cargaTextura(TEX_JEFE4, "img\\r-typesheet41.png");
 	_sis->cargaTextura(TEX_EXPLO2, "img\\r-typesheet44.png");
 
+	_sis->cargaSonido(SOUND_EXPLO1, "wavs\\rtype-083.wav", false, 50, 20);
+
 	_state = ENEMIGO_VIVE;
 	_seq = 0;
 	_delay = JEFE4_MUEVE_DELAY;
@@ -312,6 +314,8 @@ void cJefe4::logica() {
 					explo.x = (_xCritter[i]-(critterSize[0]>>1)) + (rand()% critterSize[0]);
 					explo.y = (_yCritter[i]-(critterSize[1]>>1)) + (rand()% critterSize[1]);
 					_exploCuerpo.push_back(explo);
+
+					_sis->playSonido(SOUND_EXPLO1);
 				}
 			}
 		}
@@ -416,6 +420,8 @@ void cJefe4::logica() {
 			explo.x = (_xCritter[0]-(critterSize[0]>>1)-32) + (rand()%(critterSize[0]+64));
 			explo.y = 32 + (rand()%(GAME_HEIGHT-64));
 			_exploCuerpo.push_back(explo);
+
+			_sis->playSonido(SOUND_EXPLO1);
 		}
 
 	}

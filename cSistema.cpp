@@ -14,13 +14,20 @@ cSistema::cSistema() {
 	_dificultad = DIFICULTAD_NORMAL;
 	_menu = NULL;
 	_data = new cData();
+	_sonidos = new cSoundManager();
 	_estado = MENU;
+	_tiempo = 0;
 }
 
 cSistema::~cSistema() {
 	if (_data != NULL) {
 		delete _data;
 		_data = NULL;
+	}
+
+	if (_sonidos != NULL) {
+		delete _sonidos;
+		_sonidos = NULL;
 	}
 
 	delNaveEspacial();
@@ -43,6 +50,23 @@ int cSistema::idTextura(int id) const {
 
 void cSistema::tamanoTextura(int id, int &width, int &height) const {
 	_data->getSize(id, &width, &height);
+}
+
+
+void cSistema::cargaSonido(int id, const char* ficheroSonido, bool loop, int num, long long delay) {
+	_sonidos->cargaSonido(id, ficheroSonido, loop, num, delay);
+}
+
+void cSistema::playSonido(int id) {
+	_sonidos->playSonido(id, _tiempo);
+}
+
+void cSistema::stopSonido(int id) {
+	_sonidos->stopSonido(id);
+}
+
+void cSistema::stopSonidos() {
+	_sonidos->stopSonidos();
 }
 
 
@@ -103,6 +127,10 @@ void cSistema::logicaMenu() {
 }
 
 void cSistema::avanzaNivel() {
+	// detener musicas
+	stopSonidos();
+
+	// 
 	_estado = MENU;
 	cMenu* menu = (cMenu*)_menu;
 	if (_nivel != NULL) {
@@ -143,25 +171,29 @@ void cSistema::cargaNivel() {
 							328, 28, "maps\\level-01.csv", 
 							TEX_NIVEL1, TEX_FONDO1, 
 							"maps\\stage1-01.png", 
-							"img\\Outer-Space-Wallpaper.png");
+							"img\\Outer-Space-Wallpaper.png",
+							SOUND_NIVEL1, "wavs\\rtype-004.wav");
 	} else if (_numNivel == NIVEL2) {
 		_nivel = new cNivel2(this, nave, 
 							288, 28, "maps\\level-02.csv", 
 							TEX_NIVEL2, TEX_FONDO2, 
 							"maps\\textura-nivel2.png", 
-							"img\\level2-back.png");
+							"img\\level2-back.png",
+							SOUND_NIVEL2, "wavs\\rtype-004.wav");
 	} else if (_numNivel == NIVEL3) {
 		_nivel = new cNivel3(this, nave, // funcionaaa yuhuuu!!!!
-			328, 28, "maps\\level-03.csv",
-			TEX_NIVEL3, TEX_FONDO3,
-			"maps\\stage3-03.png",
-			"img\\Outer-Space-Wallpaper.png");
+							328, 28, "maps\\level-03.csv",
+							TEX_NIVEL3, TEX_FONDO3,
+							"maps\\stage3-03.png",
+							"img\\Outer-Space-Wallpaper.png", 
+							SOUND_NIVEL3, "wavs\\rtype-004.wav");
 	} else if (_numNivel == NIVEL4) {
 		_nivel = new cNivel4(this, nave,
-			96, 28, "maps\\level-04.csv",
-			TEX_NIVEL4, TEX_FONDO4,
-			"maps\\level-4.png",
-			"img\\level4-back.png");
+							96, 28, "maps\\level-04.csv",
+							TEX_NIVEL4, TEX_FONDO4,
+							"maps\\level-4.png",
+							"img\\level4-back.png",
+							SOUND_NIVEL4, "wavs\\rtype-004.wav");
 	} else if (_numNivel == NUM_NIVELES) {
 
 		// partida completada
@@ -200,6 +232,7 @@ void cSistema::continuePartida() {
 }
 
 void cSistema::logica() {
+	++_tiempo;
 	if (_estado == MENU) logicaMenu();
 	else if (_estado == NIVEL) logicaNivel();
 }

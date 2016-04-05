@@ -8,13 +8,16 @@ cNivel1::cNivel1(cSistema* sis, cNaveEspacial* naveEspacial,
 					const char* ficheroMapa, 
 					int idTextura, int idFondo, 
 					const char* ficheroTextura,
-					const char* ficheroFondo) : cNivel(sis, naveEspacial, 
-														tilesAncho, tilesAlto,
-														ficheroMapa, 
-														idTextura, idFondo, 
-														ficheroTextura,
-														ficheroFondo) {
-	//_posicion = 4200-640;//3218;
+					const char* ficheroFondo,
+					int idMusica, const char* ficheroMusica) : 
+							cNivel(sis, naveEspacial, 
+									tilesAncho, tilesAlto,
+									ficheroMapa, 
+									idTextura, idFondo, 
+									ficheroTextura,
+									ficheroFondo, 
+									idMusica, ficheroMusica) {
+	_posicion = 4200-640;//3218;
 }
 
 

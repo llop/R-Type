@@ -99,6 +99,8 @@ int jefe1ExploMid[2] = { 65, 131 };
 cJefe1::cJefe1(cSistema* sis) : cEnemigo(sis) {
 	_sis->cargaTextura(TEX_JEFE1, "img\\r-typesheet30.png");
 	_sis->cargaTextura(TEX_EXPLO2, "img\\r-typesheet44.png");
+
+	_sis->cargaSonido(SOUND_EXPLO1, "wavs\\rtype-083.wav", false, 50, 6);
 	
 	_state = ENEMIGO_VIVE;
 	_seq = 0;
@@ -109,6 +111,7 @@ cJefe1::cJefe1(cSistema* sis) : cEnemigo(sis) {
 
 	_tiempoVida = 0;
 	_ultimoImpacto = -JEFE1_FLASH_IMPACTO;
+	_ultimoTiro = -JEFE1_TIRO_DELAY;
 
 	_x = 5084;
 	_y = 96;
@@ -435,6 +438,8 @@ void cJefe1::logica() {
 		}
 		// genera una explosion random
 		if (_exploCuerpo.size() < JEFE1_MAX_NUM_EXPLO && !(rand() % 4)) {
+			_sis->playSonido(SOUND_EXPLO1);
+
 			cExplo explo;
   			explo.seq = 0;
 			explo.delay = JEFE1_EXPLO_DELAY;

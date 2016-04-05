@@ -7,12 +7,15 @@ cNivel4::cNivel4(cSistema* sis, cNaveEspacial* naveEspacial,
 	const char* ficheroMapa,
 	int idTextura, int idFondo,
 	const char* ficheroTextura,
-	const char* ficheroFondo) : cNivel(sis, naveEspacial,
-		tilesAncho, tilesAlto,
-		ficheroMapa,
-		idTextura, idFondo,
-		ficheroTextura,
-		ficheroFondo) {
+	const char* ficheroFondo,
+	int idMusica, const char* ficheroMusica) :
+		cNivel(sis, naveEspacial,
+			tilesAncho, tilesAlto,
+			ficheroMapa,
+			idTextura, idFondo,
+			ficheroTextura,
+			ficheroFondo,
+			idMusica, ficheroMusica) {
 	_iterAvance = 0;
 }
 

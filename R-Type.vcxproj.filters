@@ -101,6 +101,12 @@
     <ClCompile Include="cNivel4.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="cJefe4.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="cSound.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cData.h">
@@ -143,6 +149,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="cMenu.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cSound.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

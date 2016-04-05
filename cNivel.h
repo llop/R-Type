@@ -72,7 +72,8 @@ public:
 			const char* ficheroMapa, 
 			int idTextura, int idFondo, 
 			const char* ficheroTextura,
-			const char* ficheroFondo);
+			const char* ficheroFondo,
+			int idMusica, const char* ficheroMusica);
 	~cNivel();
 	
 
@@ -143,7 +144,8 @@ public:
 			const char* ficheroMapa, 
 			int idTextura, int idFondo, 
 			const char* ficheroTextura,
-			const char* ficheroFondo);
+			const char* ficheroFondo,
+			int idMusica, const char* ficheroMusica);
 
 	void posicionRespawn(int &x, int &y);
 	float factorDificultad() const;
@@ -166,7 +168,8 @@ public:
 			const char* ficheroMapa, 
 			int idTextura, int idFondo, 
 			const char* ficheroTextura,
-			const char* ficheroFondo);
+			const char* ficheroFondo,
+			int idMusica, const char* ficheroMusica);
 
 	void posicionRespawn(int &x, int &y);
 	float factorDificultad() const;
@@ -185,7 +188,8 @@ public:
 		const char* ficheroMapa,
 		int idTextura, int idFondo,
 		const char* ficheroTextura,
-		const char* ficheroFondo);
+		const char* ficheroFondo,
+		int idMusica, const char* ficheroMusica);
 
 	void posicionRespawn(int &x, int &y);
 	float factorDificultad() const;
@@ -214,7 +218,8 @@ public:
 		const char* ficheroMapa,
 		int idTextura, int idFondo,
 		const char* ficheroTextura,
-		const char* ficheroFondo);
+		const char* ficheroFondo,
+		int idMusica, const char* ficheroMusica);
 
 	void posicionRespawn(int &x, int &y);
 	float factorDificultad() const;

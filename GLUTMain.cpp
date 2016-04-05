@@ -48,10 +48,50 @@ void AppIdle() {
 	if (interval < elapsedInterval) return;
 	lastElapsed = elapsed;
 
-	if(!Game.Loop()) exit(0);
+	if (!Game.Loop()) {
+		exit(0);
+	}
 }
 
+
+bool initOpenAL() {
+	bool initOK = true;
+
+	// Initialize OpenAL.   
+	alutInit(0, NULL);
+
+	// Clear the error code.   
+	alGetError();
+
+	ALfloat listenerPosition[] = { 0.0,0.0,0.0 };
+	ALfloat listenerVelocity[] = { 0.0,0.0,0.0 };
+	ALfloat listenerOrientation[] = { 0.0,0.0,0.0,0.0,1.0,0.0 };
+
+	alListenerfv(AL_POSITION, listenerPosition);
+	if (alGetError() != AL_NO_ERROR)
+	{
+		initOK = false;
+	}
+
+	alListenerfv(AL_VELOCITY, listenerPosition);
+	if (alGetError() != AL_NO_ERROR)
+	{
+		initOK = false;
+	}
+
+	alListenerfv(AL_ORIENTATION, listenerPosition);
+	if (alGetError() != AL_NO_ERROR)
+	{
+		initOK = false;
+	}
+
+	return (initOK);
+}
+
+
 void main(int argc, char** argv) {
+
+
 	int res_x,res_y,pos_x,pos_y;
 
 	// vars
@@ -90,9 +130,13 @@ void main(int argc, char** argv) {
 	glutMouseFunc(AppMouse);
 	glutIdleFunc(AppIdle);
 
+	initOpenAL();
+
 	//Game initializations
 	Game.Init();
 
 	//Application loop
 	glutMainLoop();	
 }
+
+

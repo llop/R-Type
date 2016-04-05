@@ -49,9 +49,13 @@ cNivel::cNivel(cSistema* sis, cNaveEspacial* naveEspacial,
 				const char* ficheroMapa, 
 				int idTextura, int idFondo, 
 				const char* ficheroTextura,
-				const char* ficheroFondo) : cSprite(sis) {
+				const char* ficheroFondo,
+				int idMusica, const char* ficheroMusica) : cSprite(sis) {
 
 	_sis->cargaTextura(TEX_MENU, "img\\menu.png");
+
+	_sis->cargaSonido(idMusica, ficheroMusica, true);
+	_sis->playSonido(idMusica);
 
 	_naveEspacial = naveEspacial;
 	//vector<cEscudo*> escudos = _naveEspacial->escudos();

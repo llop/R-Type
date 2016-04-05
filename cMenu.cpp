@@ -33,6 +33,11 @@ int gameOver[4] = { 239, 405, 144, 14 };
 cMenu::cMenu(cSistema* sis) : cSprite(sis) {
 	_sis->cargaTextura(TEX_MENU, "img\\menu.png");
 
+	_sis->cargaSonido(SOUND_SCORE, "wavs\\rtype-028.wav");
+	_sis->cargaSonido(SOUND_JUEGO_COMPLETO, "wavs\\rtype-028.wav");
+	_sis->cargaSonido(SOUND_SET_HI_SCORE, "wavs\\rtype-040.wav", true);
+		
+
 	_ficheroHiScore="score\\hi-score.dat";
 	cargaHiScore();
 
@@ -115,11 +120,16 @@ void cMenu::setDificultad(int dificultad) {
 void cMenu::setPantalla(int pantalla) {
 	_state = pantalla;
 
-	if (_state == PANTALLA_SCORE) _tiempoScore = 0;
-	else if (_state == PANTALLA_COMPLETE) _tiempoComplete = 0;
-	else if (_state == PANTALLA_SET_HI_SCORE) {
+	if (_state == PANTALLA_SCORE) {
+		_tiempoScore = 0;
+		_sis->playSonido(SOUND_SCORE);
+	} else if (_state == PANTALLA_COMPLETE) {
+		_tiempoComplete = 0;
+		_sis->playSonido(SOUND_JUEGO_COMPLETO);
+	} else if (_state == PANTALLA_SET_HI_SCORE) {
 		_tiempoSetHiScore = 0;
 		_hiScoreNameTmp=MENU_HI_SCORE_DEF_NAME;
+		_sis->playSonido(SOUND_SET_HI_SCORE);
 	}
 }
 

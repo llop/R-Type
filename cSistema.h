@@ -2,6 +2,7 @@
 
 
 #include "cData.h"
+#include "cSound.h"
 
 
 #define GAME_WIDTH	640
@@ -51,6 +52,10 @@ private:
 	int _numNivel;
 
 	int _dificultad;
+
+	cSoundManager* _sonidos;
+
+	long long _tiempo;
 	
 	void delNaveEspacial();
 	void delNivel();
@@ -76,6 +81,12 @@ public:
 	void cargaTextura(int id, const char* ficheroTextura);
 	int idTextura(int id) const;
 	void tamanoTextura(int id, int &width, int &height) const;
+
+	// sonidos
+	void cargaSonido(int id, const char* ficheroSonido, bool loop = false, int num = 1, long long delay = 20);
+	void playSonido(int id);
+	void stopSonido(int id);
+	void stopSonidos();
 
 	// arranca partida y pasa de nivel
 	void arrancaPartida();

@@ -40,7 +40,7 @@ using namespace std;
 
 #define MENU_ENTER_KEY 13
 
-#define MENU_TIEMPO_SCORE 480
+#define MENU_TIEMPO_SCORE 486
 
 #define MENU_AVANCE_NAVE 2
 

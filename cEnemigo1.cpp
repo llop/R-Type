@@ -2,6 +2,8 @@
 #include "cEnemigo.h"
 #include <gl/glut.h>
 
+#include "cSound.h"
+
 int e1mov[8][4] = {
 	{ 5, 6, 21, 24 },
 	{ 38, 12, 21, 14 },
@@ -28,6 +30,8 @@ int e1dieMid = 311;
 cEnemigo1::cEnemigo1(cSistema* sis, int x, int y) : cEnemigo(sis, x, y) {
 	_sis->cargaTextura(TEX_ENE1, "img\\r-typesheet5.png");
 	_sis->cargaTextura(TEX_NAVE1, "img\\r-typesheet1.png");
+
+	_sis->cargaSonido(SOUND_EXPLO2, "wavs\\rtype-053.wav", false, 50, 6);
 	
 	_state = ENEMIGO_VIVE;
 	_seq = 0;
@@ -45,7 +49,9 @@ cEnemigo1::~cEnemigo1(){
 }
 
 void cEnemigo1::muerete() {
-	_vida = 0;
+	_sis->playSonido(SOUND_EXPLO2);
+
+ 	_vida = 0;
 	_state = ENEMIGO_EXPLO;
 	_seq = 0;
 	_delay = ENEMIGO1_MUERE_DELAY;
