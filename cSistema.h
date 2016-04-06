@@ -53,6 +53,8 @@ private:
 
 	int _dificultad;
 
+	bool _soundON;
+
 	cSoundManager* _sonidos;
 
 	long long _tiempo;
@@ -87,6 +89,10 @@ public:
 	void playSonido(int id);
 	void stopSonido(int id);
 	void stopSonidos();
+	void pauseSonidos();
+	void suena();
+	bool soundEnabled() const;
+	void activeSound();
 
 	// arranca partida y pasa de nivel
 	void arrancaPartida();

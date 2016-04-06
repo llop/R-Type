@@ -36,6 +36,10 @@ cMenu::cMenu(cSistema* sis) : cSprite(sis) {
 	_sis->cargaSonido(SOUND_SCORE, "wavs\\rtype-028.wav");
 	_sis->cargaSonido(SOUND_JUEGO_COMPLETO, "wavs\\rtype-028.wav");
 	_sis->cargaSonido(SOUND_SET_HI_SCORE, "wavs\\rtype-040.wav", true);
+	_sis->cargaSonido(SOUND_PANTALLA_INICIAL, "wavs\\rtype-037.wav", true);
+	_sis->cargaSonido(SOUND_START_GAME, "wavs\\rtype-099.wav");
+	_sis->cargaSonido(SOUND_OPCION_MENU, "wavs\\rtype-094.wav");
+	_sis->playSonido(SOUND_PANTALLA_INICIAL);
 		
 
 	_ficheroHiScore="score\\hi-score.dat";
@@ -161,6 +165,8 @@ void cMenu::procesaTeclas(unsigned char* keys) {
 	if (_state == PANTALLA_INICIO) {
 		if (enterPress) {
 			if (_seleccionado == INICIO_START) {
+				_sis->stopSonido(SOUND_PANTALLA_INICIAL);
+				_sis->playSonido(SOUND_START_GAME);
 				_sis->arrancaPartida();
 			} else if (_seleccionado == INICIO_DIFICULTAD) {
 				_dificultad = (_dificultad+1)%NUM_DIFICULTADES;
@@ -174,14 +180,18 @@ void cMenu::procesaTeclas(unsigned char* keys) {
 			_ultimoInput = _tiempoVida;
 		} else {
 			if (keys[GLUT_KEY_UP] || keys[GLUT_KEY_DOWN]) {
-				if (keys[GLUT_KEY_UP]) _seleccionado = (_seleccionado-1+INICIO_NUM_OPCIONES)%INICIO_NUM_OPCIONES;
+				if (keys[GLUT_KEY_UP]) {
+					_seleccionado = (_seleccionado - 1 + INICIO_NUM_OPCIONES) % INICIO_NUM_OPCIONES;
+				}
 				if (keys[GLUT_KEY_DOWN]) _seleccionado = (_seleccionado+1)%INICIO_NUM_OPCIONES;
+				_sis->playSonido(SOUND_OPCION_MENU);
 				_ultimoInput = _tiempoVida;
 			} else {
 				if (_seleccionado == INICIO_DIFICULTAD) {
 					if (keys[GLUT_KEY_LEFT] || keys[GLUT_KEY_RIGHT]) {
 						if (keys[GLUT_KEY_LEFT]) _dificultad = (_dificultad-1+NUM_DIFICULTADES)%NUM_DIFICULTADES;
 						if (keys[GLUT_KEY_RIGHT]) _dificultad = (_dificultad+1)%NUM_DIFICULTADES;
+						_sis->playSonido(SOUND_OPCION_MENU);
 						_ultimoInput = _tiempoVida;
 					}
 				}
@@ -227,6 +237,7 @@ void cMenu::procesaTeclas(unsigned char* keys) {
 				}
 				if (keys[GLUT_KEY_LEFT]) _hiScoreNameChar = (_hiScoreNameChar-1+MENU_HI_SCORE_NAME_LEN)%MENU_HI_SCORE_NAME_LEN;
 				if (keys[GLUT_KEY_RIGHT]) _hiScoreNameChar = (_hiScoreNameChar+1)%MENU_HI_SCORE_NAME_LEN;
+				_sis->playSonido(SOUND_OPCION_MENU);
 				_ultimoInput = _tiempoVida;
 			}
 		}
@@ -242,6 +253,7 @@ void cMenu::procesaTeclas(unsigned char* keys) {
 			if (keys[GLUT_KEY_LEFT] || keys[GLUT_KEY_RIGHT]) {
 				if (keys[GLUT_KEY_LEFT]) _continua = (_continua-1+GAME_OVER_NUM_OPCIONES)%GAME_OVER_NUM_OPCIONES;
 				if (keys[GLUT_KEY_RIGHT]) _continua = (_continua+1)%GAME_OVER_NUM_OPCIONES;
+				_sis->playSonido(SOUND_OPCION_MENU);
 				_ultimoInput = _tiempoVida;
 			}
 		}

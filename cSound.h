@@ -42,23 +42,26 @@ private:
 #define SOUND_GAME_OVER 12
 
 #define SOUND_OPCION_MENU 13
+#define SOUND_START_GAME 14
 
-#define SOUND_EXPLO1 14
-#define SOUND_EXPLO2 15
+#define SOUND_EXPLO1 15
+#define SOUND_EXPLO2 16
 
-#define SOUND_DISPARO_ENEMIGO 16
-#define SOUND_DISPARO_JEFE1 17
-#define SOUND_DISPARO_GUSANO 18
+#define SOUND_DISPARO_ENEMIGO 17
+#define SOUND_DISPARO_JEFE1 18
+#define SOUND_DISPARO_GUSANO 19
 
-#define SOUND_DISPARO_NAVE 19
-#define SOUND_DISPARO_RB_NAVE 20
-#define SOUND_CARGA_DISPARO 21
-#define SOUND_DISPARO_CARGADO 22
+#define SOUND_DISPARO_NAVE 20
+#define SOUND_DISPARO_RB_NAVE 21
+#define SOUND_CARGA_DISPARO 22
+#define SOUND_DISPARO_CARGADO 23
 
-#define SOUND_DISPARO_ESCUDO1 23
-#define SOUND_DISPARO_ESCUDO2 24
+#define SOUND_DISPARO_ESCUDO1 24
+#define SOUND_DISPARO_ESCUDO2 25
 
-#define NUM_SOUNDS 25
+
+
+#define NUM_SOUNDS 26
 
 
 struct cSoundWrapper {
@@ -100,7 +103,8 @@ public:
 	void cargaSonido(int id, const char* ficheroSonido, bool loop, int num, long long delay);
 	void playSonido(int id);
 	void stopSonido(int id);
-
 	void stopSonidos();
+	void pauseSonido(int id);
+	void pauseSonidos();
 
 };

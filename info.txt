@@ -15,6 +15,7 @@ Funcionalitats implementades:
 	POWER-UPs: Power-ups que proporcionen a la nau diversos escuts i tirs diferents.
 	DIFICULTAT: Es pot escollir la dificultat NORMAL o HARD des del menú principal.
 	PUNTUACIÓ: Llista dels millors jugadors amb les seves corresponents puntuacions.
+	MÚSICA I SONS: Música de fons i efectes sonors pels diferents esdeveniments del joc.
 
 Instruccions:
 	MENÚ I PANTALLES: Amb les fletxes del teclat et mous per les diferents opcions i amb el SPACE selecciones la opció desitjada.
@@ -24,3 +25,5 @@ Instruccions:
 		- Dispar potent: Mantenir SPACE per carregar el dispar i alliberar SPACE per disparar.
 		- Llançar escut endavant: N
 		- Màgies: M
+		- Pausar joc: P
+	MÚSICA I SONS: Amb la tecla S es pot activar/desactivar la música i efectes sonors del joc.

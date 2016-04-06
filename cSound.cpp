@@ -59,6 +59,20 @@ void cSoundManager::stopSonidos() {
 	}
 }
 
+void cSoundManager::pauseSonido(int id) {
+	if (_sounds[id]._loaded) {
+		for (int i = 0; i < _sounds[id]._numSources; ++i) {
+			_sounds[id]._sources[i].pause();
+		}
+	}
+}
+
+void cSoundManager::pauseSonidos() {
+	for (int id = 0; id < NUM_SOUNDS; ++id) {
+		pauseSonido(id);
+	}
+}
+
 void cSoundManager::suena() {
 	++_tiempo;
 
