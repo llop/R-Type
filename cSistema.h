@@ -91,7 +91,7 @@ public:
 	void stopSonidos();
 	void pauseSonidos();
 	void suena();
-	bool soundEnabled() const;
+	bool soundEnabled();
 	void activeSound();
 
 	// arranca partida y pasa de nivel

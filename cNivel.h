@@ -41,6 +41,8 @@ protected:
 	list<cDisparo*> _disparos;				// disparos
 	cHud* _hud;
 
+	int _idMusica;
+
 	long long _puntos;
 
 	int _tilesAncho, _tilesAlto;			// dimensiones del mapa en tiles

@@ -161,6 +161,11 @@ void cMenu::procesaTeclas(unsigned char* keys) {
 	if (intervalo < MENU_INTERVALO_INPUT) return;
 
 	bool enterPress = keys[MENU_ENTER_KEY]||keys[' '];
+	bool soundPress = keys['s'] || keys['S'];
+	if (soundPress) {
+		_sis->activeSound();
+		if (_sis->soundEnabled()) _sis->playSonido(SOUND_PANTALLA_INICIAL);
+	}
 
 	if (_state == PANTALLA_INICIO) {
 		if (enterPress) {
@@ -170,6 +175,7 @@ void cMenu::procesaTeclas(unsigned char* keys) {
 				_sis->arrancaPartida();
 			} else if (_seleccionado == INICIO_DIFICULTAD) {
 				_dificultad = (_dificultad+1)%NUM_DIFICULTADES;
+				_sis->playSonido(SOUND_OPCION_MENU);
 			} else if (_seleccionado == INICIO_INSTRUCCIONES) {
 				setPantalla(PANTALLA_INSTRUCCIONES);
 			} else if (_seleccionado == INICIO_CREDITOS) {
@@ -246,6 +252,8 @@ void cMenu::procesaTeclas(unsigned char* keys) {
 			if (_continua == GAME_OVER_CONTINUE) {
 				_sis->continuePartida();
 			} else if (_continua == GAME_OVER_QUIT) {
+				_sis->stopSonido(SOUND_GAME_OVER);
+				_sis->playSonido(SOUND_PANTALLA_INICIAL);
 				setPantalla(PANTALLA_INICIO);
 			}
 			_ultimoInput = _tiempoVida;

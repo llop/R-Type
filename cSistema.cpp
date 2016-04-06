@@ -80,13 +80,19 @@ void cSistema::suena() {
 	_sonidos->suena();
 }
 
-bool cSistema::soundEnabled() const {
+bool cSistema::soundEnabled() {
 	return _soundON;
 }
 
 void cSistema::activeSound() {
-	if (_soundON) _soundON = false;
-	else _soundON = true;
+	if (_soundON) {
+		_soundON = false;
+		stopSonidos();
+	}
+	else {
+		_soundON = true;
+		suena();
+	}
 }
 
 
@@ -128,17 +134,6 @@ void cSistema::procesaTeclas(unsigned char *keys) {
 		if (_menu != NULL) ((cMenu*)_menu)->procesaTeclas(keys);
 	} else if (_estado == NIVEL) {
 		if (_nivel != NULL) ((cNivel*)_nivel)->procesaTeclas(keys);
-	}
-	bool soundPress = keys['p'] || keys['P'];
-	if (soundPress) {
-		if (soundEnabled()) {
-			activeSound();
-			pauseSonidos();
-		}
-		else {
-			activeSound();
-			suena();
-		}
 	}
 }
 
