@@ -91,11 +91,9 @@ bool cSistema::soundEnabled() {
 void cSistema::activeSound() {
 	if (_soundON) {
 		_soundON = false;
-		stopSonidos();
 	}
 	else {
 		_soundON = true;
-		suena();
 	}
 }
 

@@ -363,8 +363,8 @@ public:
 // jefe nivel 3
 //----------------------------------------------------------------------
 #define JEFE3_MUEVE_DELAY 6
-#define JEFE3_VIDA_INICIAL 1000
-#define JEFE3_VIDA_INICIAL_HARD 1500
+#define JEFE3_VIDA_INICIAL 2000
+#define JEFE3_VIDA_INICIAL_HARD 3000
 #define JEFE3_PUNTOS 100
 
 #define JEFE3_MINI_MUEVE_DELAY 6

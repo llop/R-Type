@@ -163,11 +163,12 @@ void cMenu::procesaTeclas(unsigned char* keys) {
 	if (intervalo < MENU_INTERVALO_INPUT) return;
 
 	bool enterPress = keys[MENU_ENTER_KEY]||keys[' '];
-	bool soundPress = keys['s'] || keys['S'];
-	if (soundPress) {
+	
+	/*if (keys['s'] || keys['S']) {
 		_sis->activeSound();
 		if (_sis->soundEnabled()) _sis->playSonido(SOUND_PANTALLA_INICIAL);
-	}
+		else _sis->stopSonidos();
+	}*/
 
 	if (_state == PANTALLA_INICIO) {
 		if (enterPress) {

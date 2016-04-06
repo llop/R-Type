@@ -65,8 +65,9 @@ void cNivel3::generaEnemigos() {
 	
 	//tiras enemigos 2
 	iniPos = 70 * TILE_WIDTH - GAME_WIDTH;
-	if (!(_posicion%inter) && !_delay && _posicion >= iniPos && _posicion < iniPos + (inter * 5)) {
-		cEnemigo2* enemigo2 = new cEnemigo2(_sis, rect.x + rect.w + 10, 150);
+	if (!(_posicion%inter) && !_delay && _posicion >= iniPos && _posicion < iniPos + (inter * 8)) {
+		int numRand = rand() % 150;
+		cEnemigo2* enemigo2 = new cEnemigo2(_sis, rect.x + rect.w + 10, 150 + numRand);
 		pushEnemigo(enemigo2);
 	}
 
@@ -83,6 +84,19 @@ void cNivel3::generaEnemigos() {
 		cEnemigo3* enemigo3 = new cEnemigo3(_sis, 1494, 292, 6, 100.0f, 0.0f, 0.005f, false);
 		pushEnemigo(enemigo3);
 	}
+
+	//gripaus
+	iniPos = 95 * TILE_WIDTH - GAME_WIDTH;
+	if (!(_posicion%inter) && !_delay && _posicion >= iniPos && _posicion < iniPos + (inter * 1)) {
+		int y = 0;
+		for (int i = 0; i < 2; ++i) {
+			for (int j = 0; j < 4; ++j) {
+				cEnemigo5* enemigo = new cEnemigo5(_sis, rect.x + (10 * j*TILE_HEIGHT), y);
+				pushEnemigo(enemigo);
+			}
+			y += GAME_HEIGHT;
+		}
+	}
 	//escudo
 	if (_posicion == 110 * TILE_WIDTH - GAME_WIDTH && !_delay) {
 		cEnemigoItem* enemigo = new cEnemigoItem(_sis, rect.x + rect.w + 8, 100, -5.0f, 0.0f, ITEM_ESCUDO);
@@ -97,6 +111,18 @@ void cNivel3::generaEnemigos() {
 			pushEnemigo(enemigo);
 		}
 	}
+
+	iniPos = 135 * TILE_WIDTH - GAME_WIDTH;
+	if (!(_posicion%inter) && !_delay && _posicion >= iniPos && _posicion < iniPos + (inter * 8)) {
+		int numRand = rand() % 150;
+		cEnemigo2* enemigo = new cEnemigo2(_sis, rect.x + rect.w + 10, 150 + numRand);
+		pushEnemigo(enemigo);
+	}
+
+	if (_posicion == 145 * TILE_WIDTH - GAME_WIDTH && !_delay) {
+		cEnemigoItem* enemigo = new cEnemigoItem(_sis, rect.x + rect.w + 8, 6 * TILE_HEIGHT, -5.0f, 0.0f, ITEM_VELOCIDAD);
+		pushEnemigo(enemigo);
+	}
 	
 	//enemigo q persigue
 	if (_posicion == 160 * TILE_WIDTH - GAME_WIDTH && !_delay) {
@@ -106,6 +132,13 @@ void cNivel3::generaEnemigos() {
 		pushEnemigo(enemigo2);
 
 	}
+
+	if (_posicion == 160 * TILE_WIDTH && !_delay) {
+		cEnemigo4* enemigo = new cEnemigo4(_sis, rect.x - 10, GAME_HEIGHT - (10 * TILE_HEIGHT) - 12, ENEMIGO4_ANDA_DER);
+		pushEnemigo(enemigo);
+	}
+
+	
 
 	//camina izq arriba
 	iniPos = 180 * TILE_WIDTH - GAME_WIDTH;
@@ -139,6 +172,24 @@ void cNivel3::generaEnemigos() {
 	}
 
 
+	//gripaus
+	iniPos = 200 * TILE_WIDTH - GAME_WIDTH;
+	if (!(_posicion%inter) && !_delay && _posicion >= iniPos && _posicion < iniPos + (inter * 1)) {
+		int y = 0;
+		for (int i = 0; i < 2; ++i) {
+			for (int j = 0; j < 4; ++j) {
+				cEnemigo5* enemigo = new cEnemigo5(_sis, rect.x + (10 * j*TILE_HEIGHT), y);
+				pushEnemigo(enemigo);
+			}
+			y += GAME_HEIGHT;
+		}
+	}
+
+	if (_posicion == 205 * TILE_WIDTH - GAME_WIDTH && !_delay) {
+		cEnemigoItem* enemigo = new cEnemigoItem(_sis, rect.x + rect.w + 8, 6 * TILE_HEIGHT, -5.0f, 0.0f, ITEM_VIDA);
+		pushEnemigo(enemigo);
+	}
+
 	//camina izq arriba
 	iniPos = 215 * TILE_WIDTH - GAME_WIDTH;
 	if (!(_posicion%inter) && !_delay && _posicion >= iniPos && _posicion < iniPos + (inter * 1)) {
@@ -171,7 +222,18 @@ void cNivel3::generaEnemigos() {
 		pushEnemigo(enemigo);
 	}
 
-
+	//gripaus
+	iniPos = 260 * TILE_WIDTH - GAME_WIDTH;
+	if (!(_posicion%inter) && !_delay && _posicion >= iniPos && _posicion < iniPos + (inter * 1)) {
+		int y = 0;
+		for (int i = 0; i < 2; ++i) {
+			for (int j = 0; j < 4; ++j) {
+				cEnemigo5* enemigo = new cEnemigo5(_sis, rect.x + (10 * j*TILE_HEIGHT), y);
+				pushEnemigo(enemigo);
+			}
+			y += GAME_HEIGHT;
+		}
+	}
 
 	//enemigo1 en flecha invertida
 

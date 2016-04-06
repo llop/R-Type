@@ -189,11 +189,13 @@ void cNivel::procesaTeclas(unsigned char* keys) {
 		if (_enPausa) _sis->pauseSonidos();
 		else _sis->resumeSonidos();
 	}
-	bool soundPress = keys['s'] || keys['S'];
-	if (soundPress) {
+
+	/*if (keys['s'] || keys['S']) {
 		_sis->activeSound();
 		if (_sis->soundEnabled()) _sis->playSonido(_idMusica);
-	}
+		else _sis->stopSonidos();
+	}*/
+
 	if (!_enPausa) _naveEspacial->procesaTeclas(keys);
 
 }
