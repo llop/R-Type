@@ -46,21 +46,25 @@ private:
 
 #define SOUND_EXPLO1 14
 #define SOUND_EXPLO2 15
+#define SOUND_EXPLO_NAVE 16
 
-#define SOUND_DISPARO_ENEMIGO 16
-#define SOUND_DISPARO_JEFE1 17
-#define SOUND_DISPARO_GUSANO 18
+#define SOUND_DISPARO_ENEMIGO 17
+#define SOUND_DISPARO_JEFE1 18
+#define SOUND_DISPARO_GUSANO 19
 
-#define SOUND_DISPARO_NAVE 19
-#define SOUND_DISPARO_RB_NAVE 20
-#define SOUND_CARGA_DISPARO 21
-#define SOUND_DISPARO_CARGADO 22
+#define SOUND_DISPARO_NAVE 20
+#define SOUND_DISPARO_RB_NAVE 21
+#define SOUND_CARGA_DISPARO 22
+#define SOUND_DISPARO_CARGADO 23
 
-#define SOUND_DISPARO_ESCUDO1 23
-#define SOUND_DISPARO_ESCUDO2 24
+#define SOUND_DISPARO_ESCUDO1 24
+#define SOUND_DISPARO_ESCUDO2 25
+
+#define SOUND_ITEM_VIDA 26
+#define SOUND_ITEM 27
 
 
-#define NUM_SOUNDS 25
+#define NUM_SOUNDS 28
 
 
 struct cSoundWrapper {
@@ -85,15 +89,10 @@ private:
 
 	long long _tiempo;
 	long long _ultimoSonido;
-	list<int> _que;
+	list<pair<long long, int> > _que;
 	cSoundWrapper _sounds[NUM_SOUNDS];
 
 	bool _paused;
-
-	//vector<cSound> _sounds[NUM_SOUNDS];
-	//int _soundIndex[NUM_SOUNDS];
-	//vector<long long> _lastPlayed[NUM_SOUNDS];
-	//long long _delay[NUM_SOUNDS];
 
 public:
 

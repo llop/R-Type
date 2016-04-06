@@ -45,6 +45,9 @@ cDisparoEnemigo::cDisparoEnemigo(cSistema* sis, int x, int y, float xu, float yu
 
 	_pixelsAvanzaX = xu;
 	_pixelsAvanzaY = yu;
+
+
+	_sis->playSonido(SOUND_DISPARO_ENEMIGO);
 }
 
 cDisparoEnemigo::~cDisparoEnemigo() {

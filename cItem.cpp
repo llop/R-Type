@@ -39,6 +39,9 @@ long long cItem::puntos() const {
 void cItem::muerete() {
 	// desaparecer inmediatamente
 	_muerto = true;
+
+	if (_tipo == ITEM_VIDA) _sis->playSonido(SOUND_ITEM_VIDA);
+	else _sis->playSonido(SOUND_ITEM);
 }
 
 void cItem::caja(cRect& rect) const {

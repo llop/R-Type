@@ -51,15 +51,22 @@ cNaveEspacial::cNaveEspacial(cSistema* sis) : cSprite(sis) {
 	_sis->cargaTextura(TEX_NAVE1, "img\\r-typesheet1.png");
 
 	_sis->cargaSonido(SOUND_DISPARO_NAVE, "wavs\\rtype-048.wav", false, 8, 6);
-	_sis->cargaSonido(SOUND_DISPARO_RB_NAVE, "wavs\\rtype-049.wav", false, 8, 6);
+	_sis->cargaSonido(SOUND_DISPARO_RB_NAVE, "wavs\\rtype-049.wav", false, 8, 12);
 
-	_sis->cargaSonido(SOUND_DISPARO_ESCUDO1, "wavs\\rtype-065.wav", false, 8, 6);
-	_sis->cargaSonido(SOUND_DISPARO_ESCUDO2, "wavs\\rtype-049.wav", false, 8, 6);
+	_sis->cargaSonido(SOUND_DISPARO_ESCUDO1, "wavs\\rtype-065.wav", false, 8, 24);
+	_sis->cargaSonido(SOUND_DISPARO_ESCUDO2, "wavs\\rtype-049.wav", false, 8, 24);
 
 	_sis->cargaSonido(SOUND_CARGA_DISPARO, "wavs\\rtype-051.wav", true, 1, 12);
 
+	_sis->cargaSonido(SOUND_EXPLO_NAVE, "wavs\\rtype-053.wav", false, 12, 8);
 	_sis->cargaSonido(SOUND_EXPLO1, "wavs\\rtype-083.wav", false, 12, 8);
-	_sis->cargaSonido(SOUND_EXPLO2, "wavs\\rtype-053.wav", false, 12, 10);
+	_sis->cargaSonido(SOUND_EXPLO2, "wavs\\boom-1.wav", false, 12, 16);
+
+	_sis->cargaSonido(SOUND_DISPARO_ENEMIGO, "wavs\\rtype-054.wav", false, 24, 16);
+
+
+	_sis->cargaSonido(SOUND_ITEM, "wavs\\rtype-080.wav", false, 12, 12);
+	_sis->cargaSonido(SOUND_ITEM_VIDA, "wavs\\rtype-056.wav", false, 2, 12);
 
 	_x=GAME_WIDTH>>1;
 	_y=(GAME_HEIGHT-HUD_HPIX)>>1;
@@ -340,6 +347,7 @@ void cNaveEspacial::muerete() {
 	_cargaTiro = 0;
 
 	_sis->stopSonido(SOUND_CARGA_DISPARO);
+	_sis->playSonido(SOUND_EXPLO_NAVE);
 }
 
 void cNaveEspacial::caja(cRect &rect) const {

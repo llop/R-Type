@@ -30,6 +30,11 @@ void cSoundManager::cargaSonido(int id, const char* ficheroSonido, bool loop, in
 	}
 }
 
+bool cmpSound(const pair<long long, int> &a, const pair<long long, int> &b) {
+	if (a.first == b.first) return a.second < b.second;
+	return a.first < b.first;
+}
+
 void cSoundManager::playSonido(int id) {
 	//long long intervalo = _tiempo - _ultimoSonido;
 	//if (intervalo < SONIDO_DELAY) return;
@@ -38,7 +43,9 @@ void cSoundManager::playSonido(int id) {
 
 		if (_sounds[id]._queued < 1) {//_sounds[id]._numSources) {
 			++_sounds[id]._queued;
-			_que.push_back(id);
+
+			// ordenar de mayor a menor:
+			_que.push_back(make_pair(_tiempo, id));
 		}
 
 	}
@@ -51,7 +58,11 @@ void cSoundManager::stopSonido(int id) {
 			_sounds[id]._sources[i].rewind();
 			_sounds[id]._queued = 0;
 		}
-		_que.remove(id);
+
+		for (list<pair<long long, int> >::iterator it = _que.begin(); it != _que.end();) {
+			if (it->second == id) it = _que.erase(it);
+			else ++it;
+		}
 	}
 }
 
@@ -95,10 +106,11 @@ void cSoundManager::suena() {
 	long long intervalo = _tiempo - _ultimoSonido;
 	if (intervalo < SONIDO_DELAY) return;
 
+	_que.sort();//cmpSound);
 	if (!_que.empty()) {
-		list<int>::iterator it = _que.begin();
+		list<pair<long long, int> >::iterator it = _que.begin();
 		while (it != _que.end()) {
-			int id = *it;
+			int id = it->second;
 
 			bool played = false;
 			if (_sounds[id]._loaded && _sounds[id]._queued) {

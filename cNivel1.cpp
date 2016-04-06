@@ -108,11 +108,11 @@ void cNivel1::generaEnemigos() {
 		cEnemigo2* enemigo = new cEnemigo2(_sis, rect.x + rect.w + 10, 4 * TILE_HEIGHT);
 		pushEnemigo(enemigo);
 	}
-	iniPos = 112 * TILE_WIDTH - GAME_WIDTH;
-	if (!(_posicion%inter) && !_delay && _posicion >= iniPos && _posicion < iniPos + (inter * 12)) {
-		cEnemigo2* enemigo = new cEnemigo2(_sis, rect.x + rect.w + 10, 10 * TILE_HEIGHT);
-		pushEnemigo(enemigo);
-	}
+	//iniPos = 112 * TILE_WIDTH - GAME_WIDTH;
+	//if (!(_posicion%inter) && !_delay && _posicion >= iniPos && _posicion < iniPos + (inter * 12)) {
+	//	cEnemigo2* enemigo = new cEnemigo2(_sis, rect.x + rect.w + 10, 10 * TILE_HEIGHT);
+	//	pushEnemigo(enemigo);
+	//}
 	iniPos = 124 * TILE_WIDTH - GAME_WIDTH;
 	if (!(_posicion%inter) && !_delay && _posicion >= iniPos && _posicion < iniPos + (inter * 12)) {
 		cEnemigo2* enemigo = new cEnemigo2(_sis, rect.x + rect.w + 10, 18 * TILE_HEIGHT);
