@@ -78,21 +78,15 @@ void cSoundManager::resumeSonido(int id) {
 }
 
 void cSoundManager::pauseSonidos() {
-//	if (!_paused) {
-//		_paused = true;
-		for (int id = 0; id < NUM_SOUNDS; ++id) {
-			pauseSonido(id);
-		}
-		//	}
+	for (int id = 0; id < NUM_SOUNDS; ++id) {
+		pauseSonido(id);
+	}
 }
 
 void cSoundManager::resumeSonidos() {
-	//if (_paused) {
-	//_paused = false;
-		for (int id = 0; id < NUM_SOUNDS; ++id) {
-			resumeSonido(id);
-		}
-		//}
+	for (int id = 0; id < NUM_SOUNDS; ++id) {
+		resumeSonido(id);
+	}
 }
 
 void cSoundManager::suena() {

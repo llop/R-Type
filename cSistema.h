@@ -91,6 +91,7 @@ public:
 	void stopSonidos();
 	void pauseSonidos();
 	void resumeSonidos();
+
 	void suena();
 	bool soundEnabled();
 	void activeSound();

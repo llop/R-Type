@@ -173,6 +173,8 @@ void cMenu::procesaTeclas(unsigned char* keys) {
 		if (enterPress) {
 			_sis->playSonido(SOUND_OPCION_MENU);
 			if (_seleccionado == INICIO_START) {
+				_sis->stopSonido(SOUND_PANTALLA_INICIAL);
+				_sis->playSonido(SOUND_START_GAME);
 				_sis->arrancaPartida();
 			} else if (_seleccionado == INICIO_DIFICULTAD) {
 				_dificultad = (_dificultad+1)%NUM_DIFICULTADES;
