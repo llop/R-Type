@@ -32,6 +32,8 @@ cDisparoEnemigo3::cDisparoEnemigo3(cSistema* sis, int x, int y, float xu, float 
 
 	_pixelsAvanzaX = xu;
 	_pixelsAvanzaY = yu;
+
+	_sis->playSonido(SOUND_DISPARO_GUSANO);
 }
 
 cDisparoEnemigo3::~cDisparoEnemigo3() {

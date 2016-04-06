@@ -63,7 +63,8 @@ cNaveEspacial::cNaveEspacial(cSistema* sis) : cSprite(sis) {
 	_sis->cargaSonido(SOUND_EXPLO2, "wavs\\boom-1.wav", false, 12, 16);
 
 	_sis->cargaSonido(SOUND_DISPARO_ENEMIGO, "wavs\\rtype-054.wav", false, 24, 16);
-
+	_sis->cargaSonido(SOUND_DISPARO_GUSANO, "wavs\\rtype-064.wav", false, 24, 16);
+	_sis->cargaSonido(SOUND_DISPARO_JEFE1, "wavs\\rtype-100.wav", false, 12, 8);
 
 	_sis->cargaSonido(SOUND_ITEM, "wavs\\rtype-080.wav", false, 12, 12);
 	_sis->cargaSonido(SOUND_ITEM_VIDA, "wavs\\rtype-056.wav", false, 2, 12);

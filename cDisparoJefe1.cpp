@@ -30,6 +30,8 @@ cDisparoJefe1::cDisparoJefe1(cSistema* sis, int x, int y, float xVec, float yVec
 	float dist = sqrt(xVec*xVec + yVec*yVec);
 	_xVec = xVec/dist;
 	_yVec = yVec/dist;
+
+	_sis->playSonido(SOUND_DISPARO_JEFE1);
 }
 
 cDisparoJefe1::~cDisparoJefe1() {
