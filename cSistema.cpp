@@ -149,7 +149,7 @@ void cSistema::arrancaPartida() {
 	delNaveEspacial();
 	_naveEspacial = new cNaveEspacial(this);
 
-	_numNivel = NIVEL1;
+	_numNivel = NIVEL2;
 	_dificultad = ((cMenu*)_menu)->dificultad();
 	cargaNivel();
 }

@@ -17,7 +17,7 @@ cNivel1::cNivel1(cSistema* sis, cNaveEspacial* naveEspacial,
 									ficheroTextura,
 									ficheroFondo, 
 									idMusica, ficheroMusica) {
-	_posicion = 4200-640;//3218;
+	//_posicion = 4200-640;//3218;
 }
 
 
@@ -190,7 +190,7 @@ void cNivel1::generaEnemigos() {
 		cEnemigo3* enemigo3 = new cEnemigo3(_sis, 4016, 224, 10, 144.0f, 0.0f, 0.005f, false);
 		pushEnemigo(enemigo3);
 
-		enemigo3 = new cEnemigo3(_sis, 4016, 224, 10, 144.0f, acos(-1.0f), 0.005f, false);
+		enemigo3 = new cEnemigo3(_sis, 4016, 224, 10, 144.0f, _PI, 0.005f, false);
 		pushEnemigo(enemigo3);
 	}
 	
