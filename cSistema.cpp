@@ -17,6 +17,7 @@ cSistema::cSistema() {
 	_sonidos = new cSoundManager();
 	_estado = MENU;
 	_tiempo = 0;
+	_soundON = true;
 }
 
 cSistema::~cSistema() {
@@ -53,12 +54,14 @@ void cSistema::tamanoTextura(int id, int &width, int &height) const {
 }
 
 
+
+// sonido
 void cSistema::cargaSonido(int id, const char* ficheroSonido, bool loop, int num, long long delay) {
 	_sonidos->cargaSonido(id, ficheroSonido, loop, num, delay);
 }
 
 void cSistema::playSonido(int id) {
-	_sonidos->playSonido(id);
+	if (soundEnabled()) _sonidos->playSonido(id);
 }
 
 void cSistema::stopSonido(int id) {
@@ -68,6 +71,31 @@ void cSistema::stopSonido(int id) {
 void cSistema::stopSonidos() {
 	_sonidos->stopSonidos();
 }
+
+void cSistema::pauseSonidos() {
+	_sonidos->pauseSonidos();
+}
+
+void cSistema::suena() {
+	_sonidos->suena();
+}
+
+bool cSistema::soundEnabled() {
+	return _soundON;
+}
+
+void cSistema::activeSound() {
+	if (_soundON) {
+		_soundON = false;
+		stopSonidos();
+	}
+	else {
+		_soundON = true;
+		suena();
+	}
+}
+
+
 
 
 // consultar

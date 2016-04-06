@@ -56,7 +56,7 @@ cNivel::cNivel(cSistema* sis, cNaveEspacial* naveEspacial,
 
 	_sis->cargaSonido(idMusica, ficheroMusica, true);
 	_sis->playSonido(idMusica);
-
+	_idMusica = idMusica;
 	_naveEspacial = naveEspacial;
 	//vector<cEscudo*> escudos = _naveEspacial->escudos();
 	//for (unsigned int i=0; i<escudos.size(); ++i) pushEscudo(escudos[i]);
@@ -186,6 +186,11 @@ void cNivel::procesaTeclas(unsigned char* keys) {
 	if ((keys['p'] || keys['P']) && _tiempoPausa >= NIVEL_INTERVALO_PAUSA) {
 		_enPausa = !_enPausa;
 		_tiempoPausa = 0;
+	}
+	bool soundPress = keys['s'] || keys['S'];
+	if (soundPress) {
+		_sis->activeSound();
+		if (_sis->soundEnabled()) _sis->playSonido(_idMusica);
 	}
 	if (!_enPausa) _naveEspacial->procesaTeclas(keys);
 
