@@ -34,11 +34,13 @@ cMenu::cMenu(cSistema* sis) : cSprite(sis) {
 	_sis->cargaTextura(TEX_MENU, "img\\menu.png");
 
 	_sis->cargaSonido(SOUND_SCORE, "wavs\\rtype-028.wav");
-	_sis->cargaSonido(SOUND_JUEGO_COMPLETO, "wavs\\rtype-028.wav");
+	_sis->cargaSonido(SOUND_JUEGO_COMPLETO, "wavs\\rtype-043.wav");
 	_sis->cargaSonido(SOUND_SET_HI_SCORE, "wavs\\rtype-040.wav", true);
 	_sis->cargaSonido(SOUND_PANTALLA_INICIAL, "wavs\\rtype-037.wav", true);
+	_sis->cargaSonido(SOUND_GAME_OVER, "wavs\\rtype-034.wav", true);
 	_sis->cargaSonido(SOUND_START_GAME, "wavs\\rtype-099.wav");
 	_sis->cargaSonido(SOUND_OPCION_MENU, "wavs\\rtype-094.wav");
+
 	_sis->playSonido(SOUND_PANTALLA_INICIAL);
 		
 
@@ -169,9 +171,8 @@ void cMenu::procesaTeclas(unsigned char* keys) {
 
 	if (_state == PANTALLA_INICIO) {
 		if (enterPress) {
+			_sis->playSonido(SOUND_OPCION_MENU);
 			if (_seleccionado == INICIO_START) {
-				_sis->stopSonido(SOUND_PANTALLA_INICIAL);
-				_sis->playSonido(SOUND_START_GAME);
 				_sis->arrancaPartida();
 			} else if (_seleccionado == INICIO_DIFICULTAD) {
 				_dificultad = (_dificultad+1)%NUM_DIFICULTADES;
@@ -205,16 +206,19 @@ void cMenu::procesaTeclas(unsigned char* keys) {
 		}
 	} else if (_state == PANTALLA_INSTRUCCIONES) {
 		if (enterPress) {
+			_sis->playSonido(SOUND_OPCION_MENU);
 			setPantalla(PANTALLA_INICIO);
 			_ultimoInput = _tiempoVida;
 		}
 	} else if (_state == PANTALLA_CREDITOS) {
 		if (enterPress) {
+			_sis->playSonido(SOUND_OPCION_MENU);
 			setPantalla(PANTALLA_INICIO);
 			_ultimoInput = _tiempoVida;
 		}
 	} else if (_state == PANTALLA_HI_SCORE) {
 		if (enterPress) {
+			_sis->playSonido(SOUND_OPCION_MENU);
 			setPantalla(PANTALLA_INICIO);
 			_ultimoInput = _tiempoVida;
 		}
@@ -223,6 +227,8 @@ void cMenu::procesaTeclas(unsigned char* keys) {
 			// establecer el record y guardarlo
 			guardaHiScore();
 
+			_sis->stopSonidos();
+			_sis->playSonido(SOUND_OPCION_MENU);
 			setPantalla(PANTALLA_COMPLETE);
 			_ultimoInput = _tiempoVida;
 		} else {
@@ -252,7 +258,8 @@ void cMenu::procesaTeclas(unsigned char* keys) {
 			if (_continua == GAME_OVER_CONTINUE) {
 				_sis->continuePartida();
 			} else if (_continua == GAME_OVER_QUIT) {
-				_sis->stopSonido(SOUND_GAME_OVER);
+				_sis->stopSonidos();
+				_sis->playSonido(SOUND_OPCION_MENU);
 				_sis->playSonido(SOUND_PANTALLA_INICIAL);
 				setPantalla(PANTALLA_INICIO);
 			}
@@ -268,6 +275,9 @@ void cMenu::procesaTeclas(unsigned char* keys) {
 	} else if (_state == PANTALLA_COMPLETE) {
 		if (enterPress) {
 			if (_tiempoComplete >= MENU_COMPLETE_RESPONSIVE) {
+				_sis->stopSonidos();
+				_sis->playSonido(SOUND_OPCION_MENU);
+				_sis->playSonido(SOUND_PANTALLA_INICIAL);
 				setPantalla(PANTALLA_INICIO);
 				_ultimoInput = _tiempoVida;
 			}

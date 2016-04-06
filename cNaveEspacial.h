@@ -23,7 +23,9 @@ using namespace std;
 #define NAVE_MUEVE_DELAY 6
 #define NAVE_EXPLO_DELAY 6
 
-#define NAVE_PIXELS_MUEVE 4
+#define NAVE_PIXELS_MUEVE 3.0f
+#define NAVE_PIXELS_MUEVE_MAX 6.0f
+#define NAVE_PIXELS_MUEVE_INC 0.5f
 
 #define NAVE_TIRO_ESCUDO_DELAY 4
 #define NAVE_TIRO_DELAY 4
@@ -67,8 +69,11 @@ private:
 	long long _ultimaMagia;
 	int _cargaTiro;
 
+	float _pixelsMueve;
+
 	long long _puntos;			// la puntuacion
 
+	float _xF, _yF;
 	int _lastX, _lastY;
 
 	int _nivelEscudos;

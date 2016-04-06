@@ -19,11 +19,22 @@ int itemTex[8][4] = {
 cItem::cItem(cSistema* sis, int x, int y, int tipo) : cSprite(sis, x, y) {
 	_sis->cargaTextura(TEX_ITEMS, "img\\items.png");
 	_tipo = tipo;
+
+	if (_tipo == ITEM_VELOCIDAD) _puntos = ITEM_VELOCIDAD_PUNTOS;
+	else if (_tipo == ITEM_DISPARO_RB) _puntos = ITEM_DISPARO_RB_PUNTOS;
+	else if (_tipo == ITEM_VIDA) _puntos = ITEM_VIDA_PUNTOS;
+	else if (_tipo == ITEM_ESCUDO) _puntos = ITEM_ESCUDO_PUNTOS;
+
 }
 
 int cItem::tipo() const {
 	return _tipo;
 }
+
+long long cItem::puntos() const {
+	return _puntos;
+}
+
 
 void cItem::muerete() {
 	// desaparecer inmediatamente
@@ -54,6 +65,10 @@ void cItem::logica() {
 	cNivel* nivel = (cNivel*)_sis->nivel();
 	cRect rect;
 	caja(rect);
+	rect.x -= 16;
+	rect.y -= 16;
+	rect.w += 32;
+	rect.h += 32;
 	if (nivel->fueraLimites(rect)) {
 		_muerto = true;
 		return;

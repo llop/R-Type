@@ -56,8 +56,8 @@ protected:
 
 	bool _enPausa;
 	long long _tiempoPausa;
-
 	long long _tiempoMagia;
+	long long _tiempo;
 
 	bool cargaMapa(const char* ficheroMapa);
 

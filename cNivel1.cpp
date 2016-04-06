@@ -18,6 +18,8 @@ cNivel1::cNivel1(cSistema* sis, cNaveEspacial* naveEspacial,
 									ficheroFondo, 
 									idMusica, ficheroMusica) {
 	//_posicion = 4200-640;//3218;
+
+	_sis->cargaSonido(SOUND_NIVEL1, "wavs\\rtype-001.wav", true);
 }
 
 
@@ -27,6 +29,11 @@ float cNivel1::factorDificultad() const {
 };
 
 int cNivel1::avanzaPosicion() {
+	if (_tiempo == 1024) {
+		_sis->stopSonido(_idMusica);
+		_sis->playSonido(SOUND_NIVEL1);
+	}
+
 	// avanzar si toca
 	int avanza = 0;
 	if (_delay) --_delay;
@@ -53,6 +60,11 @@ void cNivel1::generaEnemigos() {
 	//--------------------------------------------------------------------
 	if (_posicion == 60 * TILE_WIDTH - GAME_WIDTH && !_delay) {
 		cEnemigoItem* enemigo = new cEnemigoItem(_sis, rect.x + rect.w + 8, 300, -5.0f, 0.0f, ITEM_ESCUDO);
+		pushEnemigo(enemigo);
+	}
+
+	if (_posicion == 94 * TILE_WIDTH - GAME_WIDTH && !_delay) {
+		cEnemigoItem* enemigo = new cEnemigoItem(_sis, rect.x + rect.w + 8, 6*TILE_HEIGHT, -5.0f, 0.0f, ITEM_VELOCIDAD);
 		pushEnemigo(enemigo);
 	}
 
@@ -122,12 +134,12 @@ void cNivel1::generaEnemigos() {
 			pushEnemigo(enemigo);
 		}
 	}
-	
+
 	//--------------------------------------------------------------------
 	// otro escudo
 	//--------------------------------------------------------------------
 	if (_posicion == 158 * TILE_WIDTH - GAME_WIDTH && !_delay) {
-		cEnemigoItem* enemigo = new cEnemigoItem(_sis, rect.x + rect.w + 8, 13*TILE_HEIGHT, -5.0f, 0.0f, ITEM_ESCUDO);
+		cEnemigoItem* enemigo = new cEnemigoItem(_sis, rect.x + rect.w + 8, 13 * TILE_HEIGHT, -5.0f, 0.0f, ITEM_ESCUDO);
 		pushEnemigo(enemigo);
 	}
 
@@ -158,10 +170,14 @@ void cNivel1::generaEnemigos() {
 	}
 
 	//--------------------------------------------------------------------
-	// disparo guay
+	// disparo guay y mas velocidad
 	//--------------------------------------------------------------------
 	if (_posicion == 202 * TILE_WIDTH - GAME_WIDTH && !_delay) {
 		cEnemigoItem* enemigo = new cEnemigoItem(_sis, rect.x + rect.w + 8, 16 * TILE_HEIGHT, -5.0f, 0.0f, ITEM_DISPARO_RB);
+		pushEnemigo(enemigo);
+	}
+	if (_posicion == 208 * TILE_WIDTH - GAME_WIDTH && !_delay) {
+		cEnemigoItem* enemigo = new cEnemigoItem(_sis, rect.x + rect.w + 8, 16 * TILE_HEIGHT, -5.0f, 0.0f, ITEM_VELOCIDAD);
 		pushEnemigo(enemigo);
 	}
 

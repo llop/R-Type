@@ -20,6 +20,8 @@ void cSoundWrapper::init(const char* ficheroSonido, bool loop, int numSources, l
 cSoundManager::cSoundManager() {
 	_tiempo = 0;
 	_ultimoSonido = -SONIDO_DELAY;
+
+	_paused = false;
 }
 
 void cSoundManager::cargaSonido(int id, const char* ficheroSonido, bool loop, int num, long long delay) {
@@ -67,10 +69,30 @@ void cSoundManager::pauseSonido(int id) {
 	}
 }
 
-void cSoundManager::pauseSonidos() {
-	for (int id = 0; id < NUM_SOUNDS; ++id) {
-		pauseSonido(id);
+void cSoundManager::resumeSonido(int id) {
+	if (_sounds[id]._loaded) {
+		for (int i = 0; i < _sounds[id]._numSources; ++i) {
+			_sounds[id]._sources[i].resume();
+		}
 	}
+}
+
+void cSoundManager::pauseSonidos() {
+//	if (!_paused) {
+//		_paused = true;
+		for (int id = 0; id < NUM_SOUNDS; ++id) {
+			pauseSonido(id);
+		}
+		//	}
+}
+
+void cSoundManager::resumeSonidos() {
+	//if (_paused) {
+	//_paused = false;
+		for (int id = 0; id < NUM_SOUNDS; ++id) {
+			resumeSonido(id);
+		}
+		//}
 }
 
 void cSoundManager::suena() {
@@ -90,8 +112,8 @@ void cSoundManager::suena() {
 				if (inter > _sounds[id]._delay) {
 					int index = _sounds[id]._playIndex;
 					cSound &sound = _sounds[id]._sources[index];
-					//sound.stop();
-					//sound.rewind();
+					sound.stop();
+					sound.rewind();
 					sound.play();
 					_sounds[id]._playIndex = (index + 1) % _sounds[id]._numSources;
 					_sounds[id]._lastPlayed = _tiempo;
@@ -179,16 +201,21 @@ bool cSound::loadWAV(const char* fileName, bool continuousLoop) {
 
 bool cSound::play() {
 	alSourcePlay(_audioSource);
-	bool ret = alGetError() == AL_NO_ERROR;
-	if (!ret) {
-		int a = 0;
-	}
-	return ret;
+	return (alGetError() == AL_NO_ERROR);
 }
 
 
 bool cSound::pause() {
-	alSourcePause(_audioSource);
+	ALint state;
+	alGetSourcei(_audioSource, AL_SOURCE_STATE, &state);
+	if (state == AL_PLAYING) alSourcePause(_audioSource);
+	return (alGetError() == AL_NO_ERROR);
+}
+
+bool cSound::resume() {
+	ALint state;
+	alGetSourcei(_audioSource, AL_SOURCE_STATE, &state);
+	if (state == AL_PAUSED) alSourcePlay(_audioSource);
 	return (alGetError() == AL_NO_ERROR);
 }
 

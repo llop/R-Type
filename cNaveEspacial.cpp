@@ -50,7 +50,6 @@ int flashMid = 91;
 cNaveEspacial::cNaveEspacial(cSistema* sis) : cSprite(sis) {
 	_sis->cargaTextura(TEX_NAVE1, "img\\r-typesheet1.png");
 
-
 	_sis->cargaSonido(SOUND_DISPARO_NAVE, "wavs\\rtype-048.wav", false, 8, 6);
 	_sis->cargaSonido(SOUND_DISPARO_RB_NAVE, "wavs\\rtype-049.wav", false, 8, 6);
 
@@ -62,9 +61,10 @@ cNaveEspacial::cNaveEspacial(cSistema* sis) : cSprite(sis) {
 	_sis->cargaSonido(SOUND_EXPLO1, "wavs\\rtype-083.wav", false, 12, 8);
 	_sis->cargaSonido(SOUND_EXPLO2, "wavs\\rtype-053.wav", false, 12, 10);
 
-
 	_x=GAME_WIDTH>>1;
 	_y=(GAME_HEIGHT-HUD_HPIX)>>1;
+	_xF=float(_x);
+	_yF=float(_y);
 
 	_vidas = NAVE_VIDAS_INICIO;
 	_magias = NAVE_MAGIAS_INICIAL;
@@ -86,7 +86,7 @@ void cNaveEspacial::delEscudos() {
 
 void cNaveEspacial::sumaPuntos(long long puntos) {
 	_puntos+=puntos;
-	((cNivel*)_sis->nivel())->sumaPuntos(puntos);
+	if (_sis->nivel() != NULL) ((cNivel*)_sis->nivel())->sumaPuntos(puntos);
 }
 long long cNaveEspacial::puntos() const {
 	return _puntos;
@@ -110,7 +110,7 @@ void cNaveEspacial::arriba() {
 	if (_state == NAVE_VIVE) {
 		
 		// cambiar coordenadas
-		_y -= NAVE_PIXELS_MUEVE;
+		_yF -= _pixelsMueve;
 		
 		if (_seq == NAVE_SUBE) {
 			if (_delay) {
@@ -131,7 +131,7 @@ void cNaveEspacial::abajo() {
 	if (_state == NAVE_VIVE) {
 
 		// cambiar coordenadas
-		_y += NAVE_PIXELS_MUEVE;
+		_yF += _pixelsMueve;
 
 		if (_seq == NAVE_BAJA) {
 			if (_delay) {
@@ -155,11 +155,11 @@ void cNaveEspacial::quieto() {
 }
 
 void cNaveEspacial::adelante() {
-	_x += NAVE_PIXELS_MUEVE;
+	_xF += _pixelsMueve;
 }
 
 void cNaveEspacial::atras() {
-	_x -= NAVE_PIXELS_MUEVE;
+	_xF -= _pixelsMueve;
 }
 
 void cNaveEspacial::dispara() {
@@ -174,8 +174,6 @@ void cNaveEspacial::dispara() {
 }
 
 void cNaveEspacial::no_dispara() {
-	
-
 	// disparar cuando el jugador suelta la tecla
 	if (_tiroPulsado) {
 		_tiroPulsado = false;
@@ -202,16 +200,9 @@ void cNaveEspacial::no_dispara() {
 		if (intervalo < _tiroDelay) return;
 		_ultimoTiro = _tiempoVida;
 
-		// que suene esto
-		if (_tipoTiro == DISPARO_NAVE_NORMAL) {
-			//_sis->playSonido(SOUND_DISPARO_NAVE);
-		} else if (_tipoTiro == DISPARO_NAVE_CIRCULAR) {
-			//_sis->playSonido(SOUND_DISPARO_RB_NAVE);
-		}
-
 		// el tiempo de carga determina lo tocho que saldra el proyectil
-		int xTiro = _x + (mov[_seq][2]>>1);
-		int yTiro = _y;
+		int xTiro = int(_xF + (mov[_seq][2]>>1));
+		int yTiro = int(_yF);
 
 		// meter el nuevo disparo en el nivel
 		int tamano = max(0, _cargaTiro/NAVE_TIRO_DELAY);
@@ -224,7 +215,7 @@ void cNaveEspacial::no_dispara() {
 }
 
 void cNaveEspacial::tira_magia() {
-	if (!puedeTirarMagia()) return;
+	if (_sis->nivel()==NULL || !puedeTirarMagia()) return;
 
 	_ultimaMagia = _tiempoVida;
 	--_magias;
@@ -246,6 +237,8 @@ void cNaveEspacial::reset() {
 	_vida = NAVE_VIDA_INICIAL;
 	_tiroPulsado = false;
 
+	_pixelsMueve = NAVE_PIXELS_MUEVE;
+
 	_state = NAVE_VIVE;
 	_seq = NAVE_LADO;
 	_delay = 0;
@@ -262,8 +255,8 @@ void cNaveEspacial::reset() {
 		renace(x, y);
 	}
 
-	_lastX = _x;
-	_lastY = _y;
+	_lastX = int(_xF);
+	_lastY = int(_yF);
 }
 
 void cNaveEspacial::renace(int x, int y) {
@@ -275,6 +268,9 @@ void cNaveEspacial::renace(int x, int y) {
 
 	_x = x;
 	_y = y;
+
+	_xF = float(_x);
+	_yF = float(_y);
 }
 
 void cNaveEspacial::anadeEscudo() {
@@ -283,24 +279,20 @@ void cNaveEspacial::anadeEscudo() {
 		cRect rectNivel;
 		nivel->caja(rectNivel);
 		int xEscudo = rectNivel.x-16;
-		int yEscudo = _y;
+		int yEscudo = int(_yF);
 		cEscudo* escudo = new cEscudo(_sis, xEscudo, yEscudo, ESCUDO_FRENTE);
-		//nivel->pushEscudo(escudo);
 		_nivelEscudos = NAVE_ESCUDO1;
 		_escudos.push_back(escudo);
 	} else if (_nivelEscudos == NAVE_ESCUDO1) {
-		int xEscudo = _x - NAVE_ESCUDO_SEC_X_OFFSET;
-		int yEscudo = _y - NAVE_ESCUDO_SEC_Y_OFFSET;
+		int xEscudo = int(_xF - NAVE_ESCUDO_SEC_X_OFFSET);
+		int yEscudo = int(_yF - NAVE_ESCUDO_SEC_Y_OFFSET);
 		cEscudo* escudo = new cEscudo(_sis, xEscudo, yEscudo, ESCUDO_ARRIBA);
-		//((cNivel*)_sis->nivel())->pushEscudo(escudo);
 		_nivelEscudos = NAVE_ESCUDO2;
 		_escudos.push_back(escudo);
-		
 	} else if (_nivelEscudos == NAVE_ESCUDO2) {
-		int xEscudo = _x - NAVE_ESCUDO_SEC_X_OFFSET;
-		int yEscudo = _y + NAVE_ESCUDO_SEC_Y_OFFSET;
+		int xEscudo = int(_xF - NAVE_ESCUDO_SEC_X_OFFSET);
+		int yEscudo = int(_yF + NAVE_ESCUDO_SEC_Y_OFFSET);
 		cEscudo* escudo = new cEscudo(_sis, xEscudo, yEscudo, ESCUDO_ABAJO);
-		//((cNivel*)_sis->nivel())->pushEscudo(escudo);
 		_nivelEscudos = NAVE_ESCUDO3;
 		_escudos.push_back(escudo);
 	}
@@ -381,11 +373,13 @@ void cNaveEspacial::logica() {
 					if (colisionMask&COLISION_IZQ && colisionMask&COLISION_DER && colisionMask&COLISION_ARRIBA && colisionMask&COLISION_ABAJO) {
 						_x = _lastX;
 						_y = _lastY;
+						_xF = float(_x);
+						_yF = float(_y);
 					} else {
-						if (colisionMask&COLISION_ARRIBA && !(colisionMask&COLISION_ABAJO)) _y += y - rect.y;
-						else if (colisionMask&COLISION_ABAJO && !(colisionMask&COLISION_ARRIBA)) _y += y - (rect.y+rect.h);
-						if (colisionMask&COLISION_IZQ && !(colisionMask&COLISION_DER)) _x += x - rect.x;
-						else if (colisionMask&COLISION_DER && !(colisionMask&COLISION_IZQ)) _x += x - (rect.x+rect.w);
+						if (colisionMask&COLISION_ARRIBA && !(colisionMask&COLISION_ABAJO)) _yF = float(_yF + y - rect.y);
+						else if (colisionMask&COLISION_ABAJO && !(colisionMask&COLISION_ARRIBA)) _yF = float(_yF + y - (rect.y+rect.h));
+						if (colisionMask&COLISION_IZQ && !(colisionMask&COLISION_DER)) _xF = float(_xF + x - rect.x);
+						else if (colisionMask&COLISION_DER && !(colisionMask&COLISION_IZQ)) _xF = float(_xF + x - (rect.x+rect.w));
 					}
 
 					// ok, ahora es posible que se salga de los limites de la pantalla
@@ -394,18 +388,18 @@ void cNaveEspacial::logica() {
 					nivel->colisionNivel(rect, colisionMask, x, y, objeto);
 				}
 				if (colisionMask && objeto&COLISION_PANTALLA) {
-					if (colisionMask & COLISION_ARRIBA) _y += y - rect.y;
-					else if (colisionMask & COLISION_ABAJO) _y += y - (rect.y+rect.h);
-					if (colisionMask & COLISION_IZQ) _x += x - rect.x;
-					else if (colisionMask & COLISION_DER) _x += x - (rect.x+rect.w);
+					if (colisionMask & COLISION_ARRIBA) _yF = float(_yF + y - rect.y);
+					else if (colisionMask & COLISION_ABAJO) _yF = float(_yF + y - (rect.y+rect.h));
+					if (colisionMask & COLISION_IZQ) _xF = float(_xF + x - rect.x);
+					else if (colisionMask & COLISION_DER) _xF = float(_xF + x - (rect.x+rect.w));
 				}
 			} else {
 				// se sale de la pantalla?
 				if (colisionMask && objeto&COLISION_PANTALLA) {
-					if (colisionMask & COLISION_ARRIBA) _y += y - rect.y;
-					else if (colisionMask & COLISION_ABAJO) _y += y - (rect.y+rect.h);
-					if (colisionMask & COLISION_IZQ) _x += x - rect.x;
-					else if (colisionMask & COLISION_DER) _x += x - (rect.x+rect.w);
+					if (colisionMask & COLISION_ARRIBA) _yF = float(_yF + y - rect.y);
+					else if (colisionMask & COLISION_ABAJO) _yF = float(_yF + y - (rect.y+rect.h));
+					if (colisionMask & COLISION_IZQ) _xF = float(_xF + x - rect.x);
+					else if (colisionMask & COLISION_DER) _xF = float(_xF + x - (rect.x+rect.w));
 					// puede que al empujar la nave, esta choque contra un tile
 					caja(rect);
 					nivel->colisionNivel(rect, colisionMask, x, y, objeto);
@@ -443,6 +437,8 @@ void cNaveEspacial::logica() {
 					else {
 						_x = _lastX;
 						_y = _lastY;
+						_xF = float(_x);
+						_yF = float(_y);
 					} 
 					if (!enemigo->jefe()) {
 						// el enemigo tambien
@@ -469,16 +465,24 @@ void cNaveEspacial::logica() {
 				item->colision(myRect, colMask);
 				if (colMask) {
 					int tipo = item->tipo();
-					if (tipo == ITEM_ESCUDO) anadeEscudo();
-					else if (tipo == ITEM_DISPARO_RB) {
+					if (tipo == ITEM_ESCUDO) {
+						anadeEscudo();
+					} else if (tipo == ITEM_DISPARO_RB) {
 						_tipoTiro = DISPARO_NAVE_CIRCULAR;
 						_tiroDelay = NAVE_TIRO_CIR_DELAY;
+					} else if (tipo == ITEM_VELOCIDAD) {
+						_pixelsMueve = min(_pixelsMueve+NAVE_PIXELS_MUEVE_INC, NAVE_PIXELS_MUEVE_MAX);
+					} else if (tipo == ITEM_VIDA) {
+						++_vidas;
 					}
+					sumaPuntos(item->puntos());
 					item->muerete();
 				}
 			}
 		}
 
+		_x = int(_xF);
+		_y = int(_yF);
 		_lastX = _x;
 		_lastY = _y;
 
@@ -505,8 +509,12 @@ void cNaveEspacial::logica() {
 
 
 void cNaveEspacial::offset(int x, int y) {
-	_x += x;
-	_y += y;
+	_xF = _xF+x;
+	_yF = _yF+y;
+
+	_x = int(_xF);
+	_y = int(_yF);
+
 	for (unsigned int i=0; i<_escudos.size(); ++i) {
 		_escudos[i]->offset(x, y);
 	}

@@ -76,6 +76,10 @@ void cSistema::pauseSonidos() {
 	_sonidos->pauseSonidos();
 }
 
+void cSistema::resumeSonidos() {
+	_sonidos->resumeSonidos();
+}
+
 void cSistema::suena() {
 	_sonidos->suena();
 }
@@ -173,16 +177,22 @@ void cSistema::avanzaNivel() {
 }
 
 void cSistema::arrancaPartida() {
+	stopSonidos();
+	playSonido(SOUND_START_GAME);
+
 	// crear una nave y nivel frescos
 	delNaveEspacial();
 	_naveEspacial = new cNaveEspacial(this);
 
-	_numNivel = NIVEL2;
+	_numNivel = NIVEL1;
 	_dificultad = ((cMenu*)_menu)->dificultad();
 	cargaNivel();
 }
 
 void cSistema::gameOver() {
+	stopSonidos();
+	playSonido(SOUND_GAME_OVER);
+
 	_estado = MENU;
 	cMenu* menu = (cMenu*)_menu;
 	menu->setPantalla(PANTALLA_GAME_OVER);
@@ -200,7 +210,7 @@ void cSistema::cargaNivel() {
 							TEX_NIVEL1, TEX_FONDO1, 
 							"maps\\stage1-01.png", 
 							"img\\Outer-Space-Wallpaper.png",
-							SOUND_NIVEL1, "wavs\\rtype-004.wav");
+							SOUND_NIVEL1_INTRO, "wavs\\rtype-031.wav");
 	} else if (_numNivel == NIVEL2) {
 		_nivel = new cNivel2(this, nave, 
 							288, 28, "maps\\level-02.csv", 
@@ -247,6 +257,9 @@ void cSistema::cargaNivel() {
 }
 
 void cSistema::continuePartida() {
+	stopSonidos();
+	playSonido(SOUND_START_GAME);
+
 	// crear una nave y nivel frescos
 	delNaveEspacial();
 	_naveEspacial = new cNaveEspacial(this);

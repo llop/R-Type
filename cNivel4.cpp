@@ -33,6 +33,11 @@ int cNivel4::avanzaPosicion() {
 		avanza = -_posicion;
 	}
 	if (_posicion + avanza > _posicionFinal) avanza = _posicionFinal - _posicion;
+
+	if (_iterAvance<NIVEL4_ITER || avanza<0) {
+		for (list<cItem*>::iterator it = _items.begin(); it != _items.end(); ++it) (*it)->offset(avanza, 0);
+	}
+
 	return avanza;
 }
 

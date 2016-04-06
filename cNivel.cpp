@@ -102,8 +102,8 @@ cNivel::cNivel(cSistema* sis, cNaveEspacial* naveEspacial,
 
 	_enPausa = false;
 	_tiempoPausa = NIVEL_INTERVALO_PAUSA;
-
 	_tiempoMagia = NIVEL_DELAY_MAGIA;
+	_tiempo = 0;
 }
 
 cNivel::~cNivel() {
@@ -186,6 +186,8 @@ void cNivel::procesaTeclas(unsigned char* keys) {
 	if ((keys['p'] || keys['P']) && _tiempoPausa >= NIVEL_INTERVALO_PAUSA) {
 		_enPausa = !_enPausa;
 		_tiempoPausa = 0;
+		if (_enPausa) _sis->pauseSonidos();
+		else _sis->resumeSonidos();
 	}
 	bool soundPress = keys['s'] || keys['S'];
 	if (soundPress) {
@@ -444,6 +446,8 @@ bool cNivel::fueraLimites(cRect &rect) const {
 //   disparos
 //   decorado
 void cNivel::logica() {
+	++_tiempo;
+
 	++_tiempoPausa;
 	if (_enPausa) return;
 
