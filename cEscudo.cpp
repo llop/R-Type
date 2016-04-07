@@ -159,15 +159,17 @@ void cEscudo::logica() {
 			_xF = float(xNave + (escudoMov[_seq][2]>>1));
 			_yF = float(yNave);
 		} else if (_state == ESCUDO_TIRO) {
-			_xF += ESCUDO_TIRO_SPEED;
-			// ha chocado con el escenario?
-			cRect rect;
-			caja(rect);
-			int colisionMask, x, y, objeto;
-			cNivel* nivel = (cNivel*)_sis->nivel();
-			nivel->colisionNivel(rect, colisionMask, x, y, objeto);
-			// si ha chocado, que se vuelva a la nave
-			if (colisionMask) _state = ESCUDO_VUELTA;
+			if (_sis->nivel() != NULL) {
+				_xF += ESCUDO_TIRO_SPEED;
+				// ha chocado con el escenario?
+				cRect rect;
+				caja(rect);
+				int colisionMask, x, y, objeto;
+				cNivel* nivel = (cNivel*)_sis->nivel();
+				nivel->colisionNivel(rect, colisionMask, x, y, objeto);
+				// si ha chocado, que se vuelva a la nave
+				if (colisionMask) _state = ESCUDO_VUELTA;
+			} else _state = ESCUDO_VUELTA;
 		}
 	} else if (_tipo == ESCUDO_ARRIBA) {
 		cNaveEspacial* nave = (cNaveEspacial*)_sis->naveEspacial();

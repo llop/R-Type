@@ -5,7 +5,7 @@ VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "R-Type", "R-Type.vcxproj", "{002A0EC3-5125-4546-8727-1B636BCEC5E6}"
 EndProject
-Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Setup3", "..\Setup3\Setup3.vdproj", "{A8F6F02D-B10D-4C89-BDEA-279DE29F871D}"
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "R-Type-Install", "..\R-Type-Install\R-Type-Install.vdproj", "{26433BE9-4E0C-47D7-8E85-1AAF5A05E705}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,8 +17,8 @@ Global
 		{002A0EC3-5125-4546-8727-1B636BCEC5E6}.Debug|Win32.Build.0 = Debug|Win32
 		{002A0EC3-5125-4546-8727-1B636BCEC5E6}.Release|Win32.ActiveCfg = Release|Win32
 		{002A0EC3-5125-4546-8727-1B636BCEC5E6}.Release|Win32.Build.0 = Release|Win32
-		{A8F6F02D-B10D-4C89-BDEA-279DE29F871D}.Debug|Win32.ActiveCfg = Debug
-		{A8F6F02D-B10D-4C89-BDEA-279DE29F871D}.Release|Win32.ActiveCfg = Release
+		{26433BE9-4E0C-47D7-8E85-1AAF5A05E705}.Debug|Win32.ActiveCfg = Debug
+		{26433BE9-4E0C-47D7-8E85-1AAF5A05E705}.Release|Win32.ActiveCfg = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
