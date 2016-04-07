@@ -321,6 +321,11 @@ void cJefe1::logica() {
 			return;
 		}
 
+		long long tiempoFlash = _tiempoVida - _ultimoImpacto;
+		if (tiempoFlash < JEFE1_FLASH_IMPACTO && !(tiempoFlash % 6)) {
+			_sis->playSonido(SOUND_ENEMIGO_HIT);
+		}
+
 		// actualizar estado
 		if (_tiempoVida == JEFE1_IDLE_DELAY) {
 			_subState = JEFE1_ALIEN_SALIENDO;
@@ -479,12 +484,7 @@ void cJefe1::pintaVivo() const {
 	int yPixEne = GAME_HEIGHT - (_y + hPixEne);
 
 	long long tiempoFlash = _tiempoVida - _ultimoImpacto;
-	if (tiempoFlash < JEFE1_FLASH_IMPACTO) {
-		float r = tiempoFlash%3 == 0;
-		float g = tiempoFlash%3 == 1;
-		float b = tiempoFlash%3 == 2;
-		glColor3f(r, g, b);
-	}
+	if (tiempoFlash < JEFE1_FLASH_IMPACTO) glColor3f(tiempoFlash % 3 == 0, tiempoFlash % 3 == 1, tiempoFlash % 3 == 2);
 	glTexCoord2f(xTexEne, yTexEne + hTexEne);			glVertex2i(xPixEne, yPixEne);
 	glTexCoord2f(xTexEne + wTexEne, yTexEne + hTexEne);	glVertex2i(xPixEne + wPixEne, yPixEne);
 	glTexCoord2f(xTexEne + wTexEne, yTexEne);			glVertex2i(xPixEne + wPixEne, yPixEne + hPixEne);

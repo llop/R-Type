@@ -85,9 +85,20 @@ void cNivel2::generaEnemigos() {
 		}
 	}
 
-	// escudo bueno
-	if (_posicion == 144 * TILE_WIDTH - GAME_WIDTH && !_delay) {
-		cEnemigoItem* enemigo = new cEnemigoItem(_sis, rect.x + rect.w + 8, 14 * (TILE_HEIGHT), -5.0f, 0.0f, ITEM_ESCUDO);
+	inter = 8;
+	iniPos = 152 * TILE_WIDTH - GAME_WIDTH;
+	if (!(_posicion%inter) && !_delay && _posicion >= iniPos && _posicion < iniPos + (inter * 8)) {
+		cEnemigo2* enemigo = new cEnemigo2(_sis, rect.x + rect.w + 10, 13 * TILE_HEIGHT);
+		pushEnemigo(enemigo);
+	}
+
+	// mas rapido 2 veces, para joder XD
+	if (_posicion == 166 * TILE_WIDTH - GAME_WIDTH && !_delay) {
+		cEnemigoItem* enemigo = new cEnemigoItem(_sis, rect.x + rect.w + 8, 9 * (TILE_HEIGHT), -5.0f, 0.0f, ITEM_VELOCIDAD);
+		pushEnemigo(enemigo);
+	}
+	if (_posicion == 166 * TILE_WIDTH - GAME_WIDTH && !_delay) {
+		cEnemigoItem* enemigo = new cEnemigoItem(_sis, rect.x + rect.w + 8, 17 * (TILE_HEIGHT), -5.0f, 0.0f, ITEM_VELOCIDAD);
 		pushEnemigo(enemigo);
 	}
 
@@ -101,7 +112,7 @@ void cNivel2::generaEnemigos() {
 
 	// tres gusanillos
 	int radiCuc = 144;
-	if (_posicion == 182 * TILE_WIDTH - GAME_WIDTH - radiCuc && !_delay) {
+	if (_posicion == 182 * TILE_WIDTH - GAME_WIDTH - radiCuc - 10 && !_delay) {
 		cEnemigo3* enemigo3 = new cEnemigo3(_sis, 182 * TILE_WIDTH, 14 * TILE_HEIGHT, 9, float(radiCuc), 0.0f, 0.005f, false);
 		pushEnemigo(enemigo3);
 		enemigo3 = new cEnemigo3(_sis, 182 * TILE_WIDTH, 14 * TILE_HEIGHT, 9, float(radiCuc), _2PI / 3, 0.005f, false);
@@ -158,6 +169,16 @@ void cNivel2::generaEnemigos() {
 		}
 	}
 
+	// 2 escudos
+	if (_posicion == 235 * TILE_WIDTH - GAME_WIDTH && !_delay) {
+		cEnemigoItem* enemigo = new cEnemigoItem(_sis, rect.x + rect.w + 8, 4 * (TILE_HEIGHT), -5.0f, 0.0f, ITEM_ESCUDO);
+		pushEnemigo(enemigo);
+	}
+	if (_posicion == 248 * TILE_WIDTH - GAME_WIDTH && !_delay) {
+		cEnemigoItem* enemigo = new cEnemigoItem(_sis, rect.x + rect.w + 8, 22 * (TILE_HEIGHT), -5.0f, 0.0f, ITEM_ESCUDO);
+		pushEnemigo(enemigo);
+	}
+
 	/*
 	// generar una cadena de malos
 	int inter = 8;
@@ -197,8 +218,24 @@ void cNivel2::generaEnemigos() {
 	// generar jefe
 	//------------------------------------------------------------------------------
 	if (_posicion == 3392 && !_delay) {
+		_tiempoJefe = _tiempo;
+
 		cJefe2* jefe = new cJefe2(_sis);
 		pushEnemigo(jefe);
+	}
+
+	if (_tiempoJefe >= 0) {
+		long long offset = 260;
+		long long interval = _tiempo - _tiempoJefe;
+		if (interval == offset) {
+			_sis->stopSonido(_idMusica);
+			_sis->playSonido(SOUND_JEFE_INTRO);
+		}
+		if (interval == offset + 292) {
+			_sis->stopSonido(SOUND_JEFE_INTRO);
+			_sis->playSonido(SOUND_JEFE);
+			_tiempoJefe = -1;
+		}
 	}
 }
 

@@ -203,6 +203,12 @@ void cJefe3::logica() {
 				}
 			}
 		}
+
+		long long tiempoFlash = _tiempoVida - _ultimoImpacto;
+		if (tiempoFlash < JEFE3_FLASH_IMPACTO && !(tiempoFlash % 6)) {
+			_sis->playSonido(SOUND_ENEMIGO_HIT);
+		}
+
 		if (_vida <= 0) {
 			nave->sumaPuntos(_puntos);
 			mataMinis();
@@ -211,15 +217,17 @@ void cJefe3::logica() {
 		}
 
 		if (_minis.size()>0) {
-		//ataque minijefes
-			int aux = _sis->dificultad() == DIFICULTAD_NORMAL ? JEFE3_INTERVALO_MINIS_ATTACK : JEFE3_INTERVALO_MINIS_ATTACK_HARD;
-			int auxRandom = rand() % aux;
-			if (auxRandom == 1) {
-				list<cMiniJefe3*>::iterator it = _minis.begin();
-				cMiniJefe3* single = *it;
-				//single attack
-				single->attack();
-				it = _minis.erase(it);
+			if (_tiempoVida > 160) {
+				//ataque minijefes
+ 				int aux = _sis->dificultad() == DIFICULTAD_NORMAL ? JEFE3_INTERVALO_MINIS_ATTACK : JEFE3_INTERVALO_MINIS_ATTACK_HARD;
+				int auxRandom = rand() % aux;
+				if (auxRandom == 1) {
+					list<cMiniJefe3*>::iterator it = _minis.begin();
+					cMiniJefe3* single = *it;
+					//single attack
+					single->attack();
+					it = _minis.erase(it);
+				}
 			}
 		}
 
@@ -267,6 +275,8 @@ void cJefe3::logica() {
 		}
 		// genera una explosion random
 		if (_exploCuerpo.size() < JEFE3_MAX_NUM_EXPLO && !(rand() % 4)) {
+			_sis->playSonido(SOUND_EXPLO1);
+
 			cExplo explo;
 			explo.seq = 0;
 			explo.delay = JEFE3_EXPLO_DELAY;
@@ -317,12 +327,7 @@ void cJefe3::pintaVivo() const {
 	int yPixEne = GAME_HEIGHT - (_y + (hPixEne>>1));
 
 	long long tiempoFlash = _tiempoVida - _ultimoImpacto;
-	if (tiempoFlash < JEFE3_FLASH_IMPACTO) {
-		float r = tiempoFlash % 3 == 0;
-		float g = tiempoFlash % 3 == 1;
-		float b = tiempoFlash % 3 == 2;
-		glColor3f(r, g, b);
-	}
+	if (tiempoFlash < JEFE3_FLASH_IMPACTO) glColor3f(tiempoFlash % 3 == 0, tiempoFlash % 3 == 1, tiempoFlash % 3 == 2);
 	glTexCoord2f(xTexEne, yTexEne + hTexEne);			glVertex2i(xPixEne, yPixEne);
 	glTexCoord2f(xTexEne + wTexEne, yTexEne + hTexEne);	glVertex2i(xPixEne + wPixEne, yPixEne);
 	glTexCoord2f(xTexEne + wTexEne, yTexEne);			glVertex2i(xPixEne + wPixEne, yPixEne + hPixEne);
@@ -436,10 +441,8 @@ cMiniJefe3::cMiniJefe3(cSistema* sis, int x, int y) : cEnemigo(sis, x, y) {
 	_puntos = JEFE3_MINI_PUNTOS;
 
 	_tiempoVida = 0;
-	_ultimoImpacto = -JEFE3_FLASH_IMPACTO;
+	_ultimoImpacto = -JEFE3_MINI_FLASH_IMPACTO;
 
-	_x = x;
-	_y = y;
 	_subState = JEFE3_MOVE_UP;
 	_pixelsAvanzaX = 0;
 	_pixelsAvanzaY = 0;
@@ -451,6 +454,8 @@ cMiniJefe3::~cMiniJefe3() {
 }
 
 void cMiniJefe3::muerete() {
+	_sis->playSonido(SOUND_EXPLO1);
+
 	_vida = 0;
 	_state = ENEMIGO_EXPLO;
 	_seq = 0;
@@ -526,6 +531,8 @@ void cMiniJefe3::logica() {
 			_y += int(_pixelsAvanzaY*VELOCIDAD_JEFE3_MINI);
 		}
 
+		bool naveLoMata = false;
+
 		// chequear impactos
 		cRect rect;
 		rect.w = mini3Mov[_seq][2];
@@ -543,15 +550,8 @@ void cMiniJefe3::logica() {
 					disparo->explota();
 					// aplicar efecto del disparo
 					_vida -= disparo->dano();
+					if (_vida <= 0) naveLoMata = true;
 					_ultimoImpacto = _tiempoVida;
-				}
-				else {
-					cRect rectDisp;
-					disparo->caja(rectDisp);
-					colision(rectDisp, colMask);
-					if (colMask) {
-						disparo->explota();
-					}
 				}
 			}
 		}
@@ -566,15 +566,22 @@ void cMiniJefe3::logica() {
 				long long tiempoFlash = _tiempoVida - _ultimoImpacto;
 				if (tiempoFlash >= JEFE3_MINI_FLASH_IMPACTO) {
 					_vida -= escudo->dano();
+					if (_vida <= 0) naveLoMata = true;
 					_ultimoImpacto = _tiempoVida;
 				}
 			}
-			else {
-				cRect rectDisp;
-				escudo->caja(rectDisp);
-				colision(rectDisp, colMask);
-				if (colMask) escudo->choca();
-			}
+		}
+
+		if (naveLoMata) nave->sumaPuntos(_puntos);
+
+		if (_vida <= 0) {
+			muerete();
+			return;
+		}
+
+		long long tiempoFlash = _tiempoVida - _ultimoImpacto;
+		if (tiempoFlash < JEFE3_MINI_FLASH_IMPACTO && !(tiempoFlash % 6)) {
+			_sis->playSonido(SOUND_ENEMIGO_HIT);
 		}
 
 		// animacion
@@ -582,12 +589,6 @@ void cMiniJefe3::logica() {
 		else {
 			_seq = (_seq + 1) % JEFE3_MINI_NUM_FRAMES;
 			_delay = JEFE3_MINI_MUEVE_DELAY;
-		}
-
-		if (_vida <= 0) {
-			nave->sumaPuntos(_puntos);
-			muerete();
-			return;
 		}
 
 	}
@@ -652,10 +653,14 @@ void cMiniJefe3::pinta() const {
 		yPixEne = GAME_HEIGHT - (_y - yPixOffset + hPixEne);
 	}
 
+	long long tiempoFlash = _tiempoVida - _ultimoImpacto;
+	bool flash = _state == ENEMIGO_VIVE && tiempoFlash < JEFE3_MINI_FLASH_IMPACTO;
+	if (flash) glColor3f(tiempoFlash % 3 == 0, tiempoFlash % 3 == 1, tiempoFlash % 3 == 2);
 	glTexCoord2f(xTexEne, yTexEne + hTexEne);			glVertex2i(xPixEne, yPixEne);
 	glTexCoord2f(xTexEne + wTexEne, yTexEne + hTexEne);	glVertex2i(xPixEne + wPixEne, yPixEne);
 	glTexCoord2f(xTexEne + wTexEne, yTexEne);			glVertex2i(xPixEne + wPixEne, yPixEne + hPixEne);
 	glTexCoord2f(xTexEne, yTexEne);						glVertex2i(xPixEne, yPixEne + hPixEne);
+	if (flash) glColor3f(1, 1, 1);
 
 	glEnd();
 	glDisable(GL_TEXTURE_2D);

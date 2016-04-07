@@ -50,6 +50,8 @@ using namespace std;
 #define NAVE_TIEMPO_INVENCIBLE 240
 #define NAVE_TIEMPO_PARPADEO 3
 
+#define NAVE_PUNTOS_VIDA 1000
+
 #define NAVE_MAGIA_DELAY 240
 
 

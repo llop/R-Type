@@ -5,10 +5,10 @@ cSoundWrapper::cSoundWrapper() {
 	_loaded = false;
 }
 
-void cSoundWrapper::init(const char* ficheroSonido, bool loop, int numSources, long long delay) {
+void cSoundWrapper::init(const char* ficheroSonido, bool loop, int numSources, long long delay, float gain) {
 	_numSources = numSources;
 	_sources.resize(_numSources);
-	for (int i = 0; i < _numSources; ++i) _sources[i].loadWAV(ficheroSonido, loop);
+	for (int i = 0; i < _numSources; ++i) _sources[i].loadWAV(ficheroSonido, loop, gain);
 	_delay = delay;
 	_lastPlayed = -_delay;
 	_queued = 0;
@@ -24,9 +24,9 @@ cSoundManager::cSoundManager() {
 	_paused = false;
 }
 
-void cSoundManager::cargaSonido(int id, const char* ficheroSonido, bool loop, int num, long long delay) {
+void cSoundManager::cargaSonido(int id, const char* ficheroSonido, bool loop, int num, long long delay, float gain) {
 	if (!_sounds[id]._loaded) {
-		_sounds[id].init(ficheroSonido, loop, num, delay);
+		_sounds[id].init(ficheroSonido, loop, num, delay, gain);
 	}
 }
 
@@ -36,18 +36,12 @@ bool cmpSound(const pair<long long, int> &a, const pair<long long, int> &b) {
 }
 
 void cSoundManager::playSonido(int id) {
-	//long long intervalo = _tiempo - _ultimoSonido;
-	//if (intervalo < SONIDO_DELAY) return;
-
 	if (_sounds[id]._loaded) {
-
-		if (_sounds[id]._queued < 1) {//_sounds[id]._numSources) {
+		int maxQueued = min(_sounds[id]._numSources, SONIDO_MAX_QUEUED);
+		if (_sounds[id]._queued < maxQueued) {
 			++_sounds[id]._queued;
-
-			// ordenar de mayor a menor:
 			_que.push_back(make_pair(_tiempo, id));
 		}
-
 	}
 }
 
@@ -130,10 +124,8 @@ void cSoundManager::suena() {
 				}
 			}
 
-			if (played) {
-				_que.erase(it);
-				return;
-			} else ++it;
+			if (played) it = _que.erase(it);
+			else ++it;
 
 		}
 	}
@@ -157,7 +149,7 @@ bool cSound::loaded() const {
 	return _loaded;
 }
 
-bool cSound::loadWAV(const char* fileName, bool continuousLoop) {
+bool cSound::loadWAV(const char* fileName, bool continuousLoop, float gain) {
 	ALenum format;
 	ALsizei size;
 	ALvoid *data;
@@ -196,7 +188,7 @@ bool cSound::loadWAV(const char* fileName, bool continuousLoop) {
 
 	alSourcei(_audioSource, AL_BUFFER, _audioBuffer);
 	alSourcef(_audioSource, AL_PITCH, 1.0f);
-	alSourcef(_audioSource, AL_GAIN, 1.0f);
+	alSourcef(_audioSource, AL_GAIN, gain);
 	alSourcefv(_audioSource, AL_POSITION, sourcePosition);
 	alSourcefv(_audioSource, AL_VELOCITY, sourceVelocity);
 	alSourcei(_audioSource, AL_LOOPING, continuousLoop);

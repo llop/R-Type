@@ -17,9 +17,9 @@ cNivel1::cNivel1(cSistema* sis, cNaveEspacial* naveEspacial,
 									ficheroTextura,
 									ficheroFondo, 
 									idMusica, ficheroMusica) {
-	//_posicion = 4200-640;//3218;
+	//_posicion = 4200-1024;//3218;
 
-	_sis->cargaSonido(SOUND_NIVEL1, "wavs\\rtype-001.wav", true);
+	_sis->cargaSonido(SOUND_NIVEL1, "wavs\\rtype-001.wav", true, 1, 1, GAIN_MUSICA);
 }
 
 
@@ -121,6 +121,11 @@ void cNivel1::generaEnemigos() {
 	iniPos = 132 * TILE_WIDTH - GAME_WIDTH;
 	if (!(_posicion%inter) && !_delay && _posicion >= iniPos && _posicion < iniPos + (inter * 12)) {
 		cEnemigo2* enemigo = new cEnemigo2(_sis, rect.x + rect.w + 10, 8 * TILE_HEIGHT);
+		pushEnemigo(enemigo);
+	}
+
+	if (_posicion == 138 * TILE_WIDTH - GAME_WIDTH && !_delay) {
+		cEnemigoItem* enemigo = new cEnemigoItem(_sis, rect.x + rect.w + 8, 6 * TILE_HEIGHT, -5.0f, 0.0f, ITEM_VIDA);
 		pushEnemigo(enemigo);
 	}
 
@@ -242,8 +247,22 @@ void cNivel1::generaEnemigos() {
 	// generar el jefe
 	//--------------------------------------------------------------------------
 	if (_posicion==4200 && !_delay) {
+		_tiempoJefe = _tiempo;
+
+		_sis->stopSonido(SOUND_NIVEL1);
+		_sis->playSonido(SOUND_JEFE_INTRO);
+
 		cJefe1* jefe = new cJefe1(_sis);
 		pushEnemigo(jefe);
+	}
+
+	if (_tiempoJefe >=0) {
+		long long interval = _tiempo - _tiempoJefe;
+		if (interval == 292) {
+			_sis->stopSonido(SOUND_JEFE_INTRO);
+			_sis->playSonido(SOUND_JEFE);
+			_tiempoJefe = -1;
+		}
 	}
 }
 

@@ -33,13 +33,13 @@ int gameOver[4] = { 239, 405, 144, 14 };
 cMenu::cMenu(cSistema* sis) : cSprite(sis) {
 	_sis->cargaTextura(TEX_MENU, "img\\menu.png");
 
-	_sis->cargaSonido(SOUND_SCORE, "wavs\\rtype-028.wav");
-	_sis->cargaSonido(SOUND_JUEGO_COMPLETO, "wavs\\rtype-043.wav");
-	_sis->cargaSonido(SOUND_SET_HI_SCORE, "wavs\\rtype-040.wav", true);
-	_sis->cargaSonido(SOUND_PANTALLA_INICIAL, "wavs\\rtype-037.wav", true);
-	_sis->cargaSonido(SOUND_GAME_OVER, "wavs\\rtype-034.wav", true);
-	_sis->cargaSonido(SOUND_START_GAME, "wavs\\rtype-099.wav");
-	_sis->cargaSonido(SOUND_OPCION_MENU, "wavs\\rtype-094.wav");
+	_sis->cargaSonido(SOUND_SCORE, "wavs\\rtype-028.wav", false, 1, 1, GAIN_MUSICA);
+	_sis->cargaSonido(SOUND_JUEGO_COMPLETO, "wavs\\rtype-043.wav", true, 1, 1, GAIN_MUSICA);
+	_sis->cargaSonido(SOUND_SET_HI_SCORE, "wavs\\rtype-040.wav", true, 1, 1, GAIN_MUSICA);
+	_sis->cargaSonido(SOUND_PANTALLA_INICIAL, "wavs\\rtype-037.wav", true, 1, 1, GAIN_MUSICA);
+	_sis->cargaSonido(SOUND_GAME_OVER, "wavs\\rtype-034.wav", true, 1, 1, GAIN_MUSICA);
+	_sis->cargaSonido(SOUND_START_GAME, "wavs\\rtype-099.wav", false, 1, 1, GAIN_MUSICA);
+	_sis->cargaSonido(SOUND_OPCION_MENU, "wavs\\rtype-094.wav", false, 1, 1, GAIN_MUSICA);
 
 	_sis->playSonido(SOUND_PANTALLA_INICIAL);
 		
@@ -130,12 +130,15 @@ void cMenu::setPantalla(int pantalla) {
 		_tiempoScore = 0;
 		_sis->playSonido(SOUND_SCORE);
 	} else if (_state == PANTALLA_COMPLETE) {
+		_dificultad = DIFICULTAD_DIFICIL;
 		_tiempoComplete = 0;
 		_sis->playSonido(SOUND_JUEGO_COMPLETO);
 	} else if (_state == PANTALLA_SET_HI_SCORE) {
 		_tiempoSetHiScore = 0;
 		_hiScoreNameTmp=MENU_HI_SCORE_DEF_NAME;
 		_sis->playSonido(SOUND_SET_HI_SCORE);
+	} else if (_state == PANTALLA_GAME_OVER) {
+		_sis->playSonido(SOUND_GAME_OVER);
 	}
 }
 
@@ -155,6 +158,10 @@ int cMenu::dificultad() const {
 
 bool cMenu::esHiScore(long long puntos) const {
 	return _hiScores.size()<MENU_NUM_HI_SCORES || _hiScores.back().second<=puntos;
+}
+
+void cMenu::setUltima(int pant) {
+	_ultimaPant = pant;
 }
 
 void cMenu::procesaTeclas(unsigned char* keys) {
@@ -232,7 +239,13 @@ void cMenu::procesaTeclas(unsigned char* keys) {
 
 			_sis->stopSonidos();
 			_sis->playSonido(SOUND_OPCION_MENU);
-			setPantalla(PANTALLA_COMPLETE);
+
+			if (_ultimaPant == PANTALLA_GAME_OVER) {
+				setPantalla(PANTALLA_GAME_OVER);
+			} else if (_ultimaPant == PANTALLA_COMPLETE) {
+				setPantalla(PANTALLA_COMPLETE);
+			}
+			
 			_ultimoInput = _tiempoVida;
 		} else {
 			if (keys[GLUT_KEY_UP] || keys[GLUT_KEY_DOWN] || keys[GLUT_KEY_LEFT] || keys[GLUT_KEY_RIGHT]) {
@@ -529,9 +542,9 @@ void cMenu::pinta() const {
 		glTexCoord2f(xTexTit, yTexTit);						glVertex2i(xPixTit, yPixTit + hPixTit);
 
 		// cabecera
-		int xCap = 420;
+		int xCap = 400;
 		int yCap = 80;
-		int incCap = 8;
+		int incCap = 9;
 		pintaString(xCap, yCap, boldCaracteres, "blast off and strike");
 		pintaString(xCap, yCap+=incCap, boldCaracteres, "the evil bydo empire!");
 
@@ -563,29 +576,29 @@ void cMenu::pinta() const {
 	} else if (_state == PANTALLA_INSTRUCCIONES) {
 		
 		int xControls = 100;
-		int xControlsOffset = 200;
+		int xControlsOffset = 140;
 		int yControls = 100;
-		int incControls = 10;
+		int incControls = 16;
 
 		pintaString(xControls, yControls, boldCaracteres, "game controls");
 		
-		pintaString(xControls, yControls += 3*incControls, boldCaracteres, "move space fighter");
-		pintaString(xControls+xControlsOffset, yControls, caracteres, "arrow keys");
+		pintaString(xControls, yControls += 3*incControls, caracteres, "move r-9");
+		pintaString(xControls+xControlsOffset, yControls, boldCaracteres, "arrow keys");
 		
-		pintaString(xControls, yControls+=incControls, boldCaracteres, "shoot");
-		pintaString(xControls+xControlsOffset, yControls, caracteres, "space bar");
+		pintaString(xControls, yControls+=incControls, caracteres, "fire");
+		pintaString(xControls+xControlsOffset, yControls, boldCaracteres, "space bar");
 
-		pintaString(xControls, yControls += incControls, boldCaracteres, "charge shoot");
-		pintaString(xControls + xControlsOffset, yControls, caracteres, "hold space bar");
+		pintaString(xControls, yControls += incControls, caracteres, "charge shot");
+		pintaString(xControls + xControlsOffset, yControls, boldCaracteres, "hold space bar");
 
-		pintaString(xControls, yControls += incControls, boldCaracteres, "shoot shield forward");
-		pintaString(xControls + xControlsOffset, yControls, caracteres, "n");
+		pintaString(xControls, yControls += incControls, caracteres, "fire shield");
+		pintaString(xControls + xControlsOffset, yControls, boldCaracteres, "n");
 
-		pintaString(xControls, yControls += incControls, boldCaracteres, "use magic");
-		pintaString(xControls + xControlsOffset, yControls, caracteres, "m");
+		pintaString(xControls, yControls += incControls, caracteres, "magic attack");
+		pintaString(xControls + xControlsOffset, yControls, boldCaracteres, "z");
 
-		pintaString(xControls, yControls += incControls, boldCaracteres, "pause game");
-		pintaString(xControls + xControlsOffset, yControls, caracteres, "p");
+		pintaString(xControls, yControls += 2*incControls, caracteres, "pause game");
+		pintaString(xControls + xControlsOffset, yControls, boldCaracteres, "p");
 
 
 
@@ -597,15 +610,28 @@ void cMenu::pinta() const {
 	} else if (_state == PANTALLA_CREDITOS) {
 
 		int xCredits = 100;
-		int xCreditsOffset = 120;
+		int xCreditsOffset = 160;
 		int yCredits = 100;
-		int incCredits = 10;
+		int incCredits = 16;
+		int incCredits2 = 10;
 
-		pintaString(xCredits, yCredits, boldCaracteres, "player 1");
-		pintaString(xCredits+xCreditsOffset, yCredits, caracteres, "albert lobo");
+		pintaString(xCredits, yCredits, boldCaracteres, "game programmers");
+
+		pintaString(xCredits, yCredits += 3 * incCredits, caracteres, "game engine");
+		pintaString(xCredits + xCreditsOffset, yCredits, boldCaracteres, "albert lobo");
+		pintaString(xCredits, yCredits += incCredits2, caracteres, "level 1, 2, 4");
+		pintaString(xCredits, yCredits += incCredits2, caracteres, "enemies, bosses");
+		pintaString(xCredits, yCredits += incCredits2, caracteres, "projectiles");
+		pintaString(xCredits, yCredits += incCredits2, caracteres, "power-ups");
+		pintaString(xCredits, yCredits += incCredits2, caracteres, "game menu, hud");
+		pintaString(xCredits, yCredits += incCredits2, caracteres, "textures, sound");
 		
-		pintaString(xCredits, yCredits+=incCredits, boldCaracteres, "player 2");
-		pintaString(xCredits+xCreditsOffset, yCredits, caracteres, "oriol momino");
+		pintaString(xCredits, yCredits+=2*incCredits, caracteres, "level 3");
+		pintaString(xCredits+xCreditsOffset, yCredits, boldCaracteres, "oriol momino");
+		pintaString(xCredits, yCredits += incCredits2, caracteres, "enemies, bosses");
+		pintaString(xCredits, yCredits += incCredits2, caracteres, "textures, sound");
+
+		pintaString(xCredits, yCredits += 3 * incCredits, caracteres, "r-type images and sounds by irem");
 		
 		// volver
 		int xBack = 100;
@@ -624,8 +650,8 @@ void cMenu::pinta() const {
 		yCredits+=2*incCredits;
 
 		for (unsigned int i=0; i<_hiScores.size(); ++i) {
-			pintaString(xCredits, yCredits+=incCredits, boldCaracteres, _hiScores[i].first);
-			pintaNumero(xCredits+xCreditsOffset, yCredits, caracteres, _hiScores[i].second*100);
+			pintaString(xCredits, yCredits+=incCredits, caracteres, _hiScores[i].first);
+			pintaNumero(xCredits+xCreditsOffset, yCredits, boldCaracteres, _hiScores[i].second*100);
 		}
 		
 		// volver
@@ -703,7 +729,7 @@ void cMenu::pinta() const {
 		yCredits+=2*incCredits;
 
 		pintaHiScoreString(xCredits, yCredits+=incCredits, boldCaracteres, _hiScoreNameTmp);
-		pintaNumero(xCredits+xCreditsOffset, yCredits, caracteres, _puntos*FACTOR_PUNTOS);
+		pintaNumero(xCredits+xCreditsOffset, yCredits, caracteres, _hiScorePointsTmp*FACTOR_PUNTOS);
 
 		// save
 		if (_tiempoSetHiScore>=MENU_SET_HI_SCORE_RESPONSIVE) {

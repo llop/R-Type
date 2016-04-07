@@ -8,7 +8,7 @@ public:
 	cSound();
 	~cSound();
 
-	bool loadWAV(const char* fileName, bool continuousLoop);
+	bool loadWAV(const char* fileName, bool continuousLoop, float gain);
 	bool play();
 	bool pause();
 	bool resume();
@@ -63,8 +63,17 @@ private:
 #define SOUND_ITEM_VIDA 26
 #define SOUND_ITEM 27
 
+#define SOUND_DISPARO_NAVE_EXPLO1 28
+#define SOUND_DISPARO_NAVE_EXPLO2 29
+#define SOUND_DISPARO_ENEMIGO_EXPLO1 30
+#define SOUND_DISPARO_ENEMIGO_EXPLO2 31
 
-#define NUM_SOUNDS 28
+#define SOUND_MAGIA 32
+#define SOUND_CLIT 33
+#define SOUND_CUC 34
+#define SOUND_ENEMIGO_HIT 35
+
+#define NUM_SOUNDS 36
 
 
 struct cSoundWrapper {
@@ -77,12 +86,13 @@ struct cSoundWrapper {
 	bool _loaded;
 
 	cSoundWrapper();
-	void init(const char* ficheroSonido, bool loop, int numSources, long long delay);
+	void init(const char* ficheroSonido, bool loop, int numSources, long long delay, float gain);
 
 };
 
 
-#define SONIDO_DELAY 6
+#define SONIDO_MAX_QUEUED 6
+#define SONIDO_DELAY 1
 
 class cSoundManager {
 private:
@@ -100,7 +110,7 @@ public:
 
 	void suena();
 
-	void cargaSonido(int id, const char* ficheroSonido, bool loop, int num, long long delay);
+	void cargaSonido(int id, const char* ficheroSonido, bool loop, int num, long long delay, float gain);
 	void playSonido(int id);
 	void stopSonido(int id);
 	void stopSonidos();

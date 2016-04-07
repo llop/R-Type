@@ -149,6 +149,7 @@ void cEnemigo5::logica() {
 					// aplicar efecto del disparo
 					_vida -= disparo->dano();
 					if (_vida <= 0) naveLoMata = true;
+					else _sis->playSonido(SOUND_ENEMIGO_HIT);
 				}
 			}
 		}
@@ -162,6 +163,7 @@ void cEnemigo5::logica() {
 			if (colMask) {
 				_vida -= escudo->dano();
 				if (_vida <= 0) naveLoMata = true;
+				else _sis->playSonido(SOUND_ENEMIGO_HIT);
 			}
 		}
 

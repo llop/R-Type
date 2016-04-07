@@ -70,7 +70,8 @@ cDisparoNave::cDisparoNave(cSistema* sis, int x, int y, int tipo, int tamano) : 
 	
 
 	if (_tipo == DISPARO_NAVE_NORMAL) {
-		_sis->playSonido(SOUND_DISPARO_NAVE);
+		if (_tamano) _sis->playSonido(SOUND_DISPARO_CARGADO);
+		else _sis->playSonido(SOUND_DISPARO_NAVE);
 	} else if (_tipo == DISPARO_NAVE_CIRCULAR) {
 		_sis->playSonido(SOUND_DISPARO_RB_NAVE);
 	}
@@ -116,6 +117,8 @@ void cDisparoNave::explota() {
 	_state = DISPARO_EXPLO;
 	_seq = 0;
 	_delay = DISPARO_EXPLO_DELAY;
+
+	_sis->playSonido(SOUND_DISPARO_NAVE_EXPLO2);
 }
 
 void cDisparoNave::muerete() {
@@ -123,6 +126,8 @@ void cDisparoNave::muerete() {
 		_state = DISPARO_EXPLO;
 		_seq = 0;
 		_delay = DISPARO_EXPLO_DELAY;
+
+		_sis->playSonido(SOUND_DISPARO_NAVE_EXPLO1);
 	}
 }
 

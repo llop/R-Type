@@ -32,6 +32,8 @@
 #define NIVEL4 3
 #define NUM_NIVELES 4
 
+#define GAIN_MUSICA 0.1f
+
 
 struct cRect {
 	int x, y, w, h;
@@ -85,7 +87,7 @@ public:
 	void tamanoTextura(int id, int &width, int &height) const;
 
 	// sonidos
-	void cargaSonido(int id, const char* ficheroSonido, bool loop = false, int num = 1, long long delay = 20);
+	void cargaSonido(int id, const char* ficheroSonido, bool loop = false, int num = 1, long long delay = 1, float gain = 0.05f);
 	void playSonido(int id);
 	void stopSonido(int id);
 	void stopSonidos();

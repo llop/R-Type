@@ -235,6 +235,11 @@ void cJefe2::logica() {
 			return;
 		}
 
+		long long tiempoFlash = _tiempoVida - _ultimoImpacto;
+		if (tiempoFlash < JEFE2_FLASH_IMPACTO && !(tiempoFlash % 6)) {
+			_sis->playSonido(SOUND_ENEMIGO_HIT);
+		}
+
 		// actualizar estado
 		if (_tiempoVida == 640) {
 			_subState = JEFE2_VULVA_CERRADA;
@@ -247,6 +252,8 @@ void cJefe2::logica() {
 				_seq = 1;
 				_delay = JEFE2_MUEVE_DELAY;
 				_ultimaSalida = _tiempoVida;
+
+				_sis->playSonido(SOUND_CLIT);
 			}
 		} else if (_subState==JEFE2_VULVA_ABIERTA) {
 			long long intervalo = _tiempoVida - _ultimaSalida;
@@ -254,6 +261,8 @@ void cJefe2::logica() {
 				_subState=JEFE2_VULVA_CERRADA;
 				_delay = JEFE2_MUEVE_DELAY;
 				_ultimaSalida = _tiempoVida;
+
+				_sis->playSonido(SOUND_CLIT);
 			}
 		}
 
@@ -267,10 +276,14 @@ void cJefe2::logica() {
 					cEnemigo3* enemigo3 = new cEnemigo3(_sis, 4288, _y+4, 6, 62.0f, 0.2f, 0.03333f, false);
 					_gusanos[0] = enemigo3;
 					nivel->pushEnemigo(enemigo3);
+
+					_sis->playSonido(SOUND_CUC);
 				}
 			} else {
-				if (_tiempoGusano[0]) --_tiempoGusano[0];
-				else if (_gusanos[0] != NULL) {
+				if (_tiempoGusano[0]) {
+					--_tiempoGusano[0];
+					if (_tiempoGusano[0]==100) _sis->playSonido(SOUND_CUC);
+				} else if (_gusanos[0] != NULL) {
 					_gusanos[0]->muerete();
 					_gusanos[0] = NULL;
 				}
@@ -284,10 +297,14 @@ void cJefe2::logica() {
 					cEnemigo3* enemigo3 = new cEnemigo3(_sis, 4288-2, _y+2, 8, 144.0f, 2.3f, 0.03333f, true);
 					_gusanos[1] = enemigo3;
 					nivel->pushEnemigo(enemigo3);
+
+					_sis->playSonido(SOUND_CUC);
 				}
 			} else {
-				if (_tiempoGusano[1]) --_tiempoGusano[1];
-				else if (_gusanos[1] != NULL) {
+				if (_tiempoGusano[1]) {
+					--_tiempoGusano[1];
+					if (_tiempoGusano[1] == 50) _sis->playSonido(SOUND_CUC);
+				} else if (_gusanos[1] != NULL) {
 					_gusanos[1]->muerete();
 					_gusanos[1] = NULL;
 				}
@@ -335,6 +352,8 @@ void cJefe2::logica() {
 		}
 		// genera una explosion random
 		if (_exploCuerpo.size() < JEFE1_MAX_NUM_EXPLO && !(rand() % 4)) {
+			_sis->playSonido(SOUND_EXPLO1);
+
 			cExplo explo;
   			explo.seq = 0;
 			explo.delay = JEFE1_EXPLO_DELAY;
@@ -374,17 +393,12 @@ void cJefe2::pintaVivo() const {
 	int yPixEne = GAME_HEIGHT - (_y + hPixEne);
 
 	long long tiempoFlash = _tiempoVida - _ultimoImpacto;
-	if (tiempoFlash < JEFE1_FLASH_IMPACTO) {
-		float r = tiempoFlash%3 == 0;
-		float g = tiempoFlash%3 == 1;
-		float b = tiempoFlash%3 == 2;
-		glColor3f(r, g, b);
-	}
+	if (tiempoFlash < JEFE2_FLASH_IMPACTO) glColor3f(tiempoFlash % 3 == 0, tiempoFlash % 3 == 1, tiempoFlash % 3 == 2);
 	glTexCoord2f(xTexEne, yTexEne + hTexEne);			glVertex2i(xPixEne, yPixEne);
 	glTexCoord2f(xTexEne + wTexEne, yTexEne + hTexEne);	glVertex2i(xPixEne + wPixEne, yPixEne);
 	glTexCoord2f(xTexEne + wTexEne, yTexEne);			glVertex2i(xPixEne + wPixEne, yPixEne + hPixEne);
 	glTexCoord2f(xTexEne, yTexEne);						glVertex2i(xPixEne, yPixEne + hPixEne);
-	if (tiempoFlash < JEFE1_FLASH_IMPACTO) glColor3f(1, 1, 1);
+	if (tiempoFlash < JEFE2_FLASH_IMPACTO) glColor3f(1, 1, 1);
 
 	glEnd();
 	glDisable(GL_TEXTURE_2D);

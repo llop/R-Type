@@ -16,7 +16,7 @@ cNivel3::cNivel3(cSistema* sis, cNaveEspacial* naveEspacial,
 			ficheroTextura,
 			ficheroFondo,
 			idMusica, ficheroMusica) {
-	//_posicion = 5084-GAME_WIDTH;
+	//_posicion = 5084-GAME_WIDTH - 640;
 }
 
 float cNivel3::factorDificultad() const {
@@ -273,9 +273,25 @@ void cNivel3::generaEnemigos() {
 	}
 
 	// generar el jefe
+	if (_posicion == 5084 - GAME_WIDTH - 200 && !_delay) {
+		_tiempoJefe = _tiempo;
+
+		_sis->stopSonido(_idMusica);
+		_sis->playSonido(SOUND_JEFE_INTRO);
+	}
+
 	if (_posicion == 5084 - GAME_WIDTH && !_delay) {
 		cJefe3* jefe = new cJefe3(_sis);
 		pushEnemigo(jefe);
+	}
+
+	if (_tiempoJefe >= 0) {
+		long long interval = _tiempo - _tiempoJefe;
+		if (interval == 292) {
+			_sis->stopSonido(SOUND_JEFE_INTRO);
+			_sis->playSonido(SOUND_JEFE);
+			_tiempoJefe = -1;
+		}
 	}
 }
 

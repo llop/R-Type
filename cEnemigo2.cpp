@@ -119,6 +119,7 @@ void cEnemigo2::logica() { // cambiar logica quan es vegi
 					// aplicar efecto del disparo
 					_vida -= disparo->dano();
 					if (_vida <= 0) naveLoMata = true;
+					else _sis->playSonido(SOUND_ENEMIGO_HIT);
 				}
 			}
 		}
@@ -132,6 +133,7 @@ void cEnemigo2::logica() { // cambiar logica quan es vegi
 			if (colMask) {
 				_vida -= escudo->dano();
 				if (_vida <= 0) naveLoMata = true;
+				else _sis->playSonido(SOUND_ENEMIGO_HIT);
 			}
 		}
 

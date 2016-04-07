@@ -76,6 +76,8 @@ protected:
 	string _hiScoreNameTmp;
 	long long _hiScorePointsTmp;
 
+	int _ultimaPant;
+
 	bool cargaHiScore();
 	bool guardaHiScore();
 	
@@ -90,6 +92,7 @@ public:
 
 	// modificadoras
 	void setDificultad(int dificultad);
+	void setUltima(int pant);
 	void setPantalla(int pantalla);
 	void setScore(int nivel, long long puntos);
 	void setHiScore(long long puntos);

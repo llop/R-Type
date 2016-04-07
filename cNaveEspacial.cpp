@@ -50,24 +50,43 @@ int flashMid = 91;
 cNaveEspacial::cNaveEspacial(cSistema* sis) : cSprite(sis) {
 	_sis->cargaTextura(TEX_NAVE1, "img\\r-typesheet1.png");
 
-	_sis->cargaSonido(SOUND_DISPARO_NAVE, "wavs\\rtype-048.wav", false, 8, 6);
-	_sis->cargaSonido(SOUND_DISPARO_RB_NAVE, "wavs\\rtype-049.wav", false, 8, 12);
+	_sis->cargaSonido(SOUND_DISPARO_NAVE, "wavs\\rtype-048.wav", false, 8, 1);
+	_sis->cargaSonido(SOUND_DISPARO_RB_NAVE, "wavs\\rtype-082.wav", false, 8, 1);
 
-	_sis->cargaSonido(SOUND_DISPARO_ESCUDO1, "wavs\\rtype-065.wav", false, 8, 24);
-	_sis->cargaSonido(SOUND_DISPARO_ESCUDO2, "wavs\\rtype-049.wav", false, 8, 24);
+	_sis->cargaSonido(SOUND_DISPARO_ESCUDO1, "wavs\\rtype-065.wav", false, 8,  1);
+	_sis->cargaSonido(SOUND_DISPARO_ESCUDO2, "wavs\\rtype-059.wav", false, 8, 1);
 
-	_sis->cargaSonido(SOUND_CARGA_DISPARO, "wavs\\rtype-051.wav", true, 1, 12);
+	_sis->cargaSonido(SOUND_CARGA_DISPARO, "wavs\\rtype-051.wav", true, 1, 1);
+	_sis->cargaSonido(SOUND_DISPARO_CARGADO, "wavs\\rtype-049.wav", false, 1, 1);
 
-	_sis->cargaSonido(SOUND_EXPLO_NAVE, "wavs\\rtype-053.wav", false, 12, 8);
-	_sis->cargaSonido(SOUND_EXPLO1, "wavs\\rtype-083.wav", false, 12, 8);
-	_sis->cargaSonido(SOUND_EXPLO2, "wavs\\boom-1.wav", false, 12, 16);
+	_sis->cargaSonido(SOUND_EXPLO_NAVE, "wavs\\rtype-053.wav", false, 12, 1);
+	_sis->cargaSonido(SOUND_EXPLO1, "wavs\\rtype-083.wav", false, 24, 6, GAIN_MUSICA);
+	_sis->cargaSonido(SOUND_EXPLO2, "wavs\\rtype-080.wav", false, 12, 1, GAIN_MUSICA);
 
-	_sis->cargaSonido(SOUND_DISPARO_ENEMIGO, "wavs\\rtype-054.wav", false, 24, 16);
-	_sis->cargaSonido(SOUND_DISPARO_GUSANO, "wavs\\rtype-064.wav", false, 24, 16);
-	_sis->cargaSonido(SOUND_DISPARO_JEFE1, "wavs\\rtype-100.wav", false, 12, 8);
+	_sis->cargaSonido(SOUND_DISPARO_ENEMIGO, "wavs\\rtype-054.wav", false, 12, 1, GAIN_MUSICA);
+	_sis->cargaSonido(SOUND_DISPARO_GUSANO, "wavs\\rtype-064.wav", false, 12, 1, GAIN_MUSICA);
+	_sis->cargaSonido(SOUND_DISPARO_JEFE1, "wavs\\rtype-100.wav", false, 6, 6);
 
-	_sis->cargaSonido(SOUND_ITEM, "wavs\\rtype-080.wav", false, 12, 12);
-	_sis->cargaSonido(SOUND_ITEM_VIDA, "wavs\\rtype-056.wav", false, 2, 12);
+	_sis->cargaSonido(SOUND_DISPARO_NAVE_EXPLO1, "wavs\\rtype-055.wav", false, 12, 1);
+	_sis->cargaSonido(SOUND_DISPARO_NAVE_EXPLO2, "wavs\\rtype-093.wav", false, 8, 1);
+	_sis->cargaSonido(SOUND_DISPARO_ENEMIGO_EXPLO1, "wavs\\rtype-065.wav", false, 12, 6);
+	_sis->cargaSonido(SOUND_DISPARO_ENEMIGO_EXPLO2, "wavs\\rtype-052.wav", false, 6, 6);
+
+	_sis->cargaSonido(SOUND_ITEM, "wavs\\rtype-058.wav", false, 12, 1);
+	_sis->cargaSonido(SOUND_ITEM_VIDA, "wavs\\rtype-056.wav", false, 2, 1);
+
+	_sis->cargaSonido(SOUND_MAGIA, "wavs\\rtype-090.wav", false, 1, 1, GAIN_MUSICA);
+
+	_sis->cargaSonido(SOUND_CUC, "wavs\\rtype-095.wav", false, 4, 1, GAIN_MUSICA);
+	_sis->cargaSonido(SOUND_CLIT, "wavs\\rtype-105.wav", false, 2, 1, GAIN_MUSICA);
+
+	_sis->cargaSonido(SOUND_JEFE_INTRO, "wavs\\rtype-025-intro.wav", false, 1, 1, GAIN_MUSICA);
+	_sis->cargaSonido(SOUND_JEFE, "wavs\\rtype-025.wav", true, 1, 1, GAIN_MUSICA);
+
+	_sis->cargaSonido(SOUND_JEFE, "wavs\\rtype-025.wav", true, 1, 1, GAIN_MUSICA);
+
+	_sis->cargaSonido(SOUND_ENEMIGO_HIT, "wavs\\rtype-086.wav", false, 12, 1);
+
 
 	_x=GAME_WIDTH>>1;
 	_y=(GAME_HEIGHT-HUD_HPIX)>>1;
@@ -93,6 +112,11 @@ void cNaveEspacial::delEscudos() {
 }
 
 void cNaveEspacial::sumaPuntos(long long puntos) {
+	if (_puntos < NAVE_PUNTOS_VIDA && (_puntos + puntos) >= NAVE_PUNTOS_VIDA) {
+		++_vidas;
+		_sis->playSonido(SOUND_ITEM_VIDA);
+	}
+
 	_puntos+=puntos;
 	if (_sis->nivel() != NULL) ((cNivel*)_sis->nivel())->sumaPuntos(puntos);
 }
@@ -320,10 +344,10 @@ void cNaveEspacial::procesaTeclas(unsigned char *keys) {
 		// lanzar el escudo
 		if (keys['n']||keys['N']) lanzaEscudo();
 		// magias
-		if (keys['m']||keys['M']) tira_magia();
+		if (keys['z']||keys['Z']) tira_magia();
 
 		// debug
-		if (keys['o']||keys['O']) {
+		if (keys['q']||keys['Q']) {
 			// chetar la nave
 			anadeEscudo();
 			anadeEscudo();
@@ -466,10 +490,10 @@ void cNaveEspacial::logica() {
 			for (list<cItem*>::iterator it = items.begin(); it != items.end(); ++it) {
 				cItem* item = *it;
 				cRect myRect = rect;
-				myRect.x -= 2;
-				myRect.y -= 2;
-				myRect.w += 4;
-				myRect.h += 4;
+				myRect.x -= 6;
+				myRect.y -= 6;
+				myRect.w += 12;
+				myRect.h += 12;
 				int colMask;
 				item->colision(myRect, colMask);
 				if (colMask) {

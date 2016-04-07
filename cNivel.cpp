@@ -54,7 +54,7 @@ cNivel::cNivel(cSistema* sis, cNaveEspacial* naveEspacial,
 
 	_sis->cargaTextura(TEX_MENU, "img\\menu.png");
 
-	_sis->cargaSonido(idMusica, ficheroMusica, true);
+	_sis->cargaSonido(idMusica, ficheroMusica, true, 1, 1, GAIN_MUSICA);
 	_sis->playSonido(idMusica);
 	_idMusica = idMusica;
 	_naveEspacial = naveEspacial;
@@ -103,6 +103,7 @@ cNivel::cNivel(cSistema* sis, cNaveEspacial* naveEspacial,
 	_enPausa = false;
 	_tiempoPausa = NIVEL_INTERVALO_PAUSA;
 	_tiempoMagia = NIVEL_DELAY_MAGIA;
+	_tiempoJefe = -1;
 	_tiempo = 0;
 }
 
@@ -131,6 +132,8 @@ cNivel::~cNivel() {
 }
 
 void cNivel::tiraMagia() {
+	_sis->playSonido(SOUND_MAGIA);
+
 	for (list<cDisparo*>::iterator it = _disparos.begin(); it != _disparos.end(); ++it) {
 		cDisparo* disparo = *it;
 		if (disparo->malo() && disparo->vive()) disparo->explota();
@@ -174,10 +177,12 @@ void cNivel::pushItem(cItem* item) {
 
 void cNivel::pushEnemigo(cEnemigo* enemigo) {
 	_enemigos.insert(_enemigos.end(), enemigo);
+	if (_tiempoMagia < NIVEL_DELAY_MAGIA) enemigo->restaVida(NIVEL_DANO_MAGIA);
 }
 
 void cNivel::pushDisparo(cDisparo* disparo) {
 	_disparos.insert(_disparos.end(), disparo);
+	if (_tiempoMagia < NIVEL_DELAY_MAGIA && disparo->malo() && disparo->vive()) disparo->explota();
 }
 
 

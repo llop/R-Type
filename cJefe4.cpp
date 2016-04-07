@@ -137,6 +137,7 @@ void cJefe4::restaVida(int vida) {
 		for (int i = 0; i < 3; ++i) {
 			if (_estadoCritter[i] == JEFE4_BARRERA_ABIERTA) {
 				_vidaCritter[i] -= vida;
+				if (_vidaCritter[i]>0) _sis->playSonido(SOUND_ENEMIGO_HIT);
 				_ultimoImpacto[i] = _tiempoVida;
 			}
 		}
@@ -273,8 +274,11 @@ void cJefe4::logica() {
 					escudo->colision(rect, colMask);
 					if (colMask) {
 						escudo->choca();
-						_vidaCritter[i] -= escudo->dano();
-						_ultimoImpacto[i] = _tiempoVida;
+						long long tiempoFlash = _tiempoVida - _ultimoImpacto[i];
+						if (tiempoFlash >= JEFE4_FLASH_IMPACTO) {
+							_vidaCritter[i] -= escudo->dano();
+							_ultimoImpacto[i] = _tiempoVida;
+						}
 					} else {
 						cRect rectDisp;
 						escudo->caja(rectDisp);
@@ -282,7 +286,7 @@ void cJefe4::logica() {
 						if (colMask) escudo->choca();
 					}
 				}
-
+				
 				if (_vidaCritter[i] <= 0) {
   					int puntos = i ? JEFE4_PUNTOS_CRITTER2 : JEFE4_PUNTOS_CRITTER1;
 					nave->sumaPuntos(puntos);
@@ -299,6 +303,13 @@ void cJefe4::logica() {
 					explo.x = _xCritter[i] + 20;
 					explo.y = _yCritter[i];
 					_exploCuerpo.push_back(explo);
+
+					_sis->playSonido(SOUND_EXPLO1);
+				} else {
+					long long tiempoFlash = _tiempoVida - _ultimoImpacto[i];
+					if (tiempoFlash < JEFE4_FLASH_IMPACTO && !(tiempoFlash % 6)) {
+						_sis->playSonido(SOUND_ENEMIGO_HIT);
+					}
 				}
 
 			} else {
@@ -546,13 +557,8 @@ void cJefe4::pintaVivo() const {
 		hTexEne = hPixEne / (float)hTex;
 
 		long long tiempoFlash = _tiempoVida - _ultimoImpacto[i];
-		bool hazFlash = tiempoFlash < JEFE1_FLASH_IMPACTO && _state == ENEMIGO_VIVE;
-		if (hazFlash) {
-			float r = tiempoFlash % 3 == 0;
-			float g = tiempoFlash % 3 == 1;
-			float b = tiempoFlash % 3 == 2;
-			glColor3f(r, g, b);
-		}
+		bool hazFlash = tiempoFlash < JEFE4_FLASH_IMPACTO && _state == ENEMIGO_VIVE;
+		if (hazFlash) glColor3f(tiempoFlash % 3 == 0, tiempoFlash % 3 == 1, tiempoFlash % 3 == 2);
 		glTexCoord2f(xTexEne, yTexEne + hTexEne);			glVertex2i(xPixEne, yPixEne);
 		glTexCoord2f(xTexEne + wTexEne, yTexEne + hTexEne);	glVertex2i(xPixEne + wPixEne, yPixEne);
 		glTexCoord2f(xTexEne + wTexEne, yTexEne);			glVertex2i(xPixEne + wPixEne, yPixEne + hPixEne);

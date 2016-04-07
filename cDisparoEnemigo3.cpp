@@ -47,6 +47,8 @@ void cDisparoEnemigo3::muerete() {
 	_state = DISPARO_EXPLO;
 	_seq = 0;
 	_delay = DISPARO_ENEMIGO3_EXPLO_DELAY;
+
+	_sis->playSonido(SOUND_DISPARO_ENEMIGO_EXPLO1);
 }
 
 

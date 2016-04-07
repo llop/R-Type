@@ -72,8 +72,20 @@ void cNivel4::generaEnemigos() {
 			pushEnemigo(enemigo);
 		}
 
-		if (_iterAvance == 38 && !_posicion) {
+		if (_iterAvance == 36 && !_posicion) {
 			cEnemigoItem* enemigo = new cEnemigoItem(_sis, rect.x + rect.w + 8, 10 * TILE_HEIGHT, -5.0f, 0.0f, ITEM_DISPARO_RB);
+			pushEnemigo(enemigo);
+		}
+		if (_iterAvance == 37 && !_posicion) {
+			cEnemigoItem* enemigo = new cEnemigoItem(_sis, rect.x + rect.w + 8, 10 * TILE_HEIGHT, -5.0f, 0.0f, ITEM_VIDA);
+			pushEnemigo(enemigo);
+		}
+		if (_iterAvance == 38 && !_posicion) {
+			cEnemigoItem* enemigo = new cEnemigoItem(_sis, rect.x + rect.w + 8, 10 * TILE_HEIGHT, -5.0f, 0.0f, ITEM_ESCUDO);
+			pushEnemigo(enemigo);
+		}
+		if (_iterAvance == 39 && !_posicion) {
+			cEnemigoItem* enemigo = new cEnemigoItem(_sis, rect.x + rect.w + 8, 10 * TILE_HEIGHT, -5.0f, 0.0f, ITEM_ESCUDO);
 			pushEnemigo(enemigo);
 		}
 
@@ -100,8 +112,23 @@ void cNivel4::generaEnemigos() {
 
 	int posFinal = (40 * TILE_WIDTH)*NIVEL4_ITER + ((_tilesAncho - 40)*TILE_WIDTH);
 	if (posReal == (40 * TILE_WIDTH)*NIVEL4_ITER) {
+		_tiempoJefe = _tiempo;
+
+		_sis->stopSonido(_idMusica);
+		_sis->playSonido(SOUND_JEFE_INTRO);
+
 		cJefe4* enemigo = new cJefe4(_sis);
 		pushEnemigo(enemigo);
+	}
+
+
+	if (_tiempoJefe >= 0) {
+		long long interval = _tiempo - _tiempoJefe;
+		if (interval == 292) {
+			_sis->stopSonido(SOUND_JEFE_INTRO);
+			_sis->playSonido(SOUND_JEFE);
+			_tiempoJefe = -1;
+		}
 	}
 }
 

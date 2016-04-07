@@ -56,8 +56,8 @@ void cSistema::tamanoTextura(int id, int &width, int &height) const {
 
 
 // sonido
-void cSistema::cargaSonido(int id, const char* ficheroSonido, bool loop, int num, long long delay) {
-	_sonidos->cargaSonido(id, ficheroSonido, loop, num, delay);
+void cSistema::cargaSonido(int id, const char* ficheroSonido, bool loop, int num, long long delay, float gain) {
+	_sonidos->cargaSonido(id, ficheroSonido, loop, num, delay, gain);
 }
 
 void cSistema::playSonido(int id) {
@@ -188,12 +188,23 @@ void cSistema::arrancaPartida() {
 }
 
 void cSistema::gameOver() {
-	stopSonidos();
-	playSonido(SOUND_GAME_OVER);
+
+	cMenu* menu = (cMenu*)_menu;
+	cNaveEspacial* nave = (cNaveEspacial*)_naveEspacial;
 
 	_estado = MENU;
-	cMenu* menu = (cMenu*)_menu;
-	menu->setPantalla(PANTALLA_GAME_OVER);
+
+	stopSonidos();
+
+	// hi-score?
+	menu->setUltima(PANTALLA_GAME_OVER);
+	long long puntos = nave->puntos();
+	if (menu->esHiScore(puntos)) {
+		menu->setHiScore(puntos);
+		menu->setPantalla(PANTALLA_SET_HI_SCORE);
+	} else {
+		menu->setPantalla(PANTALLA_GAME_OVER);
+	}
 }
 
 
@@ -221,15 +232,15 @@ void cSistema::cargaNivel() {
 							328, 28, "maps\\level-03.csv",
 							TEX_NIVEL3, TEX_FONDO3,
 							"maps\\stage3-03.png",
-							"img\\Outer-Space-Wallpaper.png", 
-							SOUND_NIVEL3, "wavs\\rtype-004.wav");
+							"img\\level3-back.png", 
+							SOUND_NIVEL3, "wavs\\rtype-007.wav");
 	} else if (_numNivel == NIVEL4) {
 		_nivel = new cNivel4(this, nave,
 							96, 28, "maps\\level-04.csv",
 							TEX_NIVEL4, TEX_FONDO4,
 							"maps\\level-4.png",
 							"img\\level4-back.png",
-							SOUND_NIVEL4, "wavs\\rtype-004.wav");
+							SOUND_NIVEL4, "wavs\\rtype-016.wav");
 	} else if (_numNivel == NUM_NIVELES) {
 
 		// partida completada
@@ -238,6 +249,7 @@ void cSistema::cargaNivel() {
 		_estado = MENU;
 
 		// hi-score?
+		menu->setUltima(PANTALLA_COMPLETE);
 		long long puntos = nave->puntos();
 		if (menu->esHiScore(puntos)) {
 			menu->setHiScore(puntos);

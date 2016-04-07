@@ -113,6 +113,7 @@ void cEnemigo3::explota() {
 	_state = ENEMIGO_EXPLO;
 	for (int i=0; i<_numPiezas; ++i) {
 		_piezas[i][0] = 0;
+		_sis->playSonido(SOUND_EXPLO2);
 	}
 }
 void cEnemigo3::muerete() {
@@ -143,7 +144,7 @@ void cEnemigo3::restaVida(int vida) {
 				((cNaveEspacial*)_sis->naveEspacial())->sumaPuntos(_puntos);
 
 				_sis->playSonido(SOUND_EXPLO2);
-			}
+			} else _sis->playSonido(SOUND_ENEMIGO_HIT);
 		}
 	}
 }
@@ -278,7 +279,7 @@ void cEnemigo3::logica() { // cambiar logica quan es vegi
 									nave->sumaPuntos(_puntos);
 
 									_sis->playSonido(SOUND_EXPLO2);
-								}
+								} else _sis->playSonido(SOUND_ENEMIGO_HIT);
 							}
 							disparo->explota();
 					}
@@ -299,7 +300,7 @@ void cEnemigo3::logica() { // cambiar logica quan es vegi
 								nave->sumaPuntos(_puntos);
 
 								_sis->playSonido(SOUND_EXPLO2);
-							}
+							} else _sis->playSonido(SOUND_ENEMIGO_HIT);
 						}
 						escudo->choca();
 				}

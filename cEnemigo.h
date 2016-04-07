@@ -29,7 +29,7 @@ public:
 		if (_vida<=0) {
 			((cNaveEspacial*)_sis->naveEspacial())->sumaPuntos(_puntos);
 			muerete();
-		}
+		} else _sis->playSonido(SOUND_ENEMIGO_HIT);
 	};
 	bool jefe() const { return _esJefe; };
 	virtual void explota() {
@@ -374,7 +374,7 @@ public:
 #define JEFE3_INC_MOV 2
 
 #define JEFE3_FLASH_IMPACTO 24
-#define JEFE3_MINI_FLASH_IMPACTO 24
+#define JEFE3_MINI_FLASH_IMPACTO 8
 
 #define JEFE3_IDLE 0
 #define JEFE3_MOVE_UP 1
