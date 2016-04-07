@@ -563,15 +563,31 @@ void cMenu::pinta() const {
 	} else if (_state == PANTALLA_INSTRUCCIONES) {
 		
 		int xControls = 100;
-		int xControlsOffset = 120;
+		int xControlsOffset = 200;
 		int yControls = 100;
 		int incControls = 10;
+
+		pintaString(xControls, yControls, boldCaracteres, "game controls");
 		
-		pintaString(xControls, yControls, boldCaracteres, "move ship");
-		pintaString(xControls+xControlsOffset, yControls, caracteres, "wsad");
+		pintaString(xControls, yControls += 3*incControls, boldCaracteres, "move space fighter");
+		pintaString(xControls+xControlsOffset, yControls, caracteres, "arrow keys");
 		
 		pintaString(xControls, yControls+=incControls, boldCaracteres, "shoot");
 		pintaString(xControls+xControlsOffset, yControls, caracteres, "space bar");
+
+		pintaString(xControls, yControls += incControls, boldCaracteres, "charge shoot");
+		pintaString(xControls + xControlsOffset, yControls, caracteres, "hold space bar");
+
+		pintaString(xControls, yControls += incControls, boldCaracteres, "shoot shield forward");
+		pintaString(xControls + xControlsOffset, yControls, caracteres, "n");
+
+		pintaString(xControls, yControls += incControls, boldCaracteres, "use magic");
+		pintaString(xControls + xControlsOffset, yControls, caracteres, "m");
+
+		pintaString(xControls, yControls += incControls, boldCaracteres, "pause game");
+		pintaString(xControls + xControlsOffset, yControls, caracteres, "p");
+
+
 
 		// volver
 		int xBack = 100;
