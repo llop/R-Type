@@ -610,7 +610,7 @@ void cMenu::pinta() const {
 	} else if (_state == PANTALLA_CREDITOS) {
 
 		int xCredits = 100;
-		int xCreditsOffset = 160;
+		int xCreditsOffset = 168;
 		int yCredits = 100;
 		int incCredits = 16;
 		int incCredits2 = 10;
@@ -619,6 +619,7 @@ void cMenu::pinta() const {
 
 		pintaString(xCredits, yCredits += 3 * incCredits, caracteres, "game engine");
 		pintaString(xCredits + xCreditsOffset, yCredits, boldCaracteres, "albert lobo");
+		pintaString(xCredits, yCredits += incCredits2, caracteres, "r-9 ship, shields");
 		pintaString(xCredits, yCredits += incCredits2, caracteres, "level 1, 2, 4");
 		pintaString(xCredits, yCredits += incCredits2, caracteres, "enemies, bosses");
 		pintaString(xCredits, yCredits += incCredits2, caracteres, "projectiles");
