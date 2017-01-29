@@ -2,7 +2,7 @@
 
 R-Type clone using OpenGL and VS2010
 
-**VJ - Q2 2015-2016 - FIB UPC**
+**VJ - FIB UPC - Q2 2015-2016**
 
 See the play-though! :smile:
   
