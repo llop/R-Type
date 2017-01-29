@@ -6,4 +6,4 @@ R-Type clone using OpenGL and VS2010
 
 See the play-though! :smile:
   
-[![R-Type](https://img.youtube.com/vi/8NiInkep9wE/0.jpg)](https://www.youtube.com/watch?v=8NiInkep9wE)
+[![R-Type](/img/rtype-screenshot.png)](https://www.youtube.com/watch?v=8NiInkep9wE)
